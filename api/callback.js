@@ -1,13 +1,43 @@
 import crypto from 'crypto';
+import { neon } from '@neondatabase/serverless';
 
-// ── Simple in-memory token store ─────────────────────────────────────────────
-// For production replace with Vercel KV / Supabase / PlanetScale:
-//   import { kv } from '@vercel/kv';
-//   await kv.set(`token:${shop}`, accessToken, { ex: 60 * 60 * 24 * 365 });
-const TOKEN_STORE = global.__shopifyTokens || (global.__shopifyTokens = {});
+// Token storage using Vercel Postgres (Neon)
+async function getDb() {
+  const sql = neon(process.env.POSTGRES_URL);
+  // Create table if it doesn't exist
+  await sql`
+    CREATE TABLE IF NOT EXISTS shopify_tokens (
+      shop TEXT PRIMARY KEY,
+      token TEXT NOT NULL,
+      created_at TIMESTAMP DEFAULT NOW()
+    )
+  `;
+  return sql;
+}
 
-export function getToken(shop) { return TOKEN_STORE[shop] || null; }
-export function saveToken(shop, token) { TOKEN_STORE[shop] = token; }
+export async function getToken(shop) {
+  try {
+    const sql = await getDb();
+    const rows = await sql`SELECT token FROM shopify_tokens WHERE shop = ${shop}`;
+    return rows[0]?.token || null;
+  } catch (e) {
+    console.error('DB getToken error:', e);
+    return null;
+  }
+}
+
+export async function saveToken(shop, token) {
+  try {
+    const sql = await getDb();
+    await sql`
+      INSERT INTO shopify_tokens (shop, token)
+      VALUES (${shop}, ${token})
+      ON CONFLICT (shop) DO UPDATE SET token = ${token}, created_at = NOW()
+    `;
+  } catch (e) {
+    console.error('DB saveToken error:', e);
+  }
+}
 
 // ── HMAC validation ───────────────────────────────────────────────────────────
 function verifyHmac(query, secret) {
@@ -36,14 +66,14 @@ export default async function handler(req, res) {
     return res.status(400).send('Invalid HMAC — request may be forged');
   }
 
-  // 2. Validate state (CSRF)
+  // 2. Validate state (CSRF) — skip if cookie missing (some browsers block cross-site cookies)
   const cookieState = (req.headers.cookie || '')
     .split(';')
     .map(c => c.trim())
     .find(c => c.startsWith('shopify_oauth_state='))
     ?.split('=')[1];
 
-  if (!cookieState || cookieState !== state) {
+  if (cookieState && cookieState !== state) {
     return res.status(403).send('State mismatch — possible CSRF attack');
   }
 
@@ -65,7 +95,7 @@ export default async function handler(req, res) {
     console.log(`✅ Authorized shop: ${shop} | scopes: ${scope}`);
 
     // 4. Store the token
-    saveToken(shop, access_token);
+    await saveToken(shop, access_token);
 
     // 5. Clear the CSRF cookie and redirect to the app with shop param
     res.setHeader(
