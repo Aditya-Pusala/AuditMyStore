@@ -352,8 +352,8 @@ tailwind.config = {
   <div class="flex flex-col lg:flex-row gap-6">
     <div class="flex-1 min-w-0 space-y-6">
 
-      <div id="analyzer" class="gradient-border animate-fade-up" style="animation-fill-mode:forwards;">
-        <div class="glass rounded-3xl p-8 md:p-10 pb-6 md:pb-6 relative overflow-hidden">
+      <div id="analyzer" class="animate-fade-up" style="animation-fill-mode:forwards;">
+        <div class="glass rounded-3xl px-8 pt-8 pb-6 md:px-10 md:pt-10 md:pb-6 relative overflow-hidden">
           <div class="absolute top-0 right-0 w-64 h-64 opacity-10 pointer-events-none">
             <svg viewBox="0 0 200 200" class="w-full h-full animate-spin-slow opacity-30">
               <circle cx="100" cy="100" r="80" fill="none" stroke="url(#heroGrad)" stroke-width="1" stroke-dasharray="8 4"/>
@@ -403,7 +403,7 @@ tailwind.config = {
           </div>
 
           <!-- URL input + buttons (shown when not connected) -->
-          <div id="url-input-area" class="mt-8 flex flex-col sm:flex-row gap-3">
+          <div id="url-input-area" class="mt-4 flex flex-col sm:flex-row gap-3">
             <div class="flex-1 relative">
               <div class="relative glass rounded-2xl overflow-hidden">
                 <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
@@ -431,7 +431,7 @@ tailwind.config = {
           </div>
 
           <!-- Access level info -->
-          <div class="mt-3 flex flex-wrap items-center gap-4 text-xs text-slate-500">
+          <div class="mt-2 flex flex-wrap items-center gap-4 text-xs text-slate-500">
             <span class="flex items-center gap-1.5">
               <svg class="w-3.5 h-3.5 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
               Quick Analyze — public data only
@@ -442,7 +442,7 @@ tailwind.config = {
             </span>
           </div>
           <!-- Feature highlights -->
-          <div class="mt-6 grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3">
             <div class="glass rounded-2xl p-3 flex items-center gap-3">
               <div class="w-8 h-8 rounded-lg bg-cyan-400/20 flex items-center justify-center flex-shrink-0">
                 <svg class="w-4 h-4 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
@@ -481,6 +481,83 @@ tailwind.config = {
             </div>
           </div>
         </div>
+      </div>
+
+      <!-- How it works section — hidden once analysis runs -->
+      <div id="how-it-works" class="space-y-4">
+
+        <!-- Section header -->
+        <div class="text-center py-2">
+          <span class="text-xs font-semibold uppercase tracking-widest text-cyan-400">How It Works</span>
+          <h2 class="font-display font-bold text-2xl md:text-3xl mt-2 gradient-text">From URL to Revenue Blueprint in 60 Seconds</h2>
+          <p class="text-slate-400 text-sm mt-2 max-w-lg mx-auto">AuditMyStore analyzes your Shopify store using real data and AI to give you a personalized action plan.</p>
+        </div>
+
+        <!-- Steps -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="glass rounded-2xl p-6 card-hover relative overflow-hidden">
+            <div class="absolute top-4 right-4 font-display font-bold text-5xl text-white/5">01</div>
+            <div class="w-10 h-10 rounded-xl bg-cyan-400/20 flex items-center justify-center mb-4">
+              <svg class="w-5 h-5 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            </div>
+            <h3 class="font-display font-bold text-base mb-2 text-cyan-400">Enter Your Store URL</h3>
+            <p class="text-slate-400 text-sm leading-relaxed">Paste any Shopify store domain — myshopify.com or custom domain. Works on any public Shopify store instantly.</p>
+          </div>
+
+          <div class="glass rounded-2xl p-6 card-hover relative overflow-hidden">
+            <div class="absolute top-4 right-4 font-display font-bold text-5xl text-white/5">02</div>
+            <div class="w-10 h-10 rounded-xl bg-orange-400/20 flex items-center justify-center mb-4">
+              <svg class="w-5 h-5 text-orange-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <h3 class="font-display font-bold text-base mb-2 text-orange-400">Connect for Full Access</h3>
+            <p class="text-slate-400 text-sm leading-relaxed">Optionally connect your store via OAuth to unlock real revenue, orders, customer LTV, and abandoned cart data.</p>
+          </div>
+
+          <div class="glass rounded-2xl p-6 card-hover relative overflow-hidden">
+            <div class="absolute top-4 right-4 font-display font-bold text-5xl text-white/5">03</div>
+            <div class="w-10 h-10 rounded-xl bg-green-400/20 flex items-center justify-center mb-4">
+              <svg class="w-5 h-5 text-green-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            </div>
+            <h3 class="font-display font-bold text-base mb-2 text-green-400">Get Your Blueprint</h3>
+            <p class="text-slate-400 text-sm leading-relaxed">Receive a personalized score, revenue opportunities, critical issues, and a 90-day action plan to double your sales.</p>
+          </div>
+        </div>
+
+        <!-- What you get -->
+        <div class="glass rounded-2xl p-6">
+          <h3 class="font-display font-bold text-base mb-4 text-slate-300">What You Get</h3>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="flex items-start gap-3">
+              <div class="w-2 h-2 rounded-full bg-cyan-400 mt-1.5 flex-shrink-0"></div>
+              <div>
+                <div class="text-sm font-semibold text-slate-300">Health Score</div>
+                <div class="text-xs text-slate-500">0–100 store rating across 6 categories</div>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <div class="w-2 h-2 rounded-full bg-green-400 mt-1.5 flex-shrink-0"></div>
+              <div>
+                <div class="text-sm font-semibold text-slate-300">Revenue Gaps</div>
+                <div class="text-xs text-slate-500">Exact $ amount you're leaving on the table</div>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <div class="w-2 h-2 rounded-full bg-orange-400 mt-1.5 flex-shrink-0"></div>
+              <div>
+                <div class="text-sm font-semibold text-slate-300">Quick Wins</div>
+                <div class="text-xs text-slate-500">Actions you can take today under 2 hours</div>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <div class="w-2 h-2 rounded-full bg-indigo-400 mt-1.5 flex-shrink-0"></div>
+              <div>
+                <div class="text-sm font-semibold text-slate-300">AI Chat</div>
+                <div class="text-xs text-slate-500">Ask Aria anything about your store</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
 
       <div id="loading-panel" class="hidden glass rounded-3xl p-8 relative overflow-hidden">
@@ -745,6 +822,7 @@ async function analyzeConnectedStore() {
   setAnalyzeLoading(true);
   document.getElementById('loading-panel').classList.remove('hidden');
   document.getElementById('dashboard').classList.add('hidden');
+  document.getElementById('how-it-works').classList.add('hidden');
 
   const checks = ['Fetching orders & revenue', 'Pulling customer data', 'Reading abandoned carts', 'AI diagnosis'];
   const checkContainer = document.getElementById('loading-checklist');
@@ -913,6 +991,7 @@ async function analyzeStore() {
   setAnalyzeLoading(true);
   document.getElementById('loading-panel').classList.remove('hidden');
   document.getElementById('dashboard').classList.add('hidden');
+  document.getElementById('how-it-works').classList.add('hidden');
 
   const checks = ['Fetching live store data', 'Analyzing products & SEO', 'Running AI diagnostics', 'Generating blueprint'];
   const checkContainer = document.getElementById('loading-checklist');
