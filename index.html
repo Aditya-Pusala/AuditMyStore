@@ -1344,7 +1344,14 @@ document.addEventListener('DOMContentLoaded', () => {
   initParticles(); initPWA(); initChat();
   checkOAuthReturn(); // Handle returning from Shopify OAuth
   if (window.matchMedia('(prefers-color-scheme: light)').matches) toggleTheme();
-  if (window.innerWidth < 1024) { document.getElementById('chat-panel').style.display = 'none'; chatVisible = false; }
+  // Only hide chat on mobile, always show on desktop
+  if (window.innerWidth < 1024) {
+    document.getElementById('chat-panel').style.display = 'none';
+    chatVisible = false;
+  } else {
+    document.getElementById('chat-panel').style.display = 'block';
+    chatVisible = true;
+  }
   const inp = document.getElementById('store-url');
   inp.addEventListener('focus', () => document.getElementById('input-line').style.opacity = '1');
   inp.addEventListener('blur', () => document.getElementById('input-line').style.opacity = '0');
