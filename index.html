@@ -1,0 +1,1358 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ShopifyAI Analyzer — 2x Sales Blueprint</title>
+<meta name="description" content="AI-Powered Shopify Store Diagnosis &amp; 2x Sales Blueprint">
+<meta name="theme-color" content="#0f172a">
+<link rel="manifest" id="manifest-placeholder">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      fontFamily: { display: ['Syne','sans-serif'], body: ['DM Sans','sans-serif'] },
+      colors: { neon: { cyan: '#22d3ee', pink: '#f472b6', orange: '#fb923c', green: '#4ade80' } },
+      animation: {
+        'fade-up': 'fadeUp 0.6s ease forwards', 'fade-in': 'fadeIn 0.4s ease forwards',
+        'slide-right': 'slideRight 0.4s ease forwards', 'slide-left': 'slideLeft 0.4s ease forwards',
+        'pulse-glow': 'pulseGlow 2s ease-in-out infinite', 'shimmer': 'shimmer 1.8s infinite',
+        'float': 'float 3s ease-in-out infinite', 'spin-slow': 'spin 8s linear infinite',
+        'typing': 'typing 1.2s steps(3) infinite', 'ripple': 'ripple 0.6s ease-out forwards',
+        'scan': 'scan 2s ease-in-out infinite',
+      },
+      keyframes: {
+        fadeUp: { '0%': { opacity: 0, transform: 'translateY(24px)' }, '100%': { opacity: 1, transform: 'translateY(0)' } },
+        fadeIn: { '0%': { opacity: 0 }, '100%': { opacity: 1 } },
+        slideRight: { '0%': { opacity: 0, transform: 'translateX(-20px)' }, '100%': { opacity: 1, transform: 'translateX(0)' } },
+        slideLeft: { '0%': { opacity: 0, transform: 'translateX(20px)' }, '100%': { opacity: 1, transform: 'translateX(0)' } },
+        pulseGlow: { '0%,100%': { boxShadow: '0 0 20px rgba(34,211,238,0.3)' }, '50%': { boxShadow: '0 0 40px rgba(34,211,238,0.7)' } },
+        shimmer: { '0%': { backgroundPosition: '-200% 0' }, '100%': { backgroundPosition: '200% 0' } },
+        float: { '0%,100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-10px)' } },
+        typing: { '0%,100%': { opacity: 1 }, '50%': { opacity: 0.2 } },
+        ripple: { '0%': { transform: 'scale(0)', opacity: 0.6 }, '100%': { transform: 'scale(4)', opacity: 0 } },
+        scan: { '0%': { top: '0%' }, '50%': { top: '90%' }, '100%': { top: '0%' } },
+      }
+    }
+  }
+}
+</script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'DM Sans', sans-serif; overflow-x: hidden; }
+  .font-display { font-family: 'Syne', sans-serif; }
+
+  .glass {
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    background: rgba(30, 30, 30, 0.85);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .light-mode .glass {
+    background: rgba(255,255,255,0.95);
+    border: 1px solid rgba(0,0,0,0.1);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+  }
+
+  .gradient-text {
+    background: linear-gradient(135deg, #e2e8f0 0%, #94a3b8 50%, #cbd5e1 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .light-mode .gradient-text {
+    background: linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+
+  body.dark-mode { background: #0a0a0a; min-height: 100vh; color: #e2e8f0; }
+  body.light-mode { background: #f8fafc; min-height: 100vh; color: #0f172a; }
+
+  .mesh-bg::before {
+    content: ''; position: fixed; inset: 0;
+    background: radial-gradient(ellipse at 20% 50%, rgba(80,80,80,0.18) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, rgba(60,60,60,0.12) 0%, transparent 60%),
+                radial-gradient(ellipse at 60% 80%, rgba(50,50,50,0.10) 0%, transparent 60%);
+    pointer-events: none; z-index: 0;
+  }
+  .light-mode.mesh-bg::before { background: none; }
+
+  .card-hover { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: default; }
+  .card-hover:hover { transform: translateY(-4px) scale(1.01); box-shadow: 0 20px 50px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.08); }
+  .light-mode .card-hover:hover { box-shadow: 0 12px 40px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.08); transform: translateY(-3px) scale(1.005); }
+
+  /* =============================================
+   * FIX: .btn-neon ALWAYS shows white text.
+   * Buttons have a dark background in BOTH themes
+   * so white text is correct in both modes.
+   * The old code let .light-mode .text-white 
+   * override to dark — making text invisible on
+   * the dark button background.
+   * ============================================= */
+  .btn-neon {
+    background: linear-gradient(135deg, #0e7490, #0891b2);
+    border: 1px solid rgba(34,211,238,0.25);
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+    color: #ffffff !important;
+  }
+  .btn-neon:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(135deg, #0891b2, #06b6d4);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+    color: #ffffff !important;
+  }
+  .light-mode .btn-neon {
+    background: linear-gradient(135deg, #0e7490, #0891b2);
+    border: 1px solid rgba(8,145,178,0.3);
+    color: #ffffff !important;
+  }
+  .light-mode .btn-neon:hover {
+    background: linear-gradient(135deg, #0891b2, #06b6d4);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    color: #ffffff !important;
+  }
+  .btn-neon:active { transform: translateY(0); }
+  .btn-neon::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+    opacity: 0; transition: opacity 0.25s;
+  }
+  .btn-neon:hover::after { opacity: 1; }
+
+  .input-glow:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(148,163,184,0.4), 0 0 16px rgba(100,100,100,0.2);
+  }
+  .light-mode .input-glow:focus {
+    box-shadow: 0 0 0 2px rgba(30,41,59,0.4), 0 0 12px rgba(0,0,0,0.08);
+  }
+  /* FIX: Chat input visible in light mode */
+  .light-mode input { color: #0f172a !important; }
+  .light-mode input::placeholder { color: #94a3b8 !important; }
+
+  /* FIX: Chat bubbles — explicit colors that can't be overridden */
+  .bubble-user {
+    background: linear-gradient(135deg, #334155, #1e293b);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 18px 18px 4px 18px;
+    color: #f1f5f9 !important;
+  }
+  .light-mode .bubble-user {
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+    color: #f8fafc !important;
+  }
+  .bubble-ai {
+    background: rgba(40,40,40,0.9);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 18px 18px 18px 4px;
+    color: #e2e8f0 !important;
+  }
+  .light-mode .bubble-ai {
+    background: #ffffff;
+    border: 1px solid rgba(0,0,0,0.1);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    color: #1e293b !important;
+  }
+  /* Ensure text inside bubbles inherits */
+  .bubble-ai *, .bubble-user * { color: inherit !important; }
+
+  .shimmer-box {
+    background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 75%);
+    background-size: 200% 100%; animation: shimmer 1.8s infinite;
+  }
+  .light-mode .shimmer-box {
+    background: linear-gradient(90deg, rgba(0,0,0,0.03) 25%, rgba(0,0,0,0.07) 50%, rgba(0,0,0,0.03) 75%);
+    background-size: 200% 100%;
+  }
+
+  /* =============================================
+   * LIGHT MODE TEXT — careful NOT to break buttons
+   * We no longer globally override .text-white
+   * Instead we target specific non-button contexts
+   * ============================================= */
+  .light-mode { color: #0f172a; }
+  .light-mode h1, .light-mode h2, .light-mode h3, .light-mode h4 { color: #0f172a; }
+  .light-mode p { color: #334155; }
+  .light-mode .font-display { color: #0f172a; }
+
+  /* The "Diagnosis" span in h1 uses class light-text instead of text-white */
+  .light-mode .light-text { color: #0f172a !important; }
+  /* In dark mode, light-text should be white */
+  .dark-mode .light-text { color: #ffffff; }
+
+  .light-mode .text-slate-400 { color: #64748b !important; }
+  .light-mode .text-slate-300 { color: #475569 !important; }
+  .light-mode .text-slate-500 { color: #94a3b8 !important; }
+  .light-mode .text-slate-600 { color: #64748b !important; }
+  .light-mode .placeholder-slate-500::placeholder { color: #94a3b8 !important; }
+
+  .light-mode .text-green-400 { color: #16a34a !important; }
+  .light-mode .text-red-400 { color: #dc2626 !important; }
+  .light-mode .text-cyan-400 { color: #0369a1 !important; }
+  .light-mode .text-orange-400 { color: #ea580c !important; }
+  .light-mode .text-indigo-400 { color: #4338ca !important; }
+  .light-mode .text-purple-400 { color: #7c3aed !important; }
+
+  .light-mode nav { background: rgba(255,255,255,0.95) !important; border-bottom: 1px solid rgba(0,0,0,0.08) !important; }
+  .light-mode .border-white\/10 { border-color: rgba(0,0,0,0.08) !important; }
+  .light-mode [class*="border-white"] { border-color: rgba(0,0,0,0.1) !important; }
+  .light-mode .bg-slate-900 { background: #ffffff !important; }
+  .light-mode .hover\:bg-white\/10:hover { background: rgba(0,0,0,0.06) !important; }
+  .light-mode .hover\:bg-white\/15:hover { background: rgba(0,0,0,0.08) !important; }
+  .light-mode #chat-messages { background: #f8fafc !important; }
+  .light-mode #notification { background: rgba(255,255,255,0.95) !important; color: #0f172a !important; }
+  .light-mode .typing-dot { background: #888888 !important; }
+
+  /* Nav buttons (not .btn-neon) */
+  .nav-btn { color: #94a3b8; transition: all 0.2s; }
+  .nav-btn:hover { background: rgba(255,255,255,0.07); color: #f1f5f9; }
+  .light-mode .nav-btn { color: #334155 !important; }
+  .light-mode .nav-btn:hover { background: rgba(0,0,0,0.06) !important; color: #0f172a !important; }
+
+  .metric-value { color: #94a3b8; }
+  .light-mode .metric-value { color: #334155; }
+
+  /* FIX: quick chips — all use .quick-chip class now */
+  .quick-chip {
+    background: rgba(50,50,50,0.8);
+    border: 1px solid rgba(255,255,255,0.08);
+    color: #94a3b8;
+    transition: all 0.2s;
+  }
+  .quick-chip:hover { background: rgba(70,70,70,0.9); color: #e2e8f0; }
+  .light-mode .quick-chip {
+    background: rgba(241,245,249,0.9) !important;
+    border: 1px solid rgba(0,0,0,0.1) !important;
+    color: #334155 !important;
+  }
+  .light-mode .quick-chip:hover { background: #e2e8f0 !important; color: #1e293b !important; }
+
+  .reset-btn { background: rgba(40,40,40,0.8); border: 1px solid rgba(255,255,255,0.1); color: #e2e8f0; transition: all 0.2s; }
+  .reset-btn:hover { background: rgba(60,60,60,0.9); }
+  .light-mode .reset-btn { background: rgba(241,245,249,0.9) !important; border: 1px solid rgba(0,0,0,0.1) !important; color: #1e293b !important; }
+  .light-mode .reset-btn:hover { background: #e2e8f0 !important; color: #0f172a !important; }
+
+  .dark-mode .text-slate-300 { color: #cbd5e1; }
+  .dark-mode .text-slate-400 { color: #94a3b8; }
+  .dark-mode .text-slate-600 { color: #64748b; }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(150,150,150,0.3); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(150,150,150,0.6); }
+  .light-mode ::-webkit-scrollbar-thumb { background: rgba(30,41,59,0.25); }
+
+  #notification { transition: all 0.4s cubic-bezier(0.4,0,0.2,1); transform: translateY(-100px); opacity: 0; }
+  #notification.show { transform: translateY(0); opacity: 1; }
+
+  @keyframes orbit {
+    from { transform: rotate(0deg) translateX(28px) rotate(0deg); }
+    to { transform: rotate(360deg) translateX(28px) rotate(-360deg); }
+  }
+  .orbit-1 { animation: orbit 4s linear infinite; }
+  .orbit-2 { animation: orbit 6s linear infinite reverse; }
+
+  .gradient-border { position: relative; border-radius: 1.5rem; }
+  .gradient-border::before {
+    content: ''; position: absolute; inset: -1px; border-radius: 1.5rem;
+    background: linear-gradient(135deg, rgba(34,211,238,0.5), rgba(244,114,182,0.3), rgba(251,146,60,0.3));
+    z-index: -1;
+  }
+
+  .progress-bar { height: 6px; border-radius: 3px; background: rgba(255,255,255,0.1); overflow: hidden; }
+  .light-mode .progress-bar { background: rgba(0,0,0,0.08); }
+  .progress-fill { height: 100%; border-radius: 3px; transition: width 1.2s cubic-bezier(0.4,0,0.2,1); }
+
+  #chat-panel { transition: all 0.4s cubic-bezier(0.4,0,0.2,1); }
+  #particles { position: fixed; inset: 0; pointer-events: none; z-index: 1; }
+  .particle { position: absolute; border-radius: 50%; pointer-events: none; animation: particleFloat linear infinite; }
+  @keyframes particleFloat {
+    0% { transform: translateY(100vh) scale(0); opacity: 0; }
+    10% { opacity: 1; } 90% { opacity: 0.3; }
+    100% { transform: translateY(-100px) scale(1); opacity: 0; }
+  }
+
+  .stagger > * { opacity: 0; animation: fadeUp 0.6s ease forwards; }
+  .stagger > *:nth-child(1) { animation-delay: 0.1s; } .stagger > *:nth-child(2) { animation-delay: 0.2s; }
+  .stagger > *:nth-child(3) { animation-delay: 0.3s; } .stagger > *:nth-child(4) { animation-delay: 0.4s; }
+  .stagger > *:nth-child(5) { animation-delay: 0.5s; } .stagger > *:nth-child(6) { animation-delay: 0.6s; }
+
+  .score-ring { transition: stroke-dashoffset 1.5s cubic-bezier(0.4,0,0.2,1); }
+  .typing-dot { animation: typing 1.2s ease-in-out infinite; }
+  .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+  .scan-line {
+    position: absolute; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, #94a3b8, transparent);
+    animation: scan 2s ease-in-out infinite;
+    box-shadow: 0 0 10px rgba(148,163,184,0.6);
+  }
+  .tag {
+    display: inline-flex; align-items: center; padding: 2px 10px; border-radius: 9999px;
+    font-size: 0.72rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;
+  }
+</style>
+</head>
+<body class="dark-mode mesh-bg">
+
+<div id="particles"></div>
+
+<div id="notification" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 glass rounded-2xl px-6 py-3 flex items-center gap-3 shadow-2xl">
+  <div class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
+  <span id="notification-text" class="text-sm font-medium"></span>
+</div>
+
+<nav class="sticky top-0 z-40 glass border-b border-white/10">
+  <div class="max-w-screen-2xl mx-auto px-4 md:px-8 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="relative w-9 h-9">
+        <svg viewBox="0 0 40 40" fill="none" class="w-9 h-9">
+          <rect width="40" height="40" rx="10" fill="url(#logoGrad)"/>
+          <path d="M12 28L16 12H24C26 12 28 14 27 17L24 28H12Z" fill="white" fill-opacity="0.9"/>
+          <path d="M20 17C21 13 26 12 27 17" stroke="white" stroke-width="1.5" fill="none"/>
+          <defs><linearGradient id="logoGrad" x1="0" y1="0" x2="40" y2="40">
+            <stop stop-color="#475569"/><stop offset="1" stop-color="#1e293b"/>
+          </linearGradient></defs>
+        </svg>
+      </div>
+      <div>
+        <span class="font-display font-800 text-lg gradient-text">ShopifyAI</span>
+        <span class="text-xs text-slate-400 block leading-none hidden sm:block">Store Analyzer</span>
+      </div>
+    </div>
+    <div class="hidden md:flex items-center gap-1">
+      <button onclick="scrollToSection('analyzer')" class="nav-btn px-4 py-2 rounded-xl text-sm font-medium">Analyzer</button>
+      <button onclick="scrollToSection('dashboard')" class="nav-btn px-4 py-2 rounded-xl text-sm font-medium">Dashboard</button>
+      <button onclick="exportPDF()" class="nav-btn px-4 py-2 rounded-xl text-sm font-medium flex items-center gap-2">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>
+        Export PDF
+      </button>
+    </div>
+    <div class="flex items-center gap-3">
+      <button id="theme-toggle" onclick="toggleTheme()" class="w-10 h-10 rounded-xl glass flex items-center justify-center transition-all hover:scale-110">
+        <svg id="sun-icon" class="w-5 h-5 text-yellow-400 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg id="moon-icon" class="w-5 h-5 text-slate-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+      </button>
+      <button onclick="toggleChat()" class="md:hidden w-10 h-10 rounded-xl glass flex items-center justify-center transition-all hover:scale-110" title="Toggle Chat">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      </button>
+      <div class="flex items-center gap-2 glass px-3 py-1.5 rounded-xl">
+        <div class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
+        <span class="text-xs font-medium text-green-400 hidden sm:block">AI Online</span>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="max-w-screen-2xl mx-auto px-4 md:px-8 py-6 relative z-10">
+  <div class="flex flex-col lg:flex-row gap-6">
+    <div class="flex-1 min-w-0 space-y-6">
+
+      <div id="analyzer" class="gradient-border animate-fade-up" style="animation-fill-mode:forwards;">
+        <div class="glass rounded-3xl p-8 md:p-10 relative overflow-hidden">
+          <div class="absolute top-0 right-0 w-64 h-64 opacity-10 pointer-events-none">
+            <svg viewBox="0 0 200 200" class="w-full h-full animate-spin-slow opacity-30">
+              <circle cx="100" cy="100" r="80" fill="none" stroke="url(#heroGrad)" stroke-width="1" stroke-dasharray="8 4"/>
+              <circle cx="100" cy="100" r="50" fill="none" stroke="url(#heroGrad)" stroke-width="1" stroke-dasharray="4 8"/>
+              <defs><linearGradient id="heroGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#94a3b8"/><stop offset="100%" stop-color="#64748b"/>
+              </linearGradient></defs>
+            </svg>
+          </div>
+          <div class="flex flex-col md:flex-row items-start md:items-center gap-6">
+            <div class="relative animate-float flex-shrink-0">
+              <div class="w-20 h-20 rounded-2xl btn-neon flex items-center justify-center shadow-2xl">
+                <svg viewBox="0 0 60 60" fill="none" class="w-12 h-12">
+                  <path d="M15 45L20 15H38C42 15 46 19 45 25L40 45H15Z" fill="white" fill-opacity="0.95"/>
+                  <path d="M32 24C34 17 44 15 45 25" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="absolute -top-1 -right-1 w-6 h-6 bg-green-400 rounded-full flex items-center justify-center orbit-1">
+                <svg class="w-3 h-3" viewBox="0 0 24 24" fill="white"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              </div>
+            </div>
+            <div class="flex-1">
+              <div class="flex items-center gap-3 mb-2">
+                <span class="tag bg-cyan-400/20 text-cyan-400 border border-cyan-400/30">AI-Powered</span>
+                <span class="tag bg-orange-400/20 text-orange-400 border border-orange-400/30">Shopify Expert</span>
+              </div>
+              <h1 class="font-display text-3xl md:text-4xl xl:text-5xl font-bold leading-tight mb-3">
+                <span class="gradient-text">AI-Powered Store</span><br>
+                <span class="light-text">Diagnosis</span>
+                <span class="gradient-text"> → 2× Sales</span>
+              </h1>
+              <p class="text-slate-400 text-base md:text-lg max-w-xl">
+                Paste your Shopify store URL for a comprehensive AI diagnosis — get actionable insights to double your revenue in 90 days.
+              </p>
+            </div>
+          </div>
+          <!-- Connected store banner (shown after OAuth) -->
+          <div id="connected-banner" class="hidden mt-6 glass rounded-2xl p-4 border border-green-400/30 flex items-center gap-4">
+            <div class="w-10 h-10 rounded-xl bg-green-400/20 flex items-center justify-center flex-shrink-0">
+              <svg class="w-5 h-5 text-green-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="text-sm font-semibold text-green-400">Store Connected</div>
+              <div class="text-xs text-slate-400 truncate" id="connected-shop-name">—</div>
+            </div>
+            <button onclick="analyzeConnectedStore()" class="btn-neon rounded-xl px-4 py-2 text-sm font-display font-bold flex items-center gap-2">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+              Run Full Analysis
+            </button>
+          </div>
+
+          <!-- URL input + buttons (shown when not connected) -->
+          <div id="url-input-area" class="mt-8 flex flex-col sm:flex-row gap-3">
+            <div class="flex-1 relative">
+              <div class="relative glass rounded-2xl overflow-hidden">
+                <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+                  <svg class="w-5 h-5 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                </div>
+                <input id="store-url" type="text" placeholder="yourstore.myshopify.com or custom domain"
+                  class="input-glow w-full bg-transparent pl-12 pr-4 py-4 text-sm md:text-base placeholder-slate-500 focus:outline-none transition-all"
+                  onkeydown="if(event.key==='Enter')analyzeStore()"/>
+                <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-cyan-400/0 via-cyan-400/60 to-cyan-400/0 opacity-0 transition-opacity" id="input-line"></div>
+              </div>
+            </div>
+            <div class="flex gap-3">
+              <button id="connect-btn" onclick="connectShopify()"
+                class="btn-neon rounded-2xl px-5 py-4 font-display font-bold text-sm flex items-center gap-2 whitespace-nowrap shadow-xl"
+                title="Connect store for full revenue & analytics access">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                <span>Connect Store</span>
+              </button>
+              <button id="analyze-btn" onclick="analyzeStore()"
+                class="btn-neon rounded-2xl px-6 py-4 font-display font-700 text-sm md:text-base flex items-center gap-2 whitespace-nowrap shadow-xl">
+                <svg id="analyze-icon" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                <span id="analyze-text">Quick Analyze</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Access level info -->
+          <div class="mt-3 flex flex-wrap items-center gap-4 text-xs text-slate-500">
+            <span class="flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+              Quick Analyze — public data only
+            </span>
+            <span class="flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5 text-green-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+              Connect Store — real revenue, orders, customers, analytics
+            </span>
+          </div>
+          <div class="mt-3 flex flex-wrap gap-2">
+            <span class="text-xs text-slate-500">Try demo:</span>
+            <button onclick="demoStore('allbirds.com')" class="text-xs text-cyan-400 hover:text-cyan-300 transition-colors underline underline-offset-2">allbirds.com</button>
+            <button onclick="demoStore('gymshark.com')" class="text-xs text-cyan-400 hover:text-cyan-300 transition-colors underline underline-offset-2">gymshark.com</button>
+            <button onclick="demoStore('kyliecosmetics.com')" class="text-xs text-cyan-400 hover:text-cyan-300 transition-colors underline underline-offset-2">kyliecosmetics.com</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="loading-panel" class="hidden glass rounded-3xl p-8 relative overflow-hidden">
+        <div class="scan-line"></div>
+        <div class="flex items-center gap-6">
+          <div class="flex-shrink-0">
+            <svg class="w-16 h-16 animate-spin" viewBox="0 0 60 60">
+              <circle cx="30" cy="30" r="26" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="4"/>
+              <circle cx="30" cy="30" r="26" fill="none" stroke="url(#spinGrad)" stroke-width="4" stroke-linecap="round" stroke-dasharray="60 103.6"/>
+              <defs><linearGradient id="spinGrad"><stop stop-color="#94a3b8"/><stop offset="1" stop-color="#475569"/></linearGradient></defs>
+            </svg>
+          </div>
+          <div class="flex-1">
+            <h3 class="font-display font-bold text-xl mb-1">Analyzing your store...</h3>
+            <p id="loading-step" class="text-slate-400 text-sm">Fetching store metadata</p>
+            <div class="mt-3 progress-bar">
+              <div id="loading-progress" class="progress-fill bg-gradient-to-r from-slate-400 to-slate-600" style="width:0%"></div>
+            </div>
+          </div>
+        </div>
+        <div id="loading-checklist" class="mt-6 grid grid-cols-2 md:grid-cols-4 gap-3 stagger"></div>
+      </div>
+
+      <div id="dashboard" class="space-y-6 hidden">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 stagger">
+          <div class="glass rounded-3xl p-6 card-hover gradient-border">
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-xs font-semibold uppercase tracking-widest text-slate-400">Overall Score</span>
+              <div class="tag bg-green-400/20 text-green-400 border border-green-400/30" id="score-badge">Excellent</div>
+            </div>
+            <div class="flex items-center justify-center py-2">
+              <svg width="120" height="120" viewBox="0 0 120 120">
+                <circle cx="60" cy="60" r="48" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="10"/>
+                <circle id="score-ring" cx="60" cy="60" r="48" fill="none" stroke="url(#scoreGrad)" stroke-width="10" stroke-linecap="round"
+                  stroke-dasharray="301.6" stroke-dashoffset="301.6" transform="rotate(-90 60 60)" class="score-ring"/>
+                <text x="60" y="56" text-anchor="middle" font-family="Syne" font-size="28" font-weight="800" fill="url(#scoreGrad)" id="score-number">0</text>
+                <text x="60" y="72" text-anchor="middle" font-family="DM Sans" font-size="11" fill="rgba(255,255,255,0.5)">/ 100</text>
+                <defs><linearGradient id="scoreGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop stop-color="#94a3b8"/><stop offset="1" stop-color="#e2e8f0"/>
+                </linearGradient></defs>
+              </svg>
+            </div>
+            <p class="text-center text-xs text-slate-400 mt-2" id="score-label">Store Health Assessment</p>
+          </div>
+
+          <div class="glass rounded-3xl p-6 card-hover">
+            <div class="flex items-center gap-3 mb-3">
+              <div class="w-10 h-10 rounded-xl bg-orange-400/20 flex items-center justify-center">
+                <svg class="w-5 h-5 text-orange-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+              </div>
+              <span class="text-xs font-semibold uppercase tracking-widest text-slate-400">Est. Monthly Revenue</span>
+            </div>
+            <div class="text-3xl font-display font-bold" id="metric-revenue">$0</div>
+            <div class="mt-2 flex items-center gap-2">
+              <svg class="w-4 h-4 text-green-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>
+              <span class="text-xs text-green-400" id="metric-revenue-change">+0% projected</span>
+            </div>
+            <div class="mt-3 progress-bar">
+              <div class="progress-fill bg-gradient-to-r from-slate-500 to-slate-400" id="revenue-bar" style="width:0%"></div>
+            </div>
+          </div>
+
+          <div class="glass rounded-3xl p-6 card-hover">
+            <div class="flex items-center gap-3 mb-3">
+              <div class="w-10 h-10 rounded-xl bg-cyan-400/20 flex items-center justify-center">
+                <svg class="w-5 h-5 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              </div>
+              <span class="text-xs font-semibold uppercase tracking-widest text-slate-400">Conv. Rate</span>
+            </div>
+            <div class="text-3xl font-display font-bold metric-value" id="metric-conversion">0%</div>
+            <div class="mt-2 flex items-center gap-2">
+              <svg class="w-4 h-4 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>
+              <span class="text-xs text-cyan-400" id="metric-conv-benchmark">Industry avg: 2.1%</span>
+            </div>
+            <div class="mt-3 progress-bar">
+              <div class="progress-fill bg-gradient-to-r from-slate-400 to-slate-600" id="conv-bar" style="width:0%"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3 stagger" id="metric-cards"></div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="glass rounded-3xl p-6 card-hover">
+            <h3 class="font-display font-bold mb-1">Category Scores</h3>
+            <p class="text-xs text-slate-400 mb-4">Performance across key dimensions</p>
+            <canvas id="radar-chart" height="220"></canvas>
+          </div>
+          <div class="glass rounded-3xl p-6 card-hover">
+            <h3 class="font-display font-bold mb-1">Revenue Opportunity</h3>
+            <p class="text-xs text-slate-400 mb-4">Projected uplift by fix category</p>
+            <canvas id="bar-chart" height="220"></canvas>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="glass rounded-3xl p-6">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-8 h-8 rounded-lg bg-red-400/20 flex items-center justify-center">
+                <svg class="w-4 h-4 text-red-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              </div>
+              <h3 class="font-display font-bold">Critical Issues</h3>
+              <span class="ml-auto tag bg-red-400/20 text-red-400 border border-red-400/30" id="issues-count">0</span>
+            </div>
+            <div id="issues-list" class="space-y-2"></div>
+          </div>
+          <div class="glass rounded-3xl p-6">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-8 h-8 rounded-lg bg-green-400/20 flex items-center justify-center">
+                <svg class="w-4 h-4 text-green-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+              </div>
+              <h3 class="font-display font-bold">Quick Wins</h3>
+              <span class="ml-auto tag bg-green-400/20 text-green-400 border border-green-400/30" id="wins-count">0</span>
+            </div>
+            <div id="wins-list" class="space-y-2"></div>
+          </div>
+        </div>
+
+        <div class="glass rounded-3xl p-6">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-8 h-8 rounded-lg bg-indigo-400/20 flex items-center justify-center">
+              <svg class="w-4 h-4 text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            </div>
+            <h3 class="font-display font-bold text-lg">90-Day Blueprint to 2× Sales</h3>
+          </div>
+          <div id="roadmap" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+        </div>
+
+        <div class="flex justify-center gap-4">
+          <button onclick="exportPDF()" class="btn-neon rounded-2xl px-8 py-4 font-display font-bold flex items-center gap-3 shadow-xl">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            Export Full Report PDF
+          </button>
+          <button onclick="resetAnalysis()" class="reset-btn rounded-2xl px-8 py-4 font-display font-bold flex items-center gap-3 transition-all">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 109-9M3 12V6m0 6H9"/></svg>
+            Analyze Another
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="chat-panel" class="w-full lg:w-80 xl:w-96 flex-shrink-0">
+      <div class="glass rounded-3xl overflow-hidden sticky top-24 flex flex-col" style="height: calc(100vh - 120px); min-height: 500px;">
+        <div class="p-4 border-b border-white/10 flex items-center gap-3">
+          <div class="relative flex-shrink-0">
+            <div class="w-10 h-10 rounded-2xl btn-neon flex items-center justify-center">
+              <!-- FIX: use fill="white" directly, not text-white class -->
+              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="white">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/>
+              </svg>
+            </div>
+            <div class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-400 rounded-full border-2 border-slate-900"></div>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="font-display font-bold text-sm">Aria AI</div>
+            <div class="text-xs text-green-400 flex items-center gap-1">
+              <div class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></div>
+              Shopify Expert • Always on
+            </div>
+          </div>
+          <button onclick="clearChat()" class="text-slate-400 hover:text-slate-200 transition-colors" title="Clear chat">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+          </button>
+        </div>
+
+        <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-3"></div>
+
+        <!-- FIX: All chips use .quick-chip class consistently -->
+        <div id="quick-suggestions" class="px-4 py-2 flex flex-wrap gap-2">
+          <button onclick="sendQuick('What are my top issues?')" class="quick-chip text-xs px-3 py-1.5 rounded-xl">Top issues?</button>
+          <button onclick="sendQuick('How to increase AOV?')" class="quick-chip text-xs px-3 py-1.5 rounded-xl">Boost AOV</button>
+          <button onclick="sendQuick('Best quick wins for conversion?')" class="quick-chip text-xs px-3 py-1.5 rounded-xl">Quick wins</button>
+          <button onclick="sendQuick('Analyze my SEO score')" class="quick-chip text-xs px-3 py-1.5 rounded-xl">SEO deep dive</button>
+        </div>
+
+        <div class="p-4 border-t border-white/10">
+          <div class="flex gap-2">
+            <input id="chat-input" type="text" placeholder="Ask about your store..."
+              class="input-glow flex-1 glass rounded-2xl px-4 py-3 text-sm bg-transparent placeholder-slate-500 focus:outline-none transition-all"
+              onkeydown="if(event.key==='Enter')sendMessage()"/>
+            <!-- FIX: use stroke="white" directly on send icon -->
+            <button onclick="sendMessage()" class="btn-neon w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+          </div>
+          <p class="text-center text-xs text-slate-600 mt-2">Powered by Claude AI • Context-aware</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let isDark = true;
+let storeData = null;
+let chatHistory = [];
+let radarChartInstance = null;
+let barChartInstance = null;
+
+// ── API proxy endpoint — all requests go through here to avoid CORS ──────────
+const API_BASE = '/api/chat';
+
+function toggleTheme() {
+  isDark = !isDark;
+  document.body.classList.toggle('dark-mode', isDark);
+  document.body.classList.toggle('light-mode', !isDark);
+  document.getElementById('sun-icon').classList.toggle('hidden', isDark);
+  document.getElementById('moon-icon').classList.toggle('hidden', !isDark);
+  if (radarChartInstance) updateChartTheme();
+}
+
+function updateChartTheme() {
+  const textColor = isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)';
+  [radarChartInstance, barChartInstance].forEach(c => {
+    if (!c) return;
+    if (c.options.scales) {
+      Object.values(c.options.scales).forEach(s => {
+        if (s.ticks) s.ticks.color = textColor;
+        if (s.grid) s.grid.color = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
+        if (s.pointLabels) s.pointLabels.color = textColor;
+      });
+    }
+    c.update();
+  });
+}
+
+let chatVisible = window.innerWidth >= 1024;
+function toggleChat() {
+  chatVisible = !chatVisible;
+  document.getElementById('chat-panel').style.display = chatVisible ? 'block' : 'none';
+}
+
+function initParticles() {
+  const container = document.getElementById('particles');
+  for (let i = 0; i < 20; i++) {
+    const p = document.createElement('div');
+    const size = Math.random() * 4 + 2;
+    const colors = ['#22d3ee','#6366f1','#f472b6','#4ade80','#fb923c'];
+    p.className = 'particle';
+    p.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;background:${colors[Math.floor(Math.random()*colors.length)]};opacity:${Math.random()*0.3+0.1};animation-duration:${Math.random()*15+10}s;animation-delay:${Math.random()*10}s;`;
+    container.appendChild(p);
+  }
+}
+
+function notify(msg, duration = 3000) {
+  const el = document.getElementById('notification');
+  document.getElementById('notification-text').textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), duration);
+}
+
+// ── OAuth & connected store state ────────────────────────────────────────────
+let connectedShop = null;
+
+function connectShopify() {
+  const url = document.getElementById('store-url').value.trim();
+  if (!url) { notify('Enter your store domain first'); return; }
+  const shop = url.replace(/^https?:\/\//, '').replace(/\/$/, '').trim().toLowerCase();
+  // Redirect to our auth endpoint — Shopify will bounce back to /api/callback
+  window.location.href = `/api/auth?shop=${encodeURIComponent(shop)}`;
+}
+
+async function analyzeConnectedStore() {
+  if (!connectedShop) return;
+  setAnalyzeLoading(true);
+  document.getElementById('loading-panel').classList.remove('hidden');
+  document.getElementById('dashboard').classList.add('hidden');
+
+  const checks = ['Fetching orders & revenue', 'Pulling customer data', 'Reading abandoned carts', 'AI diagnosis'];
+  const checkContainer = document.getElementById('loading-checklist');
+  checkContainer.innerHTML = checks.map((c, i) => `
+    <div class="glass rounded-2xl p-3 flex items-center gap-2 text-xs font-medium text-slate-400 shimmer-box" id="check-${i}">
+      <div class="w-4 h-4 rounded-full border border-slate-500 flex items-center justify-center"><div class="w-2 h-2 rounded-full bg-slate-600"></div></div>${c}
+    </div>`).join('');
+
+  const progressEl = document.getElementById('loading-progress');
+  const stepEl = document.getElementById('loading-step');
+
+  async function updateProgress(step, pct) {
+    stepEl.textContent = step;
+    progressEl.style.width = pct + '%';
+    const idx = Math.min(Math.floor(pct / 25), 3);
+    const checkEl = document.getElementById(`check-${idx}`);
+    if (checkEl) checkEl.innerHTML = `<div class="w-4 h-4 rounded-full bg-green-400/20 flex items-center justify-center"><svg class="w-2.5 h-2.5 text-green-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>${checks[idx]}`;
+    await delay(500);
+  }
+
+  try {
+    await updateProgress('Fetching orders & revenue...', 10);
+    const adminResp = await fetch(API_BASE, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: 'shopify-admin-fetch', shop: connectedShop })
+    });
+    if (!adminResp.ok) {
+      const e = await adminResp.json();
+      if (e.error === 'not_authorized') { notify('Session expired — please reconnect your store'); setAnalyzeLoading(false); return; }
+      throw new Error(e.error || 'Admin fetch failed');
+    }
+    const { adminData } = await adminResp.json();
+
+    await updateProgress('Analyzing customer data...', 35);
+    await updateProgress('Running AI diagnostics...', 60);
+
+    const analysis = await runAIAnalysisFromAdminData(connectedShop, adminData);
+    storeData = analysis;
+
+    await updateProgress('Generating blueprint...', 90);
+    await delay(300);
+    progressEl.style.width = '100%';
+    await delay(200);
+
+    renderDashboard(analysis);
+    document.getElementById('loading-panel').classList.add('hidden');
+    document.getElementById('dashboard').classList.remove('hidden');
+    document.getElementById('dashboard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    addChatMessage('ai', `✅ Full analysis complete for **${connectedShop}** using your real store data! Score: **${analysis.score}/100**. Revenue: **${analysis.monthlyRevenue}/mo**. Ask me anything!`);
+    notify('Full analysis complete!');
+  } catch (err) {
+    console.error(err);
+    notify('Error: ' + err.message);
+  }
+  setAnalyzeLoading(false);
+}
+
+async function runAIAnalysisFromAdminData(shop, adminData) {
+  const m = adminData.metrics || {};
+  const currency = m.currency || 'USD';
+  const fmt = n => `${currency} ${parseFloat(n).toLocaleString()}`;
+
+  const context = `
+REAL SHOPIFY ADMIN DATA for ${shop}:
+- Total orders (all time sample): ${m.totalOrders || 0}
+- Paid orders: ${m.paidOrders || 0}
+- Total revenue (sample): ${fmt(m.totalRevenue || 0)}
+- Avg monthly revenue: ${fmt(m.monthlyRevenue || 0)}
+- Average order value: ${fmt(m.aov || 0)}
+- Revenue by month: ${JSON.stringify(m.revenueByMonth || {})}
+- Repeat customer rate: ${m.repeatCustomerRate || 0}%
+- Total customers: ${adminData.customerCount || 0}
+- Avg customer LTV: ${fmt(adminData.avgLTV || 0)}
+- Email opt-in rate: ${adminData.emailOptInRate || 0}%
+- Abandoned cart rate: ${adminData.abandonedCartRate || 'unknown'}%
+- Abandoned cart revenue at risk: ${fmt(adminData.abandonedRevenue || 0)}
+- Product count: ${adminData.products?.length || 0}
+- Collection count: ${(adminData.collections?.length || 0) + (adminData.smartCollections?.length || 0)}
+- Active discounts/price rules: ${adminData.priceRules?.length || 0}
+- Shop currency: ${currency}
+- Shop name: ${adminData.shop?.name || shop}
+- Shop plan: ${adminData.shop?.plan_name || 'unknown'}
+- Products without descriptions: ${adminData.products?.filter(p => !p.body_html || p.body_html.length < 50).length || 0}
+- Products without images: ${adminData.products?.filter(p => !p.images?.length).length || 0}
+`;
+
+  const prompt = `You are a Shopify e-commerce expert AI. Analyze this store using REAL data.
+
+${context}
+
+Produce a detailed, data-driven analysis. Use the real numbers — don't estimate revenue or AOV, use the actual values above.
+RETURN ONLY valid JSON (no markdown fences, no trailing commas) with this exact structure:
+{
+  "storeName": "${adminData.shop?.name || shop}",
+  "storeUrl": "${shop}",
+  "score": 72,
+  "conversionRate": 2.4,
+  "monthlyRevenue": "$45,000",
+  "revenueChange": "+23% potential",
+  "revenueBarPct": 65,
+  "convBarPct": 55,
+  "scoreBadge": "Good",
+  "scoreLabel": "Above average",
+  "metrics": [
+    {"label":"Monthly Revenue","value":"$45,000","icon":"💰","color":"orange","change":"+18% potential"},
+    {"label":"Avg Order Value","value":"$67","icon":"🛒","color":"cyan","change":"+$15 opp"},
+    {"label":"Customer LTV","value":"$134","icon":"👤","color":"indigo","change":"${adminData.avgLTV ? `$${adminData.avgLTV}` : 'calculate'}"},
+    {"label":"Cart Abandonment","value":"68%","icon":"🛒","color":"pink","change":"$12K at risk"},
+    {"label":"Email Opt-In","value":"34%","icon":"📧","color":"green","change":"+15% opp"},
+    {"label":"Repeat Buyers","value":"22%","icon":"🔄","color":"purple","change":"Improve LTV"}
+  ],
+  "categoryScores": {"SEO":71,"UX/Design":78,"Performance":65,"Conversion":62,"Trust":80,"Retention":58},
+  "revenueOpportunity": {"Abandoned Cart":12000,"Email/SMS":8000,"AOV Boost":9000,"Retention":7000,"SEO":5000},
+  "issues": [
+    {"title":"68% cart abandonment rate","impact":"Critical","revenue":"$12,400/mo lost"},
+    {"title":"Low email opt-in rate","impact":"High","revenue":"$5,200/mo lost"},
+    {"title":"No upsell/cross-sell","impact":"High","revenue":"$4,800/mo lost"},
+    {"title":"Repeat buyer rate below average","impact":"Medium","revenue":"$3,100/mo lost"}
+  ],
+  "quickWins": [
+    {"title":"Klaviyo abandoned cart flow","effort":"2 hours","impact":"Recover $12K/mo"},
+    {"title":"Post-purchase upsell","effort":"1 hour","impact":"+15% AOV"},
+    {"title":"Exit-intent email popup","effort":"30 min","impact":"+2% capture rate"},
+    {"title":"Loyalty points program","effort":"3 hours","impact":"+28% repeat rate"}
+  ],
+  "roadmap": {
+    "days1_30": {"title":"Days 1-30: Foundation","color":"cyan","tasks":["Abandoned cart email flow","Exit-intent popup","Trust badge audit","Product description audit","AOV upsell install"]},
+    "days31_60": {"title":"Days 31-60: Growth","color":"indigo","tasks":["SMS marketing setup","Post-purchase sequence","Google Shopping feed","Review request automation","Bundle offers"]},
+    "days61_90": {"title":"Days 61-90: Scale","color":"pink","tasks":["Loyalty program launch","VIP customer segment","Retargeting campaigns","Referral program","Analytics review"]}
+  }
+}
+
+Use the REAL data values (AOV, LTV, monthly revenue, abandonment rate) in your response. Make issues specific to what the data reveals.`;
+
+  const text = await callGroq([{ role: 'user', content: prompt }]);
+  const clean = text.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
+  try { return JSON.parse(clean); } catch {}
+  try { const m2 = clean.match(/\{[\s\S]*\}/); if (m2) return JSON.parse(m2[0]); } catch {}
+  throw new Error('Could not parse AI response');
+}
+
+// Check URL params on page load for returning OAuth callback
+function checkOAuthReturn() {
+  const params = new URLSearchParams(window.location.search);
+  const shop = params.get('shop');
+  const authorized = params.get('authorized');
+  if (shop && authorized === '1') {
+    connectedShop = shop;
+    document.getElementById('connected-banner').classList.remove('hidden');
+    document.getElementById('url-input-area').classList.add('hidden');
+    document.getElementById('connected-shop-name').textContent = shop;
+    // Clean URL without reloading
+    window.history.replaceState({}, '', '/');
+    notify(`✅ ${shop} connected! Ready for full analysis.`, 5000);
+    addChatMessage('ai', `🎉 **${shop}** has been connected! I now have access to your real orders, revenue, customers, and analytics. Click **Run Full Analysis** to get started!`);
+  }
+}
+
+function scrollToSection(id) { document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }); }
+
+async function analyzeStore() {
+  const url = document.getElementById('store-url').value.trim();
+  if (!url) { notify('Please enter a store URL'); return; }
+  const storeUrl = url.replace(/^https?:\/\//, '').replace(/\/$/, '');
+  setAnalyzeLoading(true);
+  document.getElementById('loading-panel').classList.remove('hidden');
+  document.getElementById('dashboard').classList.add('hidden');
+
+  const checks = ['Fetching live store data', 'Analyzing products & SEO', 'Running AI diagnostics', 'Generating blueprint'];
+  const checkContainer = document.getElementById('loading-checklist');
+  checkContainer.innerHTML = checks.map((c,i) => `
+    <div class="glass rounded-2xl p-3 flex items-center gap-2 text-xs font-medium text-slate-400 shimmer-box" id="check-${i}">
+      <div class="w-4 h-4 rounded-full border border-slate-500 flex items-center justify-center"><div class="w-2 h-2 rounded-full bg-slate-600"></div></div>${c}
+    </div>`).join('');
+
+  const progressEl = document.getElementById('loading-progress');
+  const stepEl = document.getElementById('loading-step');
+
+  async function updateProgress(step, pct) {
+    stepEl.textContent = step;
+    progressEl.style.width = pct + '%';
+    const checkEl = document.getElementById(`check-${Math.min(Math.floor(pct/25), 3)}`);
+    if (checkEl) checkEl.innerHTML = `<div class="w-4 h-4 rounded-full bg-green-400/20 flex items-center justify-center"><svg class="w-2.5 h-2.5 text-green-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>${checkEl.textContent}`;
+    await delay(600);
+  }
+
+  try {
+    await updateProgress('Fetching store metadata...', 10);
+    await updateProgress('Analyzing SEO & performance...', 30);
+    await updateProgress('Running AI diagnostics...', 60);
+    const analysis = await runAIAnalysis(storeUrl);
+    storeData = analysis;
+    await updateProgress('Generating blueprint...', 90);
+    await delay(400);
+    progressEl.style.width = '100%';
+    await delay(300);
+    renderDashboard(analysis);
+    document.getElementById('loading-panel').classList.add('hidden');
+    document.getElementById('dashboard').classList.remove('hidden');
+    document.getElementById('dashboard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    addChatMessage('ai', `Analysis complete for **${storeUrl}**! Your store scored **${analysis.score}/100**. I identified ${analysis.issues.length} critical issues and ${analysis.quickWins.length} quick wins. Ask me anything!`);
+    notify('Analysis complete!');
+  } catch (err) {
+    console.error(err);
+    notify('Error — showing demo data');
+    const demo = generateDemoData(storeUrl);
+    storeData = demo;
+    renderDashboard(demo);
+    document.getElementById('loading-panel').classList.add('hidden');
+    document.getElementById('dashboard').classList.remove('hidden');
+    addChatMessage('ai', `Analysis complete for **${storeUrl}** (demo mode). Score: **${demo.score}/100**. Ask me anything!`);
+  }
+  setAnalyzeLoading(false);
+}
+
+async function fetchShopifyData(storeUrl) {
+  // Server-side fetch via our Vercel proxy — no CORS issues
+  const resp = await fetch(API_BASE, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ type: 'shopify-fetch', storeUrl })
+  });
+  if (!resp.ok) throw new Error('Proxy error ' + resp.status);
+  const { shopifyData, errors } = await resp.json();
+  if (errors?.length) console.warn('Shopify fetch warnings:', errors);
+  return shopifyData || {};
+}
+
+async function callGroq(messages, system) {
+  // All Groq calls go through our server-side proxy — fixes CORS
+  const resp = await fetch(API_BASE, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ messages, system })
+  });
+  if (!resp.ok) {
+    const e = await resp.json().catch(() => ({}));
+    throw new Error(e.error || 'API error ' + resp.status);
+  }
+  const { content } = await resp.json();
+  return content || '';
+}
+
+async function runAIAnalysis(storeUrl) {
+  // Step 1: Fetch real Shopify public data via server proxy
+  let shopifyCtx = {};
+  try {
+    shopifyCtx = await fetchShopifyData(storeUrl);
+  } catch (e) {
+    console.warn('Could not fetch Shopify data:', e.message);
+  }
+
+  // Build a rich context string for the AI
+  const shopifyFacts = shopifyCtx.productCount != null ? `
+REAL STORE DATA FETCHED:
+- Products: ${shopifyCtx.productCount} (${shopifyCtx.publishedCount || '?'} active)
+- Collections: ${shopifyCtx.collectionCount || 0}
+- Price range: $${shopifyCtx.minPrice || '?'} – $${shopifyCtx.maxPrice || '?'}
+- Avg price: $${shopifyCtx.avgPrice || '?'}
+- Products with images: ${shopifyCtx.productsWithImages || 0}/${shopifyCtx.productCount}
+- Products with descriptions: ${shopifyCtx.productsWithDescriptions || 0}/${shopifyCtx.productCount}
+- Has sitemap: ${shopifyCtx.hasSitemap}
+- Has structured data (LD+JSON): ${shopifyCtx.hasStructuredData}
+- Has OpenGraph tags: ${shopifyCtx.hasOpenGraph}
+- Has email capture (Klaviyo/Mailchimp/etc): ${shopifyCtx.hasEmailCapture}
+- Has reviews app (Yotpo/Loox/etc): ${shopifyCtx.hasReviews}
+- Has live chat: ${shopifyCtx.hasLiveChat}
+- Meta description: ${shopifyCtx.metaDescription || 'MISSING'}
+- Page title: ${shopifyCtx.pageTitle || 'MISSING'}
+- Theme: ${shopifyCtx.themeName || 'Unknown'}
+- Sample products: ${JSON.stringify(shopifyCtx.sampleProducts || [])}
+- Collection names: ${(shopifyCtx.collectionNames || []).join(', ')}
+- Vendors: ${(shopifyCtx.vendors || []).slice(0, 5).join(', ')}
+` : `Could not fetch live store data — base analysis on the domain name and industry context.`;
+
+  const prompt = `You are a Shopify e-commerce expert AI. Analyze the store: "${storeUrl}"
+
+${shopifyFacts}
+
+Using all available data above, produce a detailed, ACCURATE store analysis.
+RETURN ONLY valid JSON (no markdown fences, no trailing commas) with this exact structure:
+{
+  "storeName": "",
+  "storeUrl": "${storeUrl}",
+  "score": 72,
+  "conversionRate": 2.4,
+  "monthlyRevenue": "$45,000",
+  "revenueChange": "+23% potential",
+  "revenueBarPct": 65,
+  "convBarPct": 55,
+  "scoreBadge": "Good",
+  "scoreLabel": "Above average",
+  "metrics": [
+    {"label":"Page Speed","value":"2.1s","icon":"⚡","color":"cyan","change":"+12%"},
+    {"label":"Mobile Score","value":"84/100","icon":"📱","color":"indigo","change":"Good"},
+    {"label":"Products","value":"124","icon":"🛍️","color":"pink","change":"Active"},
+    {"label":"Reviews","value":"4.6★","icon":"⭐","color":"orange","change":"+0.2"},
+    {"label":"SEO Score","value":"71/100","icon":"🔍","color":"green","change":"+8pts"},
+    {"label":"AOV","value":"$67","icon":"💰","color":"purple","change":"+$12 opp"}
+  ],
+  "categoryScores": {"SEO":71,"UX/Design":78,"Performance":65,"Conversion":62,"Trust":80,"Mobile":84},
+  "revenueOpportunity": {"SEO Fix":15000,"Speed Opt":8000,"CRO":22000,"Email":12000,"Mobile UX":7000},
+  "issues": [
+    {"title":"Slow checkout","impact":"High","revenue":"$8,200/mo lost"},
+    {"title":"No schema markup","impact":"High","revenue":"$4,100/mo lost"},
+    {"title":"No abandoned cart","impact":"Critical","revenue":"$12,400/mo lost"},
+    {"title":"Slow images","impact":"Medium","revenue":"$2,800/mo lost"}
+  ],
+  "quickWins": [
+    {"title":"Add trust badges","effort":"30 min","impact":"+3-5% conv"},
+    {"title":"One-click upsell","effort":"1 hour","impact":"+15% AOV"},
+    {"title":"Klaviyo abandoned cart","effort":"2 hours","impact":"+$12K/mo"},
+    {"title":"Compress images","effort":"30 min","impact":"-1.2s load"}
+  ],
+  "roadmap": {
+    "days1_30": {"title":"Days 1-30: Foundation","color":"cyan","tasks":["1-page checkout","Compress images","Schema markup","Abandoned cart emails","Trust badges"]},
+    "days31_60": {"title":"Days 31-60: Growth","color":"indigo","tasks":["Email welcome series","A/B test pages","Reviews widget","Meta titles","Google Shopping"]},
+    "days61_90": {"title":"Days 61-90: Scale","color":"pink","tasks":["Loyalty program","Post-purchase upsells","Retargeting","A/B test review","Influencer outreach"]}
+  }
+}
+
+Use the real data to make the analysis accurate. For example:
+- If products have no descriptions, flag it as an issue
+- If no email capture detected, include it as a critical issue
+- If no reviews app, flag it
+- If no sitemap, flag it as an SEO issue
+- Base the product count metric on actual data
+- Estimate revenue based on product count, price range, and industry averages`;
+
+  const text = await callGroq([{ role: 'user', content: prompt }]);
+  const clean = text.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
+  try { return JSON.parse(clean); } catch {}
+  try { const m = clean.match(/\{[\s\S]*\}/); if (m) return JSON.parse(m[0]); } catch {}
+  try {
+    const m = clean.match(/\{[\s\S]*\}/);
+    if (m) return JSON.parse(m[0].replace(/,\s*([}\]])/g, '$1'));
+  } catch {}
+  throw new Error('Could not parse AI response');
+}
+
+function generateDemoData(url) {
+  const name = url.split('.')[0].charAt(0).toUpperCase() + url.split('.')[0].slice(1);
+  return {
+    storeName: name, storeUrl: url, score: 74, conversionRate: 2.7,
+    monthlyRevenue: '$52,000', revenueChange: '+28% potential', revenueBarPct: 70, convBarPct: 62,
+    scoreBadge: 'Good', scoreLabel: 'Top 35% in category',
+    metrics: [
+      { label: 'Page Speed', value: '2.3s', icon: '⚡', color: 'cyan', change: '+10%' },
+      { label: 'Mobile Score', value: '81/100', icon: '📱', color: 'indigo', change: 'Good' },
+      { label: 'Products', value: '87', icon: '🛍️', color: 'pink', change: 'Active' },
+      { label: 'Reviews', value: '4.4★', icon: '⭐', color: 'orange', change: '+0.1' },
+      { label: 'SEO Score', value: '68/100', icon: '🔍', color: 'green', change: '+5pts' },
+      { label: 'AOV', value: '$54', icon: '💰', color: 'purple', change: '+$18 opp' }
+    ],
+    categoryScores: { SEO: 68, 'UX/Design': 75, Performance: 62, Conversion: 59, Trust: 77, Mobile: 81 },
+    revenueOpportunity: { 'SEO Fix': 12000, 'Speed Opt': 6500, CRO: 18000, Email: 14500, 'Mobile UX': 5000 },
+    issues: [
+      { title: 'No one-page checkout', impact: 'Critical', revenue: '$10,200/mo lost' },
+      { title: 'Missing SSL trust signals', impact: 'High', revenue: '$3,500/mo lost' },
+      { title: 'No email capture popup', impact: 'High', revenue: '$7,800/mo lost' },
+      { title: 'Product pages lack urgency', impact: 'Medium', revenue: '$4,200/mo lost' }
+    ],
+    quickWins: [
+      { title: 'Add sticky add-to-cart button', effort: '20 min', impact: '+4% conversion' },
+      { title: 'Display savings in cart', effort: '30 min', impact: '+6% AOV' },
+      { title: 'Install exit-intent popup', effort: '1 hour', impact: '+2% recovery' },
+      { title: 'Add video to hero section', effort: '2 hours', impact: '+12% engagement' }
+    ],
+    roadmap: {
+      days1_30: { title: 'Days 1-30: Foundation', color: 'cyan', tasks: ['One-page checkout','Trust badge install','Image compression','Email capture setup','Mobile UX audit'] },
+      days31_60: { title: 'Days 31-60: Growth', color: 'indigo', tasks: ['Welcome email series','Product page A/B tests','Google Shopping setup','Review widget install','Blog SEO content'] },
+      days61_90: { title: 'Days 61-90: Scale', color: 'pink', tasks: ['Loyalty program launch','Post-purchase upsells','Retargeting ads','Influencer partnerships','Analytics deep dive'] }
+    }
+  };
+}
+
+function renderDashboard(d) {
+  const offset = 301.6 * (1 - d.score / 100);
+  setTimeout(() => {
+    document.getElementById('score-ring').style.strokeDashoffset = offset;
+    animateNumber('score-number', 0, d.score, 1500, v => Math.round(v));
+  }, 100);
+  document.getElementById('score-badge').textContent = d.scoreBadge || 'Good';
+  document.getElementById('score-label').textContent = d.scoreLabel || '';
+  document.getElementById('metric-revenue').textContent = d.monthlyRevenue;
+  document.getElementById('metric-revenue-change').textContent = d.revenueChange;
+  document.getElementById('metric-conversion').textContent = d.conversionRate + '%';
+  document.getElementById('metric-conv-benchmark').textContent = 'Industry avg: 2.1%';
+  setTimeout(() => {
+    document.getElementById('revenue-bar').style.width = d.revenueBarPct + '%';
+    document.getElementById('conv-bar').style.width = d.convBarPct + '%';
+  }, 200);
+
+  const cardColors = isDark
+    ? { cyan:'#94a3b8', indigo:'#a1afc4', pink:'#b0bec5', orange:'#90a4ae', green:'#80cbc4', purple:'#b0bec5' }
+    : { cyan:'#0369a1', indigo:'#4338ca', pink:'#be185d', orange:'#c2410c', green:'#15803d', purple:'#7c3aed' };
+  document.getElementById('metric-cards').innerHTML = d.metrics.map(m => `
+    <div class="glass rounded-2xl p-4 card-hover text-center" style="animation:fadeUp 0.5s ease forwards;opacity:0;animation-delay:${Math.random()*0.4}s">
+      <div class="text-2xl mb-1">${m.icon}</div>
+      <div class="font-display font-bold text-sm" style="color:${cardColors[m.color]||'#22d3ee'}">${m.value}</div>
+      <div class="text-xs text-slate-400 mt-0.5">${m.label}</div>
+      <div class="text-xs mt-1" style="color:${cardColors[m.color]||'#22d3ee'};opacity:0.8">${m.change}</div>
+    </div>`).join('');
+
+  renderRadarChart(d.categoryScores);
+  renderBarChart(d.revenueOpportunity);
+
+  const issueColors = isDark
+    ? { Critical:'#f87171', High:'#fb923c', Medium:'#fbbf24' }
+    : { Critical:'#dc2626', High:'#ea580c', Medium:'#d97706' };
+  document.getElementById('issues-count').textContent = d.issues.length;
+  document.getElementById('issues-list').innerHTML = d.issues.map(i => `
+    <div class="glass rounded-xl p-3 flex items-start gap-3 animate-fade-up">
+      <span class="tag mt-0.5 flex-shrink-0" style="background:${issueColors[i.impact]}22;color:${issueColors[i.impact]};border:1px solid ${issueColors[i.impact]}44">${i.impact}</span>
+      <div><div class="text-sm font-medium">${i.title}</div><div class="text-xs text-red-400 mt-0.5">${i.revenue}</div></div>
+    </div>`).join('');
+
+  document.getElementById('wins-count').textContent = d.quickWins.length;
+  document.getElementById('wins-list').innerHTML = d.quickWins.map(w => `
+    <div class="glass rounded-xl p-3 flex items-start gap-3 animate-fade-up">
+      <span class="tag mt-0.5 flex-shrink-0 bg-green-400/20 text-green-400 border border-green-400/30">${w.effort}</span>
+      <div><div class="text-sm font-medium">${w.title}</div><div class="text-xs text-green-400 mt-0.5">${w.impact}</div></div>
+    </div>`).join('');
+
+  const rm = d.roadmap;
+  const phaseColors = isDark
+    ? { cyan:'#64748b', indigo:'#94a3b8', pink:'#78909c' }
+    : { cyan:'#0369a1', indigo:'#4338ca', pink:'#be185d' };
+  document.getElementById('roadmap').innerHTML = [rm.days1_30, rm.days31_60, rm.days61_90].map(ph => {
+    const c = phaseColors[ph.color] || '#22d3ee';
+    const taskColor = isDark ? '#cbd5e1' : '#334155';
+    return `
+      <div class="glass rounded-2xl p-5 card-hover" style="border-top:3px solid ${c}">
+        <div class="font-display font-bold text-sm mb-3" style="color:${c}">${ph.title}</div>
+        <ol class="space-y-2">
+          ${ph.tasks.map((t,j) => `<li class="flex items-start gap-2 text-sm" style="color:${taskColor};animation:fadeUp 0.4s ease forwards;opacity:0;animation-delay:${0.1+j*0.08}s">
+            <span class="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold mt-0.5" style="background:${c}22;color:${c}">${j+1}</span>${t}
+          </li>`).join('')}
+        </ol>
+      </div>`;
+  }).join('');
+}
+
+function renderRadarChart(scores) {
+  if (radarChartInstance) radarChartInstance.destroy();
+  const ctx = document.getElementById('radar-chart');
+  const textColor = isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)';
+  const gridColor = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.07)';
+  radarChartInstance = new Chart(ctx, {
+    type: 'radar',
+    data: { labels: Object.keys(scores), datasets: [{ label: 'Score', data: Object.values(scores), borderColor: '#22d3ee', backgroundColor: 'rgba(34,211,238,0.15)', borderWidth: 2, pointBackgroundColor: '#22d3ee', pointRadius: 4 }] },
+    options: { responsive: true, animation: { duration: 1200, easing: 'easeOutQuart' }, plugins: { legend: { display: false } },
+      scales: { r: { min: 0, max: 100, ticks: { stepSize: 25, color: textColor, font: { size: 10 }, backdropColor: 'transparent' }, grid: { color: gridColor }, pointLabels: { color: textColor, font: { size: 11, family: 'DM Sans' } }, angleLines: { color: gridColor } } } }
+  });
+}
+
+function renderBarChart(data) {
+  if (barChartInstance) barChartInstance.destroy();
+  const ctx = document.getElementById('bar-chart');
+  const textColor = isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)';
+  const gridColor = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.07)';
+  const colors = ['#22d3ee','#6366f1','#f472b6','#fb923c','#4ade80'];
+  barChartInstance = new Chart(ctx, {
+    type: 'bar',
+    data: { labels: Object.keys(data), datasets: [{ label: '$/mo uplift', data: Object.values(data), backgroundColor: colors.map(c => c+'99'), borderColor: colors, borderWidth: 2, borderRadius: 8 }] },
+    options: { responsive: true, animation: { duration: 1200, easing: 'easeOutBounce' },
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: (ctx) => ` $${ctx.raw.toLocaleString()}/mo uplift` } } },
+      scales: { x: { ticks: { color: textColor, font: { size: 11 } }, grid: { display: false } }, y: { ticks: { color: textColor, font: { size: 11 }, callback: v => '$'+(v/1000)+'k' }, grid: { color: gridColor } } } }
+  });
+}
+
+function initChat() {
+  addChatMessage('ai', "👋 Hi! I'm **Aria**, your AI Shopify expert. Enter your store URL above and hit **Analyze Store** — I'll build you a personalized **2× sales blueprint** in seconds. You can also ask me any Shopify question!");
+}
+
+function addChatMessage(role, text) {
+  chatHistory.push({ role, text });
+  const container = document.getElementById('chat-messages');
+  const isUser = role === 'user';
+  const div = document.createElement('div');
+  div.className = `flex ${isUser ? 'justify-end' : 'justify-start'}`;
+  div.style.cssText = `opacity:0;animation:${isUser ? 'slideLeft' : 'slideRight'} 0.3s ease forwards`;
+  const formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
+  div.innerHTML = `<div class="max-w-[85%] ${isUser ? 'bubble-user' : 'bubble-ai'} px-4 py-3 text-sm leading-relaxed shadow-lg">${formatted}</div>`;
+  container.appendChild(div);
+  setTimeout(() => div.style.opacity = '1', 10);
+  container.scrollTop = container.scrollHeight;
+}
+
+function showTypingIndicator() {
+  const container = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.id = 'typing-indicator'; div.className = 'flex justify-start';
+  div.innerHTML = `<div class="bubble-ai px-4 py-3 flex items-center gap-1.5"><span class="typing-dot w-2 h-2 rounded-full bg-gray-400 inline-block"></span><span class="typing-dot w-2 h-2 rounded-full bg-slate-400 inline-block"></span><span class="typing-dot w-2 h-2 rounded-full bg-slate-400 inline-block"></span></div>`;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+function removeTypingIndicator() { document.getElementById('typing-indicator')?.remove(); }
+
+async function sendMessage() {
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  addChatMessage('user', text);
+  await getAIReply(text);
+}
+function sendQuick(msg) { document.getElementById('chat-input').value = msg; sendMessage(); }
+function clearChat() { chatHistory = []; document.getElementById('chat-messages').innerHTML = ''; initChat(); }
+
+async function getAIReply(userMessage) {
+  showTypingIndicator();
+  const contextSummary = storeData
+    ? `Store: ${storeData.storeUrl}. Score: ${storeData.score}/100. Issues: ${storeData.issues.map(i=>i.title).join(', ')}. Quick wins: ${storeData.quickWins.map(w=>w.title).join(', ')}. Revenue: ${storeData.monthlyRevenue}.`
+    : 'No store analyzed yet.';
+
+  const rawHistory = chatHistory.slice(-10).map(m => ({ role: m.role === 'ai' ? 'assistant' : 'user', content: m.text }));
+  const cleanHistory = [];
+  for (const msg of rawHistory) {
+    const last = cleanHistory[cleanHistory.length - 1];
+    if (!last || last.role !== msg.role) cleanHistory.push(msg);
+  }
+  if (cleanHistory.length && cleanHistory[cleanHistory.length - 1].role === 'user') cleanHistory.pop();
+  cleanHistory.push({ role: 'user', content: userMessage });
+
+  const system = `You are Aria, an expert Shopify consultant AI. Concise, actionable advice. Use **bold** for key points. Store context: ${contextSummary}`;
+
+  try {
+    const reply = await callGroq(cleanHistory, system);
+    removeTypingIndicator();
+    addChatMessage('ai', reply.trim() || 'No response — please try again.');
+  } catch (err) {
+    removeTypingIndicator();
+    addChatMessage('ai', `Request failed: ${err.message}`);
+  }
+}
+
+async function exportPDF() {
+  if (!storeData) { notify('Please analyze a store first'); return; }
+  notify('Generating PDF...');
+  try {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const w = 210, m = 20;
+    doc.setFillColor(15,23,42); doc.rect(0,0,w,50,'F');
+    doc.setTextColor(34,211,238); doc.setFontSize(22); doc.setFont('helvetica','bold');
+    doc.text('ShopifyAI Store Analysis Report', m, 22);
+    doc.setTextColor(148,163,184); doc.setFontSize(11); doc.setFont('helvetica','normal');
+    doc.text(`Store: ${storeData.storeUrl}  •  Score: ${storeData.score}/100  •  ${new Date().toLocaleDateString()}`, m, 35);
+    doc.setFillColor(34,211,238); doc.roundedRect(m,60,50,30,4,4,'F');
+    doc.setTextColor(255,255,255); doc.setFontSize(28); doc.setFont('helvetica','bold');
+    doc.text(String(storeData.score), m+10, 80); doc.setFontSize(10); doc.text('/100 Overall', m+28, 80);
+    doc.setFillColor(99,102,241); doc.roundedRect(m+60,60,60,30,4,4,'F');
+    doc.setFontSize(14); doc.text(storeData.monthlyRevenue, m+65, 72);
+    doc.setFontSize(10); doc.text('Est. Monthly Revenue', m+65, 82);
+    let y = 105;
+    doc.setTextColor(248,113,113); doc.setFontSize(13); doc.setFont('helvetica','bold'); doc.text('Critical Issues', m, y); y += 8;
+    doc.setTextColor(71,85,105); doc.setFontSize(10); doc.setFont('helvetica','normal');
+    storeData.issues.forEach(i => { doc.text(`• [${i.impact}] ${i.title} — ${i.revenue}`, m, y); y += 6; });
+    y += 6;
+    doc.setTextColor(74,222,128); doc.setFontSize(13); doc.setFont('helvetica','bold'); doc.text('Quick Wins', m, y); y += 8;
+    doc.setTextColor(71,85,105); doc.setFontSize(10); doc.setFont('helvetica','normal');
+    storeData.quickWins.forEach(w2 => { doc.text(`• ${w2.title} (${w2.effort}) → ${w2.impact}`, m, y); y += 6; });
+    y += 6;
+    doc.setTextColor(99,102,241); doc.setFontSize(13); doc.setFont('helvetica','bold'); doc.text('90-Day Blueprint', m, y); y += 8;
+    [storeData.roadmap.days1_30, storeData.roadmap.days31_60, storeData.roadmap.days61_90].forEach(ph => {
+      doc.setTextColor(34,211,238); doc.setFontSize(11); doc.setFont('helvetica','bold'); doc.text(ph.title, m, y); y += 6;
+      doc.setTextColor(71,85,105); doc.setFontSize(10); doc.setFont('helvetica','normal');
+      ph.tasks.forEach(t => { doc.text(`  ${t}`, m+4, y); y += 5; }); y += 3;
+    });
+    doc.setFillColor(15,23,42); doc.rect(0,277,w,20,'F');
+    doc.setTextColor(34,211,238); doc.setFontSize(9); doc.text('Generated by ShopifyAI Analyzer • Powered by Claude AI', m, 289);
+    doc.save(`shopify-analysis-${storeData.storeUrl.replace(/\./g,'-')}.pdf`);
+    notify('PDF exported!');
+  } catch(e) { console.error(e); notify('PDF export failed'); }
+}
+
+function setAnalyzeLoading(on) {
+  const btn = document.getElementById('analyze-btn');
+  const icon = document.getElementById('analyze-icon');
+  const text = document.getElementById('analyze-text');
+  if (on) { btn.disabled = true; icon.innerHTML = '<circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2" fill="none" stroke-dasharray="30 60"/>'; text.textContent = 'Analyzing...'; }
+  else { btn.disabled = false; icon.innerHTML = '<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>'; text.textContent = 'Analyze Store'; }
+}
+
+function resetAnalysis() {
+  storeData = null;
+  document.getElementById('dashboard').classList.add('hidden');
+  document.getElementById('store-url').value = '';
+  document.getElementById('store-url').focus();
+  document.getElementById('analyzer').scrollIntoView({ behavior: 'smooth' });
+}
+
+function animateNumber(id, from, to, duration, format) {
+  const el = document.getElementById(id); if (!el) return;
+  const start = performance.now();
+  function step(now) {
+    const p = Math.min((now - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - p, 3);
+    el.textContent = format ? format(from + (to - from) * ease) : Math.round(from + (to - from) * ease);
+    if (p < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function initPWA() {
+  const manifest = { name:'ShopifyAI Analyzer', short_name:'ShopifyAI', description:'AI-Powered Shopify Store Diagnosis', start_url:'/', display:'standalone', background_color:'#0f172a', theme_color:'#22d3ee', icons:[{ src:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="100" fill="%2322d3ee"/><text y="400" font-size="380" font-family="serif">%F0%9F%9B%8D</text></svg>', sizes:'512x512', type:'image/svg+xml' }] };
+  const blob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
+  document.getElementById('manifest-placeholder').setAttribute('href', URL.createObjectURL(blob));
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initParticles(); initPWA(); initChat();
+  checkOAuthReturn(); // Handle returning from Shopify OAuth
+  if (window.matchMedia('(prefers-color-scheme: light)').matches) toggleTheme();
+  if (window.innerWidth < 1024) { document.getElementById('chat-panel').style.display = 'none'; chatVisible = false; }
+  const inp = document.getElementById('store-url');
+  inp.addEventListener('focus', () => document.getElementById('input-line').style.opacity = '1');
+  inp.addEventListener('blur', () => document.getElementById('input-line').style.opacity = '0');
+  document.getElementById('analyze-btn').addEventListener('click', function(e) {
+    const rect = this.getBoundingClientRect();
+    const ripple = document.createElement('span');
+    ripple.style.cssText = `position:absolute;width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,0.4);left:${e.clientX-rect.left-10}px;top:${e.clientY-rect.top-10}px;animation:ripple 0.6s ease-out forwards;pointer-events:none;`;
+    this.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 600);
+  });
+});
+</script>
+</body>
+</html>
