@@ -434,7 +434,7 @@ tailwind.config = {
           <div class="mt-2 flex flex-wrap items-center gap-4 text-xs text-slate-500">
             <span class="flex items-center gap-1.5">
               <svg class="w-3.5 h-3.5 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-              Quick Analyze — public data only
+              Quick Analyze — public data & estimated metrics only
             </span>
             <span class="flex items-center gap-1.5">
               <svg class="w-3.5 h-3.5 text-green-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
@@ -582,6 +582,21 @@ tailwind.config = {
       </div>
 
       <div id="dashboard" class="space-y-6 hidden">
+
+        <!-- Disclaimer banner — shown for quick analyze, hidden for connected stores -->
+        <div id="estimate-disclaimer" class="hidden glass rounded-2xl p-4 border border-orange-400/30 flex items-start gap-3">
+          <div class="w-8 h-8 rounded-lg bg-orange-400/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+            <svg class="w-4 h-4 text-orange-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </div>
+          <div class="flex-1">
+            <div class="text-sm font-bold text-orange-400 mb-1">Estimates Based on Public Data Only</div>
+            <div class="text-xs text-slate-400 leading-relaxed">Revenue, AOV, and customer metrics shown below are AI estimates based on industry benchmarks — not your real store data. <span class="text-orange-400 font-semibold">Connect your store</span> to unlock real orders, revenue, customer LTV, abandoned cart rates, and more.</div>
+          </div>
+          <button onclick="document.getElementById('url-input-area').scrollIntoView({behavior:'smooth'});document.getElementById('store-url').focus()" class="flex-shrink-0 btn-neon rounded-xl px-3 py-2 text-xs font-bold whitespace-nowrap">
+            Connect Store
+          </button>
+        </div>
+
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 stagger">
           <div class="glass rounded-3xl p-6 card-hover" style="border: 1px solid rgba(14,116,144,0.3);">
             <div class="flex items-center justify-between mb-4">
@@ -869,6 +884,7 @@ async function analyzeConnectedStore() {
     await delay(200);
 
     renderDashboard(analysis);
+    document.getElementById('estimate-disclaimer').classList.add('hidden');
     document.getElementById('loading-panel').classList.add('hidden');
     document.getElementById('dashboard').classList.remove('hidden');
     document.getElementById('dashboard').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1022,10 +1038,11 @@ async function analyzeStore() {
     progressEl.style.width = '100%';
     await delay(300);
     renderDashboard(analysis);
+    document.getElementById('estimate-disclaimer').classList.remove('hidden');
     document.getElementById('loading-panel').classList.add('hidden');
     document.getElementById('dashboard').classList.remove('hidden');
     document.getElementById('dashboard').scrollIntoView({ behavior: 'smooth', block: 'start' });
-    addChatMessage('ai', `Analysis complete for **${storeUrl}**! Your store scored **${analysis.score}/100**. I identified ${analysis.issues.length} critical issues and ${analysis.quickWins.length} quick wins. Ask me anything!`);
+    addChatMessage('ai', `Analysis complete for **${storeUrl}**! Your store scored **${analysis.score}/100**. I identified ${analysis.issues.length} critical issues and ${analysis.quickWins.length} quick wins. Note: revenue figures are estimates — connect your store for real data. Ask me anything!`);
     notify('Analysis complete!');
   } catch (err) {
     console.error(err);
@@ -1209,9 +1226,42 @@ function renderDashboard(d) {
   }, 100);
   document.getElementById('score-badge').textContent = d.scoreBadge || 'Good';
   document.getElementById('score-label').textContent = d.scoreLabel || '';
+  // Add estimated note under score when not connected
+  const existingNote = document.getElementById('score-estimate-note');
+  if (existingNote) existingNote.remove();
+  if (!connectedShop) {
+    const note = document.createElement('p');
+    note.id = 'score-estimate-note';
+    note.style.cssText = 'text-align:center;font-size:10px;color:#fb923c;margin-top:4px;font-weight:600';
+    note.textContent = '⚠ Based on public data estimates';
+    document.getElementById('score-label').after(note);
+  }
   document.getElementById('metric-revenue').textContent = d.monthlyRevenue;
   document.getElementById('metric-revenue-change').textContent = d.revenueChange;
   document.getElementById('metric-conversion').textContent = d.conversionRate + '%';
+
+  // Show/hide "estimated" labels on top metrics
+  const revenueLabel = document.querySelector('[for-metric="revenue-label"]') || (() => {
+    const el = document.createElement('span');
+    el.setAttribute('for-metric', 'revenue-label');
+    el.style.cssText = 'font-size:10px;color:#fb923c;margin-left:6px;font-weight:600;vertical-align:middle';
+    document.getElementById('metric-revenue').after(el);
+    return el;
+  })();
+  const convLabel = document.querySelector('[for-metric="conv-label"]') || (() => {
+    const el = document.createElement('span');
+    el.setAttribute('for-metric', 'conv-label');
+    el.style.cssText = 'font-size:10px;color:#fb923c;margin-left:6px;font-weight:600;vertical-align:middle';
+    document.getElementById('metric-conversion').after(el);
+    return el;
+  })();
+  if (!connectedShop) {
+    revenueLabel.textContent = '(estimated)';
+    convLabel.textContent = '(estimated)';
+  } else {
+    revenueLabel.textContent = '';
+    convLabel.textContent = '';
+  }
   document.getElementById('metric-conv-benchmark').textContent = 'Industry avg: 2.1%';
   setTimeout(() => {
     document.getElementById('revenue-bar').style.width = d.revenueBarPct + '%';
@@ -1221,10 +1271,11 @@ function renderDashboard(d) {
   const cardColors = isDark
     ? { cyan:'#94a3b8', indigo:'#a1afc4', pink:'#b0bec5', orange:'#90a4ae', green:'#80cbc4', purple:'#b0bec5' }
     : { cyan:'#0369a1', indigo:'#4338ca', pink:'#be185d', orange:'#c2410c', green:'#15803d', purple:'#7c3aed' };
+  const isEstimate = !connectedShop;
   document.getElementById('metric-cards').innerHTML = d.metrics.map(m => `
     <div class="glass rounded-2xl p-4 card-hover text-center" style="animation:fadeUp 0.5s ease forwards;opacity:0;animation-delay:${Math.random()*0.4}s">
       <div class="text-2xl mb-1">${m.icon}</div>
-      <div class="font-display font-bold text-sm" style="color:${cardColors[m.color]||'#22d3ee'}">${m.value}</div>
+      <div class="font-display font-bold text-sm" style="color:${cardColors[m.color]||'#22d3ee'}">${m.value}${isEstimate ? '<span style="font-size:9px;opacity:0.7;margin-left:3px">est.</span>' : ''}</div>
       <div class="text-xs text-slate-400 mt-0.5">${m.label}</div>
       <div class="text-xs mt-1" style="color:${cardColors[m.color]||'#22d3ee'};opacity:0.8">${m.change}</div>
     </div>`).join('');
