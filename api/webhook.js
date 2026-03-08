@@ -21,10 +21,18 @@ export default async function handler(req, res) {
   const sig = req.headers['stripe-signature'];
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
+  // Collect raw body chunks
+  const chunks = [];
+  await new Promise((resolve, reject) => {
+    req.on('data', chunk => chunks.push(chunk));
+    req.on('end', resolve);
+    req.on('error', reject);
+  });
+  const rawBody = Buffer.concat(chunks);
+
   let event;
   try {
-    // req.body must be raw buffer — Vercel provides it as string
-    event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
+    event = stripe.webhooks.constructEvent(rawBody, sig, webhookSecret);
   } catch (err) {
     console.error('Webhook signature error:', err.message);
     return res.status(400).send(`Webhook Error: ${err.message}`);
@@ -49,3 +57,4 @@ export default async function handler(req, res) {
 }
 
 export const config = { api: { bodyParser: false } };
+
