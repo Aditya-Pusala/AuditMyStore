@@ -321,7 +321,10 @@ tailwind.config = {
       </div>
       <div>
         <span class="font-display font-800 text-lg gradient-text">AuditMyStore</span>
-        <span class="text-xs text-slate-400 block leading-none hidden sm:block">AI Store Analyzer</span>
+        <div class="flex items-center gap-2">
+          <span class="text-xs text-slate-400 block leading-none hidden sm:block">AI Store Analyzer</span>
+          <span id="pro-badge" class="hidden text-xs font-bold px-2 py-0.5 rounded-full" style="background:linear-gradient(135deg,#f59e0b,#d97706);color:black">PRO</span>
+        </div>
       </div>
     </div>
     <div class="hidden md:flex items-center gap-1">
@@ -340,6 +343,10 @@ tailwind.config = {
       <button onclick="toggleChat()" class="md:hidden w-10 h-10 rounded-xl glass flex items-center justify-center transition-all hover:scale-110" title="Toggle Chat">
         <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
       </button>
+      <!-- Audit counter — shown for free users -->
+      <div id="audit-counter" class="hidden glass px-3 py-1.5 rounded-xl">
+        <span class="text-xs font-medium text-orange-400 hidden sm:block" id="audit-counter-text">2/2 free audits</span>
+      </div>
       <div class="flex items-center gap-2 glass px-3 py-1.5 rounded-xl">
         <div class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
         <span class="text-xs font-medium text-green-400 hidden sm:block">AI Online</span>
@@ -1553,6 +1560,7 @@ async function checkUnlockReturn() {
     if (data.valid) {
       unlockApp();
       hidePaywall();
+      updateNavStatus();
       window.history.replaceState({}, '', '/');
       notify('🎉 Pro unlocked! Unlimited audits activated.', 5000);
       addChatMessage('ai', '🎉 Welcome to **AuditMyStore Pro**! You now have unlimited audits and PDF exports. Run as many analyses as you want!');
@@ -1562,7 +1570,34 @@ async function checkUnlockReturn() {
   }
 }
 
-function checkPaywall() {
+function updateNavStatus() {
+  const proBadge = document.getElementById('pro-badge');
+  const auditCounter = document.getElementById('audit-counter');
+  const auditCounterText = document.getElementById('audit-counter-text');
+
+  if (isUnlocked()) {
+    // Show PRO badge, hide counter
+    proBadge.classList.remove('hidden');
+    auditCounter.classList.add('hidden');
+  } else {
+    // Show audit counter
+    proBadge.classList.add('hidden');
+    const count = getAuditCount();
+    const remaining = Math.max(0, FREE_AUDIT_LIMIT - count);
+    auditCounter.classList.remove('hidden');
+    if (remaining === 0) {
+      auditCounterText.textContent = '🔒 Upgrade to Pro';
+      auditCounterText.style.color = '#f87171';
+      auditCounter.style.cursor = 'pointer';
+      auditCounter.onclick = () => showPaywall();
+    } else {
+      auditCounterText.textContent = `${count}/${FREE_AUDIT_LIMIT} free audits used`;
+      auditCounterText.style.color = '#fb923c';
+    }
+  }
+}
+
+
   if (isUnlocked()) return true; // Pro user — always allow
   const count = getAuditCount();
   if (count >= FREE_AUDIT_LIMIT) {
@@ -1570,6 +1605,7 @@ function checkPaywall() {
     return false;
   }
   incrementAuditCount();
+  updateNavStatus();
   const remaining = FREE_AUDIT_LIMIT - getAuditCount();
   if (remaining === 0) {
     notify(`Last free audit used! Upgrade to Pro for unlimited access.`, 4000);
@@ -1583,6 +1619,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initParticles(); initPWA(); initChat();
   checkOAuthReturn();
   checkUnlockReturn();
+  updateNavStatus();
   if (window.matchMedia('(prefers-color-scheme: light)').matches) toggleTheme();
   // Only hide chat on mobile, always show on desktop
   if (window.innerWidth < 1024) {
