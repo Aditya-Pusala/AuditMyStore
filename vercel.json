@@ -7,6 +7,7 @@
     { "src": "api/checkout.js",  "use": "@vercel/node" },
     { "src": "api/webhook.js",   "use": "@vercel/node" },
     { "src": "api/verify.js",    "use": "@vercel/node" },
+    { "src": "api/account.js",   "use": "@vercel/node" },
     { "src": "index.html",       "use": "@vercel/static" }
   ],
   "routes": [
@@ -16,6 +17,7 @@
     { "src": "/api/checkout", "dest": "/api/checkout.js" },
     { "src": "/api/webhook",  "dest": "/api/webhook.js"  },
     { "src": "/api/verify",   "dest": "/api/verify.js"   },
+    { "src": "/api/account",  "dest": "/api/account.js"  },
     { "src": "/",             "dest": "/index.html"      }
   ]
 }

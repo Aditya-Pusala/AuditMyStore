@@ -347,6 +347,11 @@ tailwind.config = {
       <div id="audit-counter" class="hidden glass px-3 py-1.5 rounded-xl">
         <span class="text-xs font-medium text-orange-400 hidden sm:block" id="audit-counter-text">2/2 free audits</span>
       </div>
+      <!-- My Account button — shown for pro users -->
+      <button id="my-account-btn" onclick="showAccountModal()" class="hidden glass px-3 py-1.5 rounded-xl flex items-center gap-2 nav-btn">
+        <svg class="w-4 h-4 text-yellow-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span class="text-xs font-medium text-yellow-400 hidden sm:block">My Account</span>
+      </button>
       <div class="flex items-center gap-2 glass px-3 py-1.5 rounded-xl">
         <div class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
         <span class="text-xs font-medium text-green-400 hidden sm:block">AI Online</span>
@@ -1713,14 +1718,15 @@ function updateNavStatus() {
   const proBadge = document.getElementById('pro-badge');
   const auditCounter = document.getElementById('audit-counter');
   const auditCounterText = document.getElementById('audit-counter-text');
+  const myAccountBtn = document.getElementById('my-account-btn');
 
   if (isUnlocked()) {
-    // Show PRO badge, hide counter
     proBadge.classList.remove('hidden');
     auditCounter.classList.add('hidden');
+    myAccountBtn.classList.remove('hidden');
   } else {
-    // Show audit counter
     proBadge.classList.add('hidden');
+    myAccountBtn.classList.add('hidden');
     const count = getAuditCount();
     const remaining = Math.max(0, FREE_AUDIT_LIMIT - count);
     auditCounter.classList.remove('hidden');
@@ -1862,6 +1868,152 @@ document.addEventListener('DOMContentLoaded', () => {
     <p class="text-center text-xs text-slate-500">Secured by Stripe • Cancel anytime • 7-day money back guarantee</p>
   </div>
 </div>
+
+<!-- Account Modal -->
+<div id="account-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4" style="background:rgba(0,0,0,0.85);backdrop-filter:blur(8px)">
+  <div class="glass rounded-3xl p-8 max-w-md w-full relative" style="border:1px solid rgba(251,191,36,0.3)">
+    <button onclick="document.getElementById('account-modal').classList.add('hidden')"
+      class="absolute top-4 right-4 text-slate-400 hover:text-white">
+      <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+
+    <div class="text-center mb-6">
+      <div class="w-14 h-14 rounded-2xl bg-yellow-400/20 flex items-center justify-center mx-auto mb-3">
+        <svg class="w-7 h-7 text-yellow-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </div>
+      <h2 class="font-display font-bold text-xl gradient-text">My Account</h2>
+      <p class="text-slate-400 text-sm mt-1">Enter your email to view subscription details</p>
+    </div>
+
+    <!-- Email input state -->
+    <div id="account-email-form">
+      <div class="glass rounded-2xl p-3 flex items-center gap-3 mb-4" style="border:1px solid rgba(251,191,36,0.2)">
+        <svg class="w-4 h-4 text-yellow-400 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg>
+        <input id="account-email-input" type="email" placeholder="your@email.com"
+          class="bg-transparent flex-1 text-sm outline-none text-slate-200 placeholder-slate-500" />
+      </div>
+      <button onclick="lookupAccount()" class="btn-neon w-full rounded-xl py-3 font-display font-bold text-sm">
+        Look Up My Account
+      </button>
+    </div>
+
+    <!-- Account info state (hidden initially) -->
+    <div id="account-info" class="hidden">
+      <div class="space-y-3 mb-6">
+        <div class="glass rounded-2xl p-4 flex items-center justify-between">
+          <span class="text-sm text-slate-400">Plan</span>
+          <span id="account-plan" class="font-bold text-yellow-400"></span>
+        </div>
+        <div class="glass rounded-2xl p-4 flex items-center justify-between">
+          <span class="text-sm text-slate-400">Status</span>
+          <span id="account-status" class="font-bold text-green-400"></span>
+        </div>
+        <div id="account-renewal-row" class="glass rounded-2xl p-4 flex items-center justify-between">
+          <span class="text-sm text-slate-400">Next Billing Date</span>
+          <span id="account-renewal" class="font-bold text-slate-200"></span>
+        </div>
+        <div id="account-cancel-warning" class="hidden glass rounded-2xl p-3 border border-orange-400/30">
+          <span class="text-xs text-orange-400">⚠ Your subscription will not renew — access ends on the date above</span>
+        </div>
+      </div>
+      <button onclick="openCustomerPortal()" class="btn-neon w-full rounded-xl py-3 font-display font-bold text-sm mb-3">
+        Manage Subscription →
+      </button>
+      <button onclick="document.getElementById('account-info').classList.add('hidden');document.getElementById('account-email-form').classList.remove('hidden')"
+        class="w-full text-xs text-slate-500 hover:text-slate-300 py-2">
+        Use a different email
+      </button>
+    </div>
+
+    <div id="account-loading" class="hidden text-center py-4">
+      <div class="w-8 h-8 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+      <p class="text-sm text-slate-400">Looking up your account...</p>
+    </div>
+  </div>
+</div>
+
+<script>
+let accountEmail = '';
+
+function showAccountModal() {
+  document.getElementById('account-modal').classList.remove('hidden');
+  document.getElementById('account-email-form').classList.remove('hidden');
+  document.getElementById('account-info').classList.add('hidden');
+  document.getElementById('account-loading').classList.add('hidden');
+  setTimeout(() => document.getElementById('account-email-input').focus(), 100);
+}
+
+async function lookupAccount() {
+  const email = document.getElementById('account-email-input').value.trim();
+  if (!email || !email.includes('@')) { notify('Please enter a valid email'); return; }
+  accountEmail = email;
+
+  document.getElementById('account-email-form').classList.add('hidden');
+  document.getElementById('account-loading').classList.remove('hidden');
+
+  try {
+    const resp = await fetch('/api/account', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'info', email })
+    });
+    const data = await resp.json();
+    document.getElementById('account-loading').classList.add('hidden');
+
+    if (!resp.ok) {
+      notify(data.error || 'Account not found');
+      document.getElementById('account-email-form').classList.remove('hidden');
+      return;
+    }
+
+    // Populate info
+    document.getElementById('account-plan').textContent = data.plan + ' Pro';
+    document.getElementById('account-status').textContent = data.status === 'active' ? '✓ Active' : data.status;
+    document.getElementById('account-status').style.color = data.status === 'active' ? '#4ade80' : '#f87171';
+
+    if (data.plan === 'Lifetime') {
+      document.getElementById('account-renewal-row').classList.add('hidden');
+    } else if (data.currentPeriodEnd) {
+      document.getElementById('account-renewal-row').classList.remove('hidden');
+      const date = new Date(data.currentPeriodEnd * 1000).toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'});
+      document.getElementById('account-renewal').textContent = date;
+    }
+
+    if (data.cancelAtPeriodEnd) {
+      document.getElementById('account-cancel-warning').classList.remove('hidden');
+    } else {
+      document.getElementById('account-cancel-warning').classList.add('hidden');
+    }
+
+    document.getElementById('account-info').classList.remove('hidden');
+  } catch (err) {
+    document.getElementById('account-loading').classList.add('hidden');
+    document.getElementById('account-email-form').classList.remove('hidden');
+    notify('Error looking up account');
+  }
+}
+
+async function openCustomerPortal() {
+  try {
+    const resp = await fetch('/api/account', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'portal', email: accountEmail })
+    });
+    const data = await resp.json();
+    if (data.url) window.location.href = data.url;
+    else notify(data.error || 'Could not open portal');
+  } catch (err) {
+    notify('Error opening customer portal');
+  }
+}
+
+// Allow Enter key in email input
+document.addEventListener('DOMContentLoaded', () => {
+  const emailInput = document.getElementById('account-email-input');
+  if (emailInput) emailInput.addEventListener('keydown', e => { if (e.key === 'Enter') lookupAccount(); });
+});
+</script>
 
 </body>
 </html>
