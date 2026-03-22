@@ -173,6 +173,14 @@ let resetToken = '';
 // Theme
 const t = localStorage.getItem('ams_theme') || 'light';
 document.documentElement.setAttribute('data-theme', t);
+function getPostLoginUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const next = params.get('next');
+  const plan = params.get('plan');
+  if (next === 'upgrade' && plan) return `app.html?upgrade=${plan}`;
+  return 'app.html';
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   const b = document.getElementById('theme-btn');
   if (b) b.textContent = t === 'dark' ? '☀️' : '🌙';
@@ -245,7 +253,7 @@ async function doLogin() {
     localStorage.setItem('ams_user_name', d.name || email.split('@')[0]);
     localStorage.setItem('ams_user_email', email);
     if (d.plan !== 'free') localStorage.setItem('ams_unlocked', '1');
-    window.location.href = 'app.html';
+    window.location.href = getPostLoginUrl();
   } catch(e) { btn.textContent = 'Log In'; btn.disabled = false; showErr('login-err', 'Connection error. Please try again.'); }
 }
 
@@ -271,7 +279,7 @@ async function doSignup() {
     localStorage.setItem('ams_session_token', d.token);
     localStorage.setItem('ams_user_name', name);
     localStorage.setItem('ams_user_email', email);
-    window.location.href = 'app.html?new=1';
+    window.location.href = getPostLoginUrl();
   } catch(e) { btn.textContent = 'Create Account'; btn.disabled = false; showErr('signup-err', 'Connection error. Please try again.'); }
 }
 

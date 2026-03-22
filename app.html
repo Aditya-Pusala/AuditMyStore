@@ -603,21 +603,56 @@ canvas{max-width:100%}
   </div>
 </div>
 
-<!-- SET PASSWORD MODAL (after payment) -->
+<!-- SET PASSWORD MODAL (for users NOT logged in after payment) -->
 <div class="modal-overlay" id="set-password-modal">
-  <div class="modal-card">
+  <div class="modal-card" style="position:relative">
+    <!-- Close/back button -->
+    <button onclick="document.getElementById('set-password-modal').classList.remove('show')" style="position:absolute;top:14px;right:14px;background:var(--bg3);border:none;border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text3);font-size:16px;transition:all .15s" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='var(--bg3)'">✕</button>
     <div style="text-align:center;margin-bottom:20px">
-      <div style="width:52px;height:52px;background:rgba(34,211,238,.15);border-radius:13px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+      <div style="width:56px;height:56px;background:rgba(249,115,22,.15);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
       </div>
-      <h2 style="font-size:20px;font-weight:700;margin-bottom:6px" class="gradient-text">🎉 Payment Successful!</h2>
-      <p style="font-size:14px;color:var(--text3);font-weight:500">Create your account to access Pro from any device</p>
+      <h2 style="font-size:22px;font-weight:700;margin-bottom:8px;color:var(--text)">🎉 Payment Successful!</h2>
+      <p style="font-size:14px;color:var(--text3);font-weight:500;line-height:1.5">Set a password to access Pro from any device —<br/>even without Google login</p>
     </div>
     <input id="set-email" type="email" class="modal-input" placeholder="Email used for payment"/>
     <input id="set-password" type="password" class="modal-input" placeholder="Choose a password (min 6 chars)"/>
     <input id="set-password-confirm" type="password" class="modal-input" placeholder="Confirm password"/>
-    <button id="register-btn" onclick="registerAccount()" class="btn-neon" style="width:100%;border-radius:10px;padding:13px;font-size:14px">Create Account & Unlock Pro</button>
-    <p style="text-align:center;font-size:14px;color:var(--text4);margin-top:12px;font-weight:500">Use this email + password to log in on any device</p>
+    <button id="register-btn" onclick="registerAccount()" class="btn-neon" style="width:100%;border-radius:10px;padding:13px;font-size:15px;background:linear-gradient(135deg,var(--orange-d),var(--orange))">Create Account & Unlock Pro</button>
+    <p style="text-align:center;font-size:13px;color:var(--text4);margin-top:12px;font-weight:500">Use this email + password to log in on any device</p>
+  </div>
+</div>
+
+<!-- PRO SUCCESS MODAL (for users already logged in after payment) -->
+<div class="modal-overlay" id="pro-success-modal">
+  <div class="modal-card" style="text-align:center;position:relative">
+    <button onclick="document.getElementById('pro-success-modal').classList.remove('show')" style="position:absolute;top:14px;right:14px;background:var(--bg3);border:none;border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text3);font-size:16px;transition:all .15s" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='var(--bg3)'">✕</button>
+    <div style="font-size:52px;margin-bottom:16px">🎉</div>
+    <h2 style="font-size:24px;font-weight:700;margin-bottom:8px;color:var(--text)">You're now <span style="background:linear-gradient(135deg,var(--orange-d),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Pro!</span></h2>
+    <p style="font-size:15px;color:var(--text3);font-weight:500;margin-bottom:24px;line-height:1.6">Unlimited audits, real store data, and full access to all of Debbie's features are now active.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px;text-align:left">
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px">
+        <div style="font-size:20px;margin-bottom:6px">✅</div>
+        <div style="font-size:13px;font-weight:700;color:var(--text)">Unlimited Audits</div>
+        <div style="font-size:12px;color:var(--text3)">No more free limits</div>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px">
+        <div style="font-size:20px;margin-bottom:6px">📊</div>
+        <div style="font-size:13px;font-weight:700;color:var(--text)">Real Data</div>
+        <div style="font-size:12px;color:var(--text3)">Connect your store</div>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px">
+        <div style="font-size:20px;margin-bottom:6px">📄</div>
+        <div style="font-size:13px;font-weight:700;color:var(--text)">PDF Export</div>
+        <div style="font-size:12px;color:var(--text3)">Full branded reports</div>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px">
+        <div style="font-size:20px;margin-bottom:6px">🤖</div>
+        <div style="font-size:13px;font-weight:700;color:var(--text)">Debbie AI</div>
+        <div style="font-size:12px;color:var(--text3)">All 5 features unlocked</div>
+      </div>
+    </div>
+    <button onclick="document.getElementById('pro-success-modal').classList.remove('show')" class="btn-neon" style="width:100%;border-radius:10px;padding:13px;font-size:15px;background:linear-gradient(135deg,var(--orange-d),var(--orange))">Start Analyzing →</button>
   </div>
 </div>
 
@@ -649,6 +684,11 @@ function showPaywall() {
   document.getElementById('dashboard').style.filter = 'blur(6px)';
   document.getElementById('dashboard').style.pointerEvents = 'none';
 }
+function showSuccessModal() {
+  document.getElementById('pro-success-modal').classList.add('show');
+  addChatMessage('ai', "🎉 You're now **Pro**! Unlimited audits, real store data, and all of Debbie's features are active. Paste a store URL to get started!");
+}
+
 function hidePaywall() {
   document.getElementById('paywall-overlay').classList.remove('show');
   document.getElementById('dashboard').style.filter = '';
@@ -719,14 +759,20 @@ function doLogout() {
 }
 
 async function startCheckout(plan) {
+  // Must be logged in to purchase
+  if (!accountSessionToken) {
+    hidePaywall();
+    window.location.href = 'login.html?tab=signup&next=upgrade&plan=' + plan;
+    return;
+  }
   const btn = document.getElementById(`checkout-${plan}`);
   btn.textContent = 'Redirecting...'; btn.disabled = true;
   try {
-    const resp = await fetch('/api/checkout', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({plan}) });
+    const email = localStorage.getItem('ams_user_email') || '';
+    const resp = await fetch('/api/checkout', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({plan, email}) });
     const { url, error } = await resp.json();
     if (error) throw new Error(error);
-    window.location.href = url;
-  } catch (err) {
+    window.location.href = url;\n  } catch (err) {
     btn.textContent = plan === 'monthly' ? 'Get Monthly — $5/mo' : 'Get Lifetime — $97';
     btn.disabled = false;
     notify('Error: ' + err.message);
@@ -739,7 +785,6 @@ async function checkUnlockReturn() {
   const unlocked = params.get('unlocked');
   if (!sessionId || !unlocked) return;
   window.history.replaceState({}, '', '/app');
-  if (accountSessionToken && isUnlocked()) { updateNavStatus(); return; }
   try {
     const resp = await fetch('/api/login', {
       method: 'POST',
@@ -747,10 +792,12 @@ async function checkUnlockReturn() {
       body: JSON.stringify({ action: 'verify-license', session_id: sessionId })
     });
     const data = await resp.json();
-    if (data.valid) {
-      pendingSessionId = sessionId;
-      document.getElementById('set-password-modal').classList.add('show');
-    }
+    if (!data.valid) return;
+    // User is always logged in at this point — just unlock and show success
+    unlockApp();
+    hidePaywall();
+    updateNavStatus();
+    showSuccessModal();
   } catch (err) { console.error('License verify error:', err); }
 }
 
@@ -1652,6 +1699,13 @@ document.addEventListener('DOMContentLoaded', () => {
   // 2. Handle Shopify OAuth & Stripe return
   checkOAuthReturn();
   checkUnlockReturn();
+
+  // 2b. Auto-trigger checkout if redirected from login with upgrade intent
+  const upgradeParam = new URLSearchParams(window.location.search).get('upgrade');
+  if (upgradeParam && accountSessionToken) {
+    window.history.replaceState({}, '', '/app');
+    setTimeout(() => startCheckout(upgradeParam), 800);
+  }
 
   // 3. Check for Google OAuth session cookie (avoids tracking prevention)
   fetch('/api/login')

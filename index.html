@@ -667,6 +667,12 @@ function toggleTheme(){
 
 async function goCheckout(plan) {
   if (plan === 'free') { window.location.href = 'app.html'; return; }
+  // Must be logged in to purchase
+  const token = localStorage.getItem('ams_session_token');
+  if (!token) {
+    window.location.href = 'login.html?tab=signup&next=upgrade&plan=' + plan;
+    return;
+  }
   const btn = event.target;
   const orig = btn.textContent;
   btn.textContent = 'Redirecting...'; btn.disabled = true;
@@ -674,7 +680,7 @@ async function goCheckout(plan) {
     const resp = await fetch('/api/checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ plan })
+      body: JSON.stringify({ plan, email: localStorage.getItem('ams_user_email') || '' })
     });
     const data = await resp.json();
     if (data.url) { window.location.href = data.url; }
