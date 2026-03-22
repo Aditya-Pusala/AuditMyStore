@@ -1571,7 +1571,7 @@ document.addEventListener('DOMContentLoaded', () => {
   checkOAuthReturn();
   checkUnlockReturn();
 
-  // Handle Google OAuth return
+  // Handle Google OAuth return — must run BEFORE updateNavStatus
   const urlParams = new URLSearchParams(window.location.search);
   const sessionToken = urlParams.get('session_token');
   const userName = urlParams.get('name');
@@ -1583,27 +1583,32 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem('ams_session_token', sessionToken);
     if (userName) localStorage.setItem('ams_user_name', decodeURIComponent(userName));
     if (userPlan && userPlan !== 'free') {
-      localStorage.setItem('ams_unlocked', '1');
+      unlockApp();
     }
     window.history.replaceState({}, '', '/app');
+    const firstName = userName ? decodeURIComponent(userName).split(' ')[0] : 'there';
     if (isNew) {
-      setTimeout(() => addChatMessage('ai', `🎉 Welcome to AuditMyStore, **${decodeURIComponent(userName).split(' ')[0]}**! I'm Debbie, your AI Shopify consultant. Enter a store URL above to run your first free analysis!`), 500);
+      setTimeout(() => addChatMessage('ai', `🎉 Welcome to AuditMyStore, **${firstName}**! I'm Debbie, your AI Shopify consultant. Enter a store URL above to run your first free analysis!`), 500);
     } else {
-      setTimeout(() => addChatMessage('ai', `👋 Welcome back, **${decodeURIComponent(userName).split(' ')[0]}**! Ready to audit another store?`), 500);
+      setTimeout(() => addChatMessage('ai', `👋 Welcome back, **${firstName}**! Ready to audit another store?`), 500);
     }
   }
 
+  // Now update nav — name is already in localStorage
   updateNavStatus();
 
-  // Restore session on load
-  if (accountSessionToken) {
+  // Restore session on load (for returning visitors)
+  if (accountSessionToken && !sessionToken) {
     fetch('/api/login', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({action:'verify-token', token:accountSessionToken}) })
     .then(r => r.json()).then(d => {
       if (d.valid) {
-        if (d.name && !localStorage.getItem('ams_user_name')) localStorage.setItem('ams_user_name', d.name);
-        unlockApp(); updateNavStatus();
+        if (d.name) localStorage.setItem('ams_user_name', d.name);
+        if (d.plan && d.plan !== 'free') unlockApp();
+        updateNavStatus();
       } else {
-        accountSessionToken = ''; localStorage.removeItem('ams_session_token');
+        accountSessionToken = '';
+        localStorage.removeItem('ams_session_token');
+        localStorage.removeItem('ams_user_name');
         updateNavStatus();
       }
     }).catch(() => {});
