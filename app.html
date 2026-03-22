@@ -13,7 +13,7 @@
 :root{
   --bg:#0f172a;--bg2:#1e293b;--bg3:#253347;--border:#334155;
   --text:#f1f5f9;--text2:#cbd5e1;--text3:#94a3b8;--text4:#64748b;
-  --teal:#22d3ee;--teal-d:#0891b2;--teal-bg:rgba(34,211,238,0.1);
+  --teal:#22d3ee;--teal-d:#0891b2;--teal-bg:rgba(34,211,238,0.1);--orange:#f97316;--orange-d:#ea580c;--orange-l:rgba(249,115,22,.12);
   --green:#4ade80;--orange:#fb923c;--red:#f87171;--yellow:#fbbf24;
   --indigo:#818cf8;--pink:#f472b6;
   --radius:14px;--shadow:0 4px 24px rgba(0,0,0,0.3);
@@ -25,11 +25,11 @@
   --shadow:0 4px 24px rgba(0,0,0,0.08);
 }
 html,body{height:100%}
-body{font-family:'Quicksand',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;transition:background .3s,color .3s}
+body{font-family:'Quicksand',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;transition:background .3s,color .3s;font-size:15px}
 .glass{background:rgba(255,255,255,0.05);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.1)}
 .light-mode .glass{background:rgba(255,255,255,0.9);border:1px solid var(--border)}
-.btn-neon{background:linear-gradient(135deg,var(--teal-d),var(--teal));color:white;border:none;cursor:pointer;font-family:'Quicksand',sans-serif;font-weight:700;transition:all .2s}
-.btn-neon:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(34,211,238,0.35)}
+.btn-neon{background:linear-gradient(135deg,var(--orange-d),var(--orange));color:white;border:none;cursor:pointer;font-family:'Quicksand',sans-serif;font-weight:700;transition:all .2s}
+.btn-neon:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(249,115,22,.3)}
 .tag{display:inline-flex;align-items:center;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:700}
 .gradient-text{background:linear-gradient(135deg,var(--teal),#818cf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .card-hover{transition:transform .2s,box-shadow .2s}
@@ -47,11 +47,11 @@ body{font-family:'Quicksand',sans-serif;background:var(--bg);color:var(--text);o
 nav{position:sticky;top:0;z-index:50;background:rgba(15,23,42,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 20px;height:60px;display:flex;align-items:center;justify-content:space-between;gap:12px;transition:background .3s}
 .light-mode nav{background:rgba(248,250,252,.95)}
 .nav-left{display:flex;align-items:center;gap:10px}
-.nav-logo{width:34px;height:34px;background:var(--teal-d);border-radius:8px;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:11px;flex-shrink:0}
-.nav-title{font-size:16px;font-weight:700;color:var(--text)}
+.nav-logo{width:34px;height:34px;background:linear-gradient(135deg,var(--orange-d),var(--orange));border-radius:8px;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:11px;flex-shrink:0}
+.nav-title{font-size:18px;font-weight:700;color:var(--text)}
 .pro-badge{display:none;font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px;background:linear-gradient(135deg,#f59e0b,#d97706);color:black;margin-left:4px}
 .nav-right{display:flex;align-items:center;gap:8px}
-.nav-btn{background:transparent;border:1px solid var(--border);border-radius:9px;padding:7px 12px;color:var(--text3);cursor:pointer;font-family:'Quicksand',sans-serif;font-size:13px;font-weight:600;transition:all .15s;display:flex;align-items:center;gap:6px}
+.nav-btn{background:transparent;border:1px solid var(--border);border-radius:9px;padding:8px 14px;color:var(--text3);cursor:pointer;font-family:'Quicksand',sans-serif;font-size:14px;font-weight:600;transition:all .15s;display:flex;align-items:center;gap:6px}
 .nav-btn:hover{border-color:var(--teal);color:var(--teal)}
 #audit-counter{display:none}
 #my-account-btn{display:none}
@@ -65,17 +65,17 @@ nav{position:sticky;top:0;z-index:50;background:rgba(15,23,42,.95);backdrop-filt
 /* HERO CARD */
 .hero-card{glass;border-radius:24px;padding:32px;margin-bottom:20px;position:relative;overflow:hidden}
 .hero-card::before{content:'';position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(34,211,238,.15),transparent 70%);pointer-events:none}
-.hero-title{font-size:clamp(22px,3vw,32px);font-weight:700;line-height:1.2;margin-bottom:8px}
-.hero-sub{font-size:15px;color:var(--text3);margin-bottom:20px;line-height:1.6;font-weight:500}
+.hero-title{font-size:clamp(26px,3.5vw,38px);font-weight:700;line-height:1.2;margin-bottom:8px}
+.hero-sub{font-size:16px;color:var(--text3);margin-bottom:20px;line-height:1.6;font-weight:500}
 
 /* INPUT */
 .input-wrap{background:var(--bg2);border:1.5px solid var(--border);border-radius:12px;display:flex;align-items:center;padding:4px 4px 4px 14px;gap:8px;transition:border-color .15s}
-.input-wrap:focus-within{border-color:var(--teal)}
-.store-input{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-family:'Quicksand',sans-serif;font-size:14px;font-weight:500;padding:10px 0}
+.input-wrap:focus-within{border-color:var(--orange)}
+.store-input{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-family:'Quicksand',sans-serif;font-size:15px;font-weight:500;padding:10px 0}
 .store-input::placeholder{color:var(--text4)}
-.btn-connect{background:var(--teal-d);color:white;border:none;border-radius:9px;padding:10px 16px;font-family:'Quicksand',sans-serif;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .15s;white-space:nowrap}
-.btn-connect:hover{background:var(--teal);transform:translateY(-1px)}
-.btn-analyze{background:linear-gradient(135deg,var(--teal-d),var(--teal));color:white;border:none;border-radius:9px;padding:10px 16px;font-family:'Quicksand',sans-serif;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .15s;white-space:nowrap;position:relative;overflow:hidden}
+.btn-connect{background:linear-gradient(135deg,var(--orange-d),var(--orange));color:white;border:none;border-radius:9px;padding:10px 16px;font-family:'Quicksand',sans-serif;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .15s;white-space:nowrap}
+.btn-connect:hover{background:var(--orange);transform:translateY(-1px)}
+.btn-analyze{background:linear-gradient(135deg,var(--orange-d),var(--orange));color:white;border:none;border-radius:9px;padding:10px 16px;font-family:'Quicksand',sans-serif;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .15s;white-space:nowrap;position:relative;overflow:hidden}
 .btn-analyze:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(34,211,238,.3)}
 
 /* CONNECTED BANNER */
@@ -89,12 +89,12 @@ nav{position:sticky;top:0;z-index:50;background:rgba(15,23,42,.95);backdrop-filt
 .loading-panel{display:none;glass;border-radius:20px;padding:28px;text-align:center;margin-bottom:20px}
 .loading-panel.show{display:block}
 .loading-spinner{width:44px;height:44px;border:3px solid var(--border);border-top-color:var(--teal);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px}
-.loading-step{font-size:14px;color:var(--text3);font-weight:500;margin-bottom:16px}
+.loading-step{font-size:15px;color:var(--text3);font-weight:500;margin-bottom:16px}
 .loading-bar{height:6px;background:var(--bg3);border-radius:3px;overflow:hidden;margin-bottom:20px}
 .loading-fill{height:100%;background:linear-gradient(90deg,var(--teal-d),var(--teal));border-radius:3px;transition:width .5s ease;width:0%}
 .checklist{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
 @media(min-width:768px){.checklist{grid-template-columns:repeat(4,1fr)}}
-.check-item{glass;border-radius:10px;padding:10px 12px;font-size:12px;font-weight:600;color:var(--text3);display:flex;align-items:center;gap:8px}
+.check-item{glass;border-radius:10px;padding:10px 12px;font-size:13px;font-weight:600;color:var(--text3);display:flex;align-items:center;gap:8px}
 
 /* DASHBOARD */
 .dashboard{display:none}
@@ -104,26 +104,26 @@ nav{position:sticky;top:0;z-index:50;background:rgba(15,23,42,.95);backdrop-filt
 .dash-grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:16px}
 @media(max-width:767px){.dash-grid-2{grid-template-columns:1fr}}
 .metric-card{glass;border-radius:var(--radius);padding:20px;card-hover}
-.metric-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:12px}
+.metric-label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:12px}
 .metric-value{font-size:32px;font-weight:700;line-height:1;margin-bottom:8px}
-.metric-change{font-size:12px;color:var(--green);font-weight:600}
+.metric-change{font-size:13px;color:var(--green);font-weight:600}
 .score-card{glass;border-radius:var(--radius);padding:20px;card-hover;border:1px solid rgba(34,211,238,.2)!important}
-.section-title{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:12px}
+.section-title{font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:12px}
 .section-card{glass;border-radius:var(--radius);padding:20px;margin-bottom:16px}
 .metrics-row{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px}
 @media(min-width:640px){.metrics-row{grid-template-columns:repeat(3,1fr)}}
 @media(min-width:900px){.metrics-row{grid-template-columns:repeat(6,1fr)}}
 .mini-metric{glass;border-radius:10px;padding:12px;text-align:center}
-.mini-metric-val{font-size:16px;font-weight:700;margin-bottom:4px}
-.mini-metric-lbl{font-size:10px;color:var(--text3);font-weight:600}
-.mini-metric-chg{font-size:10px;font-weight:600;margin-top:2px}
+.mini-metric-val{font-size:17px;font-weight:700;margin-bottom:4px}
+.mini-metric-lbl{font-size:11px;color:var(--text3);font-weight:600}
+.mini-metric-chg{font-size:11px;font-weight:600;margin-top:2px}
 .issue-item{glass;border-radius:10px;padding:12px 14px;display:flex;align-items:flex-start;gap:10px;margin-bottom:8px}
 .win-item{glass;border-radius:10px;padding:12px 14px;display:flex;align-items:flex-start;gap:10px;margin-bottom:8px}
 .roadmap-phase{margin-bottom:16px}
-.roadmap-phase-title{font-size:13px;font-weight:700;margin-bottom:8px}
+.roadmap-phase-title{font-size:14px;font-weight:700;margin-bottom:8px}
 .roadmap-tasks{display:grid;grid-template-columns:1fr 1fr;gap:6px}
 @media(max-width:480px){.roadmap-tasks{grid-template-columns:1fr}}
-.roadmap-task{glass;border-radius:8px;padding:8px 12px;font-size:13px;font-weight:500;color:var(--text2);display:flex;align-items:center;gap-8px}
+.roadmap-task{glass;border-radius:8px;padding:8px 12px;font-size:14px;font-weight:500;color:var(--text2);display:flex;align-items:center;gap-8px}
 
 /* DISCLAIMER */
 .disclaimer-banner{display:none;background:rgba(251,146,60,.08);border:1px solid rgba(251,146,60,.3);border-radius:12px;padding:14px 16px;margin-bottom:16px;align-items:flex-start;gap:12px}
@@ -131,19 +131,19 @@ nav{position:sticky;top:0;z-index:50;background:rgba(15,23,42,.95);backdrop-filt
 
 /* CHAT */
 .chat-header{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-.chat-title{font-size:14px;font-weight:700;color:var(--text)}
-.chat-online{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--green);font-weight:600}
+.chat-title{font-size:15px;font-weight:700;color:var(--text)}
+.chat-online{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--green);font-weight:600}
 .chat-dot{width:7px;height:7px;background:var(--green);border-radius:50%;animation:shimmer 2s infinite}
 .chat-messages{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
-.chat-msg{max-width:85%;padding:10px 13px;border-radius:12px;font-size:13px;line-height:1.5;font-weight:500}
+.chat-msg{max-width:85%;padding:10px 13px;border-radius:12px;font-size:14px;line-height:1.5;font-weight:500}
 .chat-msg.ai{background:var(--bg3);color:var(--text2);align-self:flex-start;border-bottom-left-radius:4px}
 .chat-msg.user{background:linear-gradient(135deg,var(--teal-d),var(--teal));color:white;align-self:flex-end;border-bottom-right-radius:4px}
 .chat-input-area{padding:12px;border-top:1px solid var(--border);display:flex;gap:8px}
-.chat-input{flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:9px 12px;color:var(--text);font-family:'Quicksand',sans-serif;font-size:13px;font-weight:500;outline:none;transition:border-color .15s}
+.chat-input{flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:9px 12px;color:var(--text);font-family:'Quicksand',sans-serif;font-size:14px;font-weight:500;outline:none;transition:border-color .15s}
 .chat-input:focus{border-color:var(--teal)}
 .chat-input::placeholder{color:var(--text4)}
-.chat-send{background:var(--teal-d);color:white;border:none;border-radius:9px;padding:9px 14px;cursor:pointer;transition:all .15s}
-.chat-send:hover{background:var(--teal)}
+.chat-send{background:var(--orange-d);color:white;border:none;border-radius:9px;padding:9px 14px;cursor:pointer;transition:all .15s}
+.chat-send:hover{background:var(--orange)}
 
 /* PAYWALL */
 .paywall-overlay{display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:20px}
@@ -166,7 +166,7 @@ nav{position:sticky;top:0;z-index:50;background:rgba(15,23,42,.95);backdrop-filt
 .account-modal.show{display:flex}
 
 /* NOTIFY */
-.notify-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px 20px;font-size:13px;font-weight:600;color:var(--text);box-shadow:var(--shadow);z-index:200;transition:transform .3s,opacity .3s;opacity:0;pointer-events:none;white-space:nowrap}
+.notify-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px 20px;font-size:14px;font-weight:600;color:var(--text);box-shadow:var(--shadow);z-index:200;transition:transform .3s,opacity .3s;opacity:0;pointer-events:none;white-space:nowrap}
 .notify-toast.show{transform:translateX(-50%) translateY(0);opacity:1}
 
 /* CHART */
@@ -237,10 +237,10 @@ canvas{max-width:100%}
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
         </div>
         <div style="flex:1;min-width:0">
-          <div style="font-size:13px;font-weight:700;color:var(--green)">Store Connected</div>
-          <div style="font-size:12px;color:var(--text3);font-weight:500" id="connected-shop-name">—</div>
+          <div style="font-size:14px;font-weight:700;color:var(--green)">Store Connected</div>
+          <div style="font-size:14px;color:var(--text3);font-weight:500" id="connected-shop-name">—</div>
         </div>
-        <button onclick="analyzeConnectedStore()" class="btn-neon" style="border-radius:10px;padding:9px 16px;font-size:13px;flex-shrink:0">
+        <button onclick="analyzeConnectedStore()" class="btn-neon" style="border-radius:10px;padding:9px 16px;font-size:14px;flex-shrink:0">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
           Run Full Analysis
         </button>
@@ -260,7 +260,7 @@ canvas{max-width:100%}
             <span id="analyze-text">Quick Analyze</span>
           </button>
         </div>
-        <div style="display:flex;flex-wrap:wrap;gap:16px;font-size:11px;color:var(--text4);font-weight:600">
+        <div style="display:flex;flex-wrap:wrap;gap:16px;font-size:14px;color:var(--text4);font-weight:600">
           <span style="display:flex;align-items:center;gap:5px">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
             Quick Analyze — public data &amp; estimated metrics only
@@ -278,25 +278,25 @@ canvas{max-width:100%}
           <div style="width:32px;height:32px;border-radius:8px;background:rgba(34,211,238,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
           </div>
-          <div><div style="font-size:12px;font-weight:700;color:var(--teal)">Store Audit</div><div style="font-size:11px;color:var(--text3);font-weight:500">Full SEO &amp; UX scan</div></div>
+          <div><div style="font-size:14px;font-weight:700;color:var(--teal)">Store Audit</div><div style="font-size:14px;color:var(--text3);font-weight:500">Full SEO &amp; UX scan</div></div>
         </div>
         <div class="glass" style="border-radius:12px;padding:12px;display:flex;align-items:center;gap:10px">
           <div style="width:32px;height:32px;border-radius:8px;background:rgba(74,222,128,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
           </div>
-          <div><div style="font-size:12px;font-weight:700;color:var(--green)">Revenue Intel</div><div style="font-size:11px;color:var(--text3);font-weight:500">Real orders &amp; AOV</div></div>
+          <div><div style="font-size:14px;font-weight:700;color:var(--green)">Revenue Intel</div><div style="font-size:14px;color:var(--text3);font-weight:500">Real orders &amp; AOV</div></div>
         </div>
         <div class="glass" style="border-radius:12px;padding:12px;display:flex;align-items:center;gap:10px">
           <div style="width:32px;height:32px;border-radius:8px;background:rgba(251,146,60,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
           </div>
-          <div><div style="font-size:12px;font-weight:700;color:var(--orange)">Conversion Fix</div><div style="font-size:11px;color:var(--text3);font-weight:500">CRO quick wins</div></div>
+          <div><div style="font-size:14px;font-weight:700;color:var(--orange)">Conversion Fix</div><div style="font-size:14px;color:var(--text3);font-weight:500">CRO quick wins</div></div>
         </div>
         <div class="glass" style="border-radius:12px;padding:12px;display:flex;align-items:center;gap:10px">
           <div style="width:32px;height:32px;border-radius:8px;background:rgba(129,140,248,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--indigo)" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
           </div>
-          <div><div style="font-size:12px;font-weight:700;color:var(--indigo)">90-Day Plan</div><div style="font-size:11px;color:var(--text3);font-weight:500">Blueprint to 2× sales</div></div>
+          <div><div style="font-size:14px;font-weight:700;color:var(--indigo)">90-Day Plan</div><div style="font-size:14px;color:var(--text3);font-weight:500">Blueprint to 2× sales</div></div>
         </div>
       </div>
     </div>
@@ -304,9 +304,9 @@ canvas{max-width:100%}
     <!-- HOW IT WORKS -->
     <div id="how-it-works" style="margin-bottom:16px">
       <div style="text-align:center;padding:12px 0 8px">
-        <span style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--teal)">How It Works</span>
+        <span style="font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--teal)">How It Works</span>
         <h2 style="font-size:22px;font-weight:700;margin-top:6px;margin-bottom:6px" class="gradient-text">From URL to Revenue Blueprint in 60s</h2>
-        <p style="font-size:13px;color:var(--text3);font-weight:500;max-width:480px;margin:0 auto">AuditMyStore analyzes your Shopify store using real data and AI to give you a personalized action plan.</p>
+        <p style="font-size:14px;color:var(--text3);font-weight:500;max-width:480px;margin:0 auto">AuditMyStore analyzes your Shopify store using real data and AI to give you a personalized action plan.</p>
       </div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px">
         <div class="glass" style="border-radius:16px;padding:20px;text-align:center;position:relative;overflow:hidden">
@@ -315,7 +315,7 @@ canvas{max-width:100%}
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
           </div>
           <h3 style="font-size:14px;font-weight:700;color:var(--teal);margin-bottom:6px">Enter Your Store URL</h3>
-          <p style="font-size:12px;color:var(--text3);line-height:1.5;font-weight:500">Paste any Shopify domain. Works instantly on any public store.</p>
+          <p style="font-size:14px;color:var(--text3);line-height:1.5;font-weight:500">Paste any Shopify domain. Works instantly on any public store.</p>
         </div>
         <div class="glass" style="border-radius:16px;padding:20px;text-align:center;position:relative;overflow:hidden">
           <div style="position:absolute;top:8px;right:12px;font-size:36px;font-weight:700;color:rgba(255,255,255,.04);line-height:1">02</div>
@@ -323,7 +323,7 @@ canvas{max-width:100%}
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           </div>
           <h3 style="font-size:14px;font-weight:700;color:var(--orange);margin-bottom:6px">Connect for Full Access</h3>
-          <p style="font-size:12px;color:var(--text3);line-height:1.5;font-weight:500">Connect via OAuth to unlock real revenue, orders &amp; customer data.</p>
+          <p style="font-size:14px;color:var(--text3);line-height:1.5;font-weight:500">Connect via OAuth to unlock real revenue, orders &amp; customer data.</p>
         </div>
         <div class="glass" style="border-radius:16px;padding:20px;text-align:center;position:relative;overflow:hidden">
           <div style="position:absolute;top:8px;right:12px;font-size:36px;font-weight:700;color:rgba(255,255,255,.04);line-height:1">03</div>
@@ -331,17 +331,17 @@ canvas{max-width:100%}
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
           </div>
           <h3 style="font-size:14px;font-weight:700;color:var(--green);margin-bottom:6px">Get Your Blueprint</h3>
-          <p style="font-size:12px;color:var(--text3);line-height:1.5;font-weight:500">Personalized score, revenue gaps, quick wins &amp; 90-day plan.</p>
+          <p style="font-size:14px;color:var(--text3);line-height:1.5;font-weight:500">Personalized score, revenue gaps, quick wins &amp; 90-day plan.</p>
         </div>
       </div>
       <!-- What you get -->
       <div class="glass" style="border-radius:14px;padding:16px;margin-top:12px">
-        <div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:12px">What You Get</div>
+        <div style="font-size:14px;font-weight:700;color:var(--text2);margin-bottom:12px">What You Get</div>
         <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px">
-          <div style="display:flex;align-items:flex-start;gap:8px"><div style="width:8px;height:8px;border-radius:50%;background:var(--teal);margin-top:4px;flex-shrink:0"></div><div><div style="font-size:12px;font-weight:700;color:var(--text2)">Health Score</div><div style="font-size:11px;color:var(--text3);font-weight:500">0–100 rating across 6 categories</div></div></div>
-          <div style="display:flex;align-items:flex-start;gap:8px"><div style="width:8px;height:8px;border-radius:50%;background:var(--green);margin-top:4px;flex-shrink:0"></div><div><div style="font-size:12px;font-weight:700;color:var(--text2)">Revenue Gaps</div><div style="font-size:11px;color:var(--text3);font-weight:500">Exact $ you're leaving on the table</div></div></div>
-          <div style="display:flex;align-items:flex-start;gap:8px"><div style="width:8px;height:8px;border-radius:50%;background:var(--orange);margin-top:4px;flex-shrink:0"></div><div><div style="font-size:12px;font-weight:700;color:var(--text2)">Quick Wins</div><div style="font-size:11px;color:var(--text3);font-weight:500">Actions you can take today under 2h</div></div></div>
-          <div style="display:flex;align-items:flex-start;gap:8px"><div style="width:8px;height:8px;border-radius:50%;background:var(--indigo);margin-top:4px;flex-shrink:0"></div><div><div style="font-size:12px;font-weight:700;color:var(--text2)">AI Chat</div><div style="font-size:11px;color:var(--text3);font-weight:500">Ask Debbie anything about your store</div></div></div>
+          <div style="display:flex;align-items:flex-start;gap:8px"><div style="width:8px;height:8px;border-radius:50%;background:var(--teal);margin-top:4px;flex-shrink:0"></div><div><div style="font-size:14px;font-weight:700;color:var(--text2)">Health Score</div><div style="font-size:14px;color:var(--text3);font-weight:500">0–100 rating across 6 categories</div></div></div>
+          <div style="display:flex;align-items:flex-start;gap:8px"><div style="width:8px;height:8px;border-radius:50%;background:var(--green);margin-top:4px;flex-shrink:0"></div><div><div style="font-size:14px;font-weight:700;color:var(--text2)">Revenue Gaps</div><div style="font-size:14px;color:var(--text3);font-weight:500">Exact $ you're leaving on the table</div></div></div>
+          <div style="display:flex;align-items:flex-start;gap:8px"><div style="width:8px;height:8px;border-radius:50%;background:var(--orange);margin-top:4px;flex-shrink:0"></div><div><div style="font-size:14px;font-weight:700;color:var(--text2)">Quick Wins</div><div style="font-size:14px;color:var(--text3);font-weight:500">Actions you can take today under 2h</div></div></div>
+          <div style="display:flex;align-items:flex-start;gap:8px"><div style="width:8px;height:8px;border-radius:50%;background:var(--indigo);margin-top:4px;flex-shrink:0"></div><div><div style="font-size:14px;font-weight:700;color:var(--text2)">AI Chat</div><div style="font-size:14px;color:var(--text3);font-weight:500">Ask Debbie anything about your store</div></div></div>
         </div>
       </div>
     </div>
@@ -363,10 +363,10 @@ canvas{max-width:100%}
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
         </div>
         <div style="flex:1">
-          <div style="font-size:13px;font-weight:700;color:var(--orange);margin-bottom:3px">Estimates Based on Public Data Only</div>
-          <div style="font-size:12px;color:var(--text3);font-weight:500;line-height:1.5">Revenue, AOV, and customer metrics are AI estimates based on industry benchmarks — not your real data. <span style="color:var(--orange);font-weight:700">Connect your store</span> to unlock real numbers.</div>
+          <div style="font-size:14px;font-weight:700;color:var(--orange);margin-bottom:3px">Estimates Based on Public Data Only</div>
+          <div style="font-size:14px;color:var(--text3);font-weight:500;line-height:1.5">Revenue, AOV, and customer metrics are AI estimates based on industry benchmarks — not your real data. <span style="color:var(--orange);font-weight:700">Connect your store</span> to unlock real numbers.</div>
         </div>
-        <button onclick="document.getElementById('store-url').focus();document.getElementById('store-url').scrollIntoView({behavior:'smooth'})" class="btn-neon" style="border-radius:9px;padding:8px 14px;font-size:12px;flex-shrink:0">Connect</button>
+        <button onclick="document.getElementById('store-url').focus();document.getElementById('store-url').scrollIntoView({behavior:'smooth'})" class="btn-neon" style="border-radius:9px;padding:8px 14px;font-size:14px;flex-shrink:0">Connect</button>
       </div>
 
       <!-- Score + Revenue + Conversion row -->
@@ -374,7 +374,7 @@ canvas{max-width:100%}
         <!-- Score -->
         <div class="glass" style="border-radius:var(--radius);padding:20px;border:1px solid rgba(34,211,238,.2)!important">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-            <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text3)">Overall Score</span>
+            <span style="font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text3)">Overall Score</span>
             <div class="tag" id="score-badge" style="background:rgba(74,222,128,.15);color:var(--green);border:1px solid rgba(74,222,128,.3)">Good</div>
           </div>
           <div style="display:flex;align-items:center;justify-content:center;padding:8px 0">
@@ -386,7 +386,7 @@ canvas{max-width:100%}
               <text x="55" y="67" text-anchor="middle" font-family="Quicksand,sans-serif" font-size="10" fill="#94a3b8" font-weight="600">/100</text>
             </svg>
           </div>
-          <p style="text-align:center;font-size:11px;font-weight:700;color:#0891b2;margin-top:4px" id="score-label">Store Health Assessment</p>
+          <p style="text-align:center;font-size:14px;font-weight:700;color:#0891b2;margin-top:4px" id="score-label">Store Health Assessment</p>
           <p id="score-estimate-note" style="display:none;text-align:center;font-size:10px;color:var(--orange);margin-top:4px;font-weight:600">⚠ Based on public data estimates</p>
         </div>
         <!-- Revenue -->
@@ -395,12 +395,12 @@ canvas{max-width:100%}
             <div style="width:36px;height:36px;border-radius:9px;background:rgba(251,146,60,.15);display:flex;align-items:center;justify-content:center">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
             </div>
-            <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text3)">Est. Monthly Revenue</span>
+            <span style="font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text3)">Est. Monthly Revenue</span>
           </div>
           <div style="font-size:28px;font-weight:700;color:var(--text);margin-bottom:6px" id="metric-revenue">$0</div>
           <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>
-            <span style="font-size:12px;color:var(--green);font-weight:600" id="metric-revenue-change">+0% projected</span>
+            <span style="font-size:14px;color:var(--green);font-weight:600" id="metric-revenue-change">+0% projected</span>
           </div>
           <div class="progress-bar"><div class="progress-fill" id="revenue-bar" style="background:linear-gradient(90deg,var(--orange),#fbbf24);width:0%"></div></div>
         </div>
@@ -410,12 +410,12 @@ canvas{max-width:100%}
             <div style="width:36px;height:36px;border-radius:9px;background:rgba(34,211,238,.15);display:flex;align-items:center;justify-content:center">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
             </div>
-            <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text3)">Conv. Rate</span>
+            <span style="font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text3)">Conv. Rate</span>
           </div>
           <div style="font-size:28px;font-weight:700;color:var(--text);margin-bottom:6px" id="metric-conversion">0%</div>
           <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>
-            <span style="font-size:12px;color:var(--teal);font-weight:600" id="metric-conv-benchmark">Industry avg: 2.1%</span>
+            <span style="font-size:14px;color:var(--teal);font-weight:600" id="metric-conv-benchmark">Industry avg: 2.1%</span>
           </div>
           <div class="progress-bar"><div class="progress-fill" id="conv-bar" style="background:linear-gradient(90deg,var(--teal-d),var(--teal));width:0%"></div></div>
         </div>
@@ -427,11 +427,11 @@ canvas{max-width:100%}
       <!-- Charts row -->
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
         <div class="glass" style="border-radius:var(--radius);padding:20px">
-          <div style="font-size:12px;font-weight:700;color:var(--text3);margin-bottom:14px;text-transform:uppercase;letter-spacing:.5px">Category Scores</div>
+          <div style="font-size:14px;font-weight:700;color:var(--text3);margin-bottom:14px;text-transform:uppercase;letter-spacing:.5px">Category Scores</div>
           <canvas id="radar-chart" height="200"></canvas>
         </div>
         <div class="glass" style="border-radius:var(--radius);padding:20px">
-          <div style="font-size:12px;font-weight:700;color:var(--text3);margin-bottom:14px;text-transform:uppercase;letter-spacing:.5px">Revenue Opportunity ($)</div>
+          <div style="font-size:14px;font-weight:700;color:var(--text3);margin-bottom:14px;text-transform:uppercase;letter-spacing:.5px">Revenue Opportunity ($)</div>
           <canvas id="bar-chart" height="200"></canvas>
         </div>
       </div>
@@ -440,20 +440,20 @@ canvas{max-width:100%}
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
         <div class="glass" style="border-radius:var(--radius);padding:20px">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-            <span style="font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px">Critical Issues</span>
+            <span style="font-size:14px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px">Critical Issues</span>
             <span class="tag" id="issues-count" style="background:rgba(248,113,113,.15);color:var(--red);border:1px solid rgba(248,113,113,.3)">0</span>
           </div>
           <div id="issues-list"></div>
         </div>
         <div class="glass" style="border-radius:var(--radius);padding:20px">
-          <div style="font-size:12px;font-weight:700;color:var(--text3);margin-bottom:14px;text-transform:uppercase;letter-spacing:.5px">⚡ Quick Wins</div>
+          <div style="font-size:14px;font-weight:700;color:var(--text3);margin-bottom:14px;text-transform:uppercase;letter-spacing:.5px">⚡ Quick Wins</div>
           <div id="quick-wins-list"></div>
         </div>
       </div>
 
       <!-- 90-Day Roadmap -->
       <div class="glass" style="border-radius:var(--radius);padding:20px;margin-bottom:14px" id="roadmap">
-        <div style="font-size:12px;font-weight:700;color:var(--text3);margin-bottom:16px;text-transform:uppercase;letter-spacing:.5px">🗺 90-Day Growth Blueprint</div>
+        <div style="font-size:14px;font-weight:700;color:var(--text3);margin-bottom:16px;text-transform:uppercase;letter-spacing:.5px">🗺 90-Day Growth Blueprint</div>
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px" id="roadmap-phases"></div>
       </div>
 
@@ -466,11 +466,11 @@ canvas{max-width:100%}
     <div class="chat-header">
       <div>
         <div class="chat-title">Debbie — AI Consultant</div>
-        <div style="font-size:11px;color:var(--text3);font-weight:500;margin-top:1px">AuditMyStore</div>
+        <div style="font-size:14px;color:var(--text3);font-weight:500;margin-top:1px">AuditMyStore</div>
       </div>
       <div style="display:flex;align-items:center;gap:8px">
         <div class="chat-online"><div class="chat-dot"></div>Online</div>
-        <button onclick="clearChat()" style="background:none;border:none;color:var(--text4);cursor:pointer;font-size:11px;font-weight:600">Clear</button>
+        <button onclick="clearChat()" style="background:none;border:none;color:var(--text4);cursor:pointer;font-size:14px;font-weight:600">Clear</button>
       </div>
     </div>
     <div class="chat-messages" id="chat-messages"></div>
@@ -490,32 +490,32 @@ canvas{max-width:100%}
     <div style="text-align:center;margin-bottom:20px">
       <div style="width:52px;height:52px;background:var(--teal-d);border-radius:13px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-weight:700;color:white;font-size:14px">AMS</div>
       <h2 style="font-size:20px;font-weight:700;margin-bottom:6px" class="gradient-text">You've Used Your Free Audits</h2>
-      <p style="font-size:13px;color:var(--text3);font-weight:500">Upgrade to Pro for unlimited audits and real store data.</p>
+      <p style="font-size:14px;color:var(--text3);font-weight:500">Upgrade to Pro for unlimited audits and real store data.</p>
     </div>
-    <div style="background:rgba(251,146,60,.1);border:1px solid rgba(251,146,60,.3);border-radius:10px;padding:10px 14px;margin-bottom:16px;text-align:center;font-size:12px;font-weight:700;color:var(--orange)">🔒 Free limit reached — 2/2 audits used</div>
+    <div style="background:rgba(251,146,60,.1);border:1px solid rgba(251,146,60,.3);border-radius:10px;padding:10px 14px;margin-bottom:16px;text-align:center;font-size:14px;font-weight:700;color:var(--orange)">🔒 Free limit reached — 2/2 audits used</div>
     <!-- Monthly -->
     <div class="paywall-plan" style="margin-bottom:10px">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-        <div><div style="font-size:14px;font-weight:700;color:var(--text)">Pro Monthly</div><div style="font-size:12px;color:var(--text3);font-weight:500">Unlimited audits • PDF exports</div></div>
-        <div style="text-align:right"><div style="font-size:22px;font-weight:700;color:var(--teal)">$5</div><div style="font-size:11px;color:var(--text3);font-weight:500">/month</div></div>
+        <div><div style="font-size:14px;font-weight:700;color:var(--text)">Pro Monthly</div><div style="font-size:14px;color:var(--text3);font-weight:500">Unlimited audits • PDF exports</div></div>
+        <div style="text-align:right"><div style="font-size:22px;font-weight:700;color:var(--teal)">$5</div><div style="font-size:14px;color:var(--text3);font-weight:500">/month</div></div>
       </div>
-      <button id="checkout-monthly" onclick="startCheckout('monthly')" class="btn-neon" style="width:100%;border-radius:10px;padding:11px;font-size:13px">Get Monthly — $5/mo</button>
+      <button id="checkout-monthly" onclick="startCheckout('monthly')" class="btn-neon" style="width:100%;border-radius:10px;padding:11px;font-size:14px">Get Monthly — $5/mo</button>
     </div>
     <!-- Lifetime -->
     <div class="paywall-plan featured">
       <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#f59e0b;color:black;padding:3px 14px;border-radius:100px;font-size:10px;font-weight:700;white-space:nowrap">BEST VALUE</div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;margin-top:4px">
-        <div><div style="font-size:14px;font-weight:700;color:var(--text)">Pro Lifetime</div><div style="font-size:12px;color:var(--text3);font-weight:500">Pay once, use forever</div></div>
-        <div style="text-align:right"><div style="font-size:22px;font-weight:700;color:#f59e0b">$97</div><div style="font-size:11px;color:var(--text3);font-weight:500">one-time</div></div>
+        <div><div style="font-size:14px;font-weight:700;color:var(--text)">Pro Lifetime</div><div style="font-size:14px;color:var(--text3);font-weight:500">Pay once, use forever</div></div>
+        <div style="text-align:right"><div style="font-size:22px;font-weight:700;color:#f59e0b">$97</div><div style="font-size:14px;color:var(--text3);font-weight:500">one-time</div></div>
       </div>
-      <button id="checkout-lifetime" onclick="startCheckout('lifetime')" style="width:100%;border-radius:10px;padding:11px;font-size:13px;font-weight:700;background:linear-gradient(135deg,#f59e0b,#d97706);color:black;border:none;cursor:pointer;font-family:'Quicksand',sans-serif">Get Lifetime — $97</button>
+      <button id="checkout-lifetime" onclick="startCheckout('lifetime')" style="width:100%;border-radius:10px;padding:11px;font-size:14px;font-weight:700;background:linear-gradient(135deg,#f59e0b,#d97706);color:black;border:none;cursor:pointer;font-family:'Quicksand',sans-serif">Get Lifetime — $97</button>
     </div>
     <div style="display:flex;flex-direction:column;gap:6px;margin-top:14px">
-      <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text3);font-weight:500"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Unlimited store audits</div>
-      <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text3);font-weight:500"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>PDF report export</div>
-      <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text3);font-weight:500"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Real revenue & order analytics</div>
+      <div style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text3);font-weight:500"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Unlimited store audits</div>
+      <div style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text3);font-weight:500"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>PDF report export</div>
+      <div style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text3);font-weight:500"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Real revenue & order analytics</div>
     </div>
-    <p style="text-align:center;font-size:11px;color:var(--text4);margin-top:14px;font-weight:500">Secured by Stripe • 7-day money back guarantee</p>
+    <p style="text-align:center;font-size:14px;color:var(--text4);margin-top:14px;font-weight:500">Secured by Stripe • 7-day money back guarantee</p>
   </div>
 </div>
 
@@ -527,13 +527,13 @@ canvas{max-width:100%}
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
       </div>
       <h2 style="font-size:20px;font-weight:700;margin-bottom:6px" class="gradient-text">🎉 Payment Successful!</h2>
-      <p style="font-size:13px;color:var(--text3);font-weight:500">Create your account to access Pro from any device</p>
+      <p style="font-size:14px;color:var(--text3);font-weight:500">Create your account to access Pro from any device</p>
     </div>
     <input id="set-email" type="email" class="modal-input" placeholder="Email used for payment"/>
     <input id="set-password" type="password" class="modal-input" placeholder="Choose a password (min 6 chars)"/>
     <input id="set-password-confirm" type="password" class="modal-input" placeholder="Confirm password"/>
     <button id="register-btn" onclick="registerAccount()" class="btn-neon" style="width:100%;border-radius:10px;padding:13px;font-size:14px">Create Account & Unlock Pro</button>
-    <p style="text-align:center;font-size:11px;color:var(--text4);margin-top:12px;font-weight:500">Use this email + password to log in on any device</p>
+    <p style="text-align:center;font-size:14px;color:var(--text4);margin-top:12px;font-weight:500">Use this email + password to log in on any device</p>
   </div>
 </div>
 
@@ -991,8 +991,8 @@ function renderDashboard(d) {
     <div class="issue-item">
       <span class="tag" style="background:${impactColors[i.impact]||'var(--red)'}22;color:${impactColors[i.impact]||'var(--red)'};border:1px solid ${impactColors[i.impact]||'var(--red)'}44;flex-shrink:0;font-size:10px">${i.impact}</span>
       <div style="flex:1;min-width:0">
-        <div style="font-size:13px;font-weight:600;color:var(--text)">${i.title}</div>
-        <div style="font-size:11px;color:var(--red);font-weight:600;margin-top:2px">${i.revenue}</div>
+        <div style="font-size:14px;font-weight:600;color:var(--text)">${i.title}</div>
+        <div style="font-size:14px;color:var(--red);font-weight:600;margin-top:2px">${i.revenue}</div>
       </div>
     </div>`).join('');
 
@@ -1003,8 +1003,8 @@ function renderDashboard(d) {
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
       </div>
       <div style="flex:1;min-width:0">
-        <div style="font-size:13px;font-weight:600;color:var(--text)">${w.title}</div>
-        <div style="font-size:11px;color:var(--text3);font-weight:500;margin-top:2px">${w.effort} · <span style="color:var(--green)">${w.impact}</span></div>
+        <div style="font-size:14px;font-weight:600;color:var(--text)">${w.title}</div>
+        <div style="font-size:14px;color:var(--text3);font-weight:500;margin-top:2px">${w.effort} · <span style="color:var(--green)">${w.impact}</span></div>
       </div>
     </div>`).join('');
 
@@ -1013,10 +1013,10 @@ function renderDashboard(d) {
   const phases = ['days1_30','days31_60','days61_90'].map(k => d.roadmap?.[k]).filter(Boolean);
   document.getElementById('roadmap-phases').innerHTML = phases.map(ph => `
     <div>
-      <div style="font-size:12px;font-weight:700;color:${phaseColors[ph.color]||'var(--teal)'};margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)">${ph.title}</div>
+      <div style="font-size:14px;font-weight:700;color:${phaseColors[ph.color]||'var(--teal)'};margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)">${ph.title}</div>
       <div style="display:flex;flex-direction:column;gap:6px">
         ${(ph.tasks||[]).map(t => `
-          <div style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:500;color:var(--text2)">
+          <div style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:500;color:var(--text2)">
             <div style="width:6px;height:6px;border-radius:50%;background:${phaseColors[ph.color]||'var(--teal)'};flex-shrink:0"></div>
             ${t}
           </div>`).join('')}
