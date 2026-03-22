@@ -178,8 +178,73 @@ canvas{max-width:100%}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
 
-/* LIGHT MODE */
-.light-mode .glass{background:white;border-color:var(--border)}
+/* ── MOBILE RESPONSIVE ───────────────────────────────────────────── */
+@media(max-width:767px){
+  /* Nav */
+  nav{padding:0 12px;height:54px}
+  .nav-title{font-size:15px}
+  .nav-btn{padding:6px 10px;font-size:12px;gap:4px}
+  #nav-login-btn{display:none!important}
+  .pro-badge{display:none!important}
+  /* Hide Export PDF and Home on mobile */
+  nav .nav-btn:nth-child(n+3):not(#nav-signup-btn):not(#audit-counter):not([onclick*="toggleChat"]):not([onclick*="toggleTheme"]):not([onclick*="showPaywall"]){display:none!important}
+
+  /* Layout */
+  .app-layout{height:auto;flex-direction:column}
+  .main-panel{padding:12px}
+
+  /* Hero */
+  .glass.hero-card,div[style*="border-radius:20px"][style*="padding:28px"]{padding:16px!important;border-radius:16px!important;margin-bottom:12px!important}
+  .hero-title{font-size:20px!important}
+  .hero-sub{font-size:13px!important;margin-bottom:14px!important}
+
+  /* Input area — stack vertically */
+  .input-wrap{flex-wrap:wrap;padding:8px!important;gap:6px!important}
+  .store-input{width:100%;padding:8px 0!important}
+  .btn-connect,.btn-analyze{flex:1;justify-content:center;padding:10px 10px!important;font-size:13px!important}
+
+  /* Feature highlights grid */
+  div[style*="grid-template-columns:repeat(2,1fr)"][style*="margin-top:16px"]{grid-template-columns:1fr 1fr!important;gap:8px!important}
+
+  /* How it works */
+  div[style*="grid-template-columns:repeat(3,1fr)"][style*="gap:12px"]{grid-template-columns:1fr!important}
+
+  /* Top metrics — stack to 1 col */
+  #top-metrics-row{grid-template-columns:1fr!important}
+
+  /* Metric cards — 2 col on mobile */
+  .metrics-row{grid-template-columns:repeat(2,1fr)!important}
+
+  /* Charts — stack */
+  div[style*="grid-template-columns:1fr 1fr"][style*="gap:14px"]{grid-template-columns:1fr!important}
+
+  /* Issues + wins — stack */
+  div[style*="grid-template-columns:1fr 1fr"][style*="gap:14px"]:has(#issues-list){grid-template-columns:1fr!important}
+
+  /* Roadmap — stack */
+  #roadmap-phases{grid-template-columns:1fr!important}
+
+  /* Checklist */
+  .checklist{grid-template-columns:1fr 1fr!important}
+
+  /* Chat button visible on mobile */
+  .chat-panel{display:none;position:fixed;inset:0;z-index:90;width:100%!important;border:none}
+  .chat-panel.mobile-open{display:flex!important;flex-direction:column}
+
+  /* Paywall */
+  .paywall-card{padding:20px!important;margin:12px}
+  .modal-card{padding:20px!important;margin:12px}
+
+  /* Section labels */
+  div[style*="font-size:11px"][style*="font-weight:700"][style*="letter-spacing:1px"]{font-size:10px!important}
+  div[style*="font-size:22px"][style*="font-weight:700"]{font-size:18px!important}
+}
+
+@media(max-width:380px){
+  .btn-connect span,.btn-analyze span{display:none}
+  .metrics-row{grid-template-columns:1fr!important}
+  .hero-title{font-size:18px!important}
+}
 .light-mode .chat-msg.ai{background:var(--bg3)}
 .light-mode .mini-metric{background:var(--bg3);border-color:var(--border)}
 .light-mode .input-wrap{background:white}
@@ -479,6 +544,7 @@ canvas{max-width:100%}
       <div style="display:flex;align-items:center;gap:8px">
         <div class="chat-online"><div class="chat-dot"></div>Online</div>
         <button onclick="clearChat()" style="background:none;border:none;color:var(--text4);cursor:pointer;font-size:13px;font-weight:600">Clear</button>
+        <button onclick="toggleChat()" style="background:none;border:none;color:var(--text4);cursor:pointer;font-size:20px;display:none" id="chat-close-btn">✕</button>
       </div>
     </div>
     <!-- Feature quick-actions -->
@@ -674,7 +740,7 @@ async function checkUnlockReturn() {
   // Only skip verification if already a paid user
   if (accountSessionToken && isUnlocked()) { updateNavStatus(); return; }
   try {
-    const resp = await fetch('/api/verify', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({session_id:sessionId}) });
+    const resp = await fetch('/api/login', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({session_id:sessionId}) });
     const data = await resp.json();
     if (data.valid) {
       pendingSessionId = sessionId;
@@ -939,7 +1005,13 @@ async function sendChat() {
 
 function toggleChat() {
   const panel = document.getElementById('chat-panel');
-  panel.style.display = panel.style.display === 'none' ? 'flex' : 'none';
+  const isMobile = window.innerWidth < 768;
+  if (isMobile) {
+    panel.classList.toggle('mobile-open');
+    panel.style.display = panel.classList.contains('mobile-open') ? 'flex' : 'none';
+  } else {
+    panel.style.display = panel.style.display === 'none' ? 'flex' : 'none';
+  }
 }
 
 // ── Loading helpers ──────────────────────────────────────────────────────────
@@ -1574,7 +1646,7 @@ document.addEventListener('DOMContentLoaded', () => {
   checkUnlockReturn();
 
   // 3. Check for Google OAuth session cookie (avoids tracking prevention)
-  fetch('/api/session')
+  fetch('/api/login')
     .then(r => r.json())
     .then(d => {
       if (d.found && d.token) {
@@ -1646,3 +1718,14 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
+<script>
+// Show close button on mobile
+if (window.innerWidth < 768) {
+  const closeBtn = document.getElementById('chat-close-btn');
+  if (closeBtn) closeBtn.style.display = 'block';
+}
+window.addEventListener('resize', () => {
+  const closeBtn = document.getElementById('chat-close-btn');
+  if (closeBtn) closeBtn.style.display = window.innerWidth < 768 ? 'block' : 'none';
+});
+</script>
