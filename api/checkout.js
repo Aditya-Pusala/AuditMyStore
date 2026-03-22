@@ -24,7 +24,7 @@ export default async function handler(req, res) {
       payment_method_types: ['card'],
       line_items: [{ price: priceId, quantity: 1 }],
       mode: isRecurring ? 'subscription' : 'payment',
-      success_url: `${appUrl}/?unlocked=1&session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${appUrl}/app?unlocked=1&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${appUrl}/`,
       metadata: { plan },
     });
