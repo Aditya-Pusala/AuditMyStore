@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Log In — AuditMyStore</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230891b2'/><text x='50%' y='54%' dominant-baseline='middle' text-anchor='middle' fill='white' font-size='11' font-weight='700' font-family='sans-serif'>AMS</text></svg>"/>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--ink:#0f172a;--ink2:#334155;--ink3:#64748b;--ink4:#94a3b8;--paper:#ffffff;--paper2:#f8fafc;--paper3:#f1f5f9;--paper4:#e2e8f0;--teal:#0891b2;--teal-l:#e0f2fe;--teal-d:#0e7490;--green:#059669;--red:#dc2626;--radius:14px;--shadow:0 1px 3px rgba(0,0,0,0.08),0 4px 16px rgba(0,0,0,0.06);--shadow-lg:0 8px 32px rgba(0,0,0,0.1)}
+[data-theme="dark"]{--ink:#f1f5f9;--ink2:#cbd5e1;--ink3:#94a3b8;--ink4:#64748b;--paper:#0f172a;--paper2:#1e293b;--paper3:#253347;--paper4:#334155;--teal:#22d3ee;--teal-l:rgba(34,211,238,0.12);--teal-d:#06b6d4;--green:#4ade80;--shadow:0 1px 3px rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.2);--shadow-lg:0 8px 32px rgba(0,0,0,.4)}
+body{font-family:'Quicksand',sans-serif;background:var(--paper2);color:var(--ink);min-height:100vh;display:flex;flex-direction:column;transition:background .3s,color .3s}
+nav{background:var(--paper);border-bottom:1px solid var(--paper4);padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between;transition:background .3s}
+.nav-brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+.nav-logo{width:36px;height:36px;background:var(--teal);border-radius:9px;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:12px}
+.nav-name{font-size:18px;font-weight:700;color:var(--ink)}
+.nav-r{display:flex;align-items:center;gap:10px}
+.back-link{font-size:14px;color:var(--ink3);text-decoration:none;font-weight:600;padding:8px 12px;border-radius:8px;transition:all .15s}
+.back-link:hover{background:var(--paper3);color:var(--ink)}
+.theme-btn{width:38px;height:38px;border-radius:10px;border:1.5px solid var(--paper4);background:var(--paper2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:17px;transition:all .15s}
+.theme-btn:hover{background:var(--paper3);border-color:var(--teal)}
+main{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 24px}
+.card{background:var(--paper);border:1px solid var(--paper4);border-radius:24px;padding:44px;width:100%;max-width:420px;box-shadow:var(--shadow-lg)}
+.card-ico{width:56px;height:56px;background:var(--teal-l);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:26px}
+.card-title{font-size:26px;font-weight:700;color:var(--ink);text-align:center;letter-spacing:-.3px;margin-bottom:6px}
+.card-sub{font-size:14px;color:var(--ink3);text-align:center;margin-bottom:28px;font-weight:500}
+.form-lbl{display:block;font-size:13px;font-weight:700;color:var(--ink2);margin-bottom:5px}
+.form-row{margin-bottom:14px}
+.lbl-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+.input{width:100%;padding:11px 14px;border:1.5px solid var(--paper4);border-radius:10px;font-size:14px;color:var(--ink);background:var(--paper2);transition:all .15s;font-family:'Quicksand',sans-serif;outline:none;font-weight:500}
+.input:focus{border-color:var(--teal);background:var(--paper);box-shadow:0 0 0 3px rgba(8,145,178,.1)}
+.input::placeholder{color:var(--ink4)}
+.btn-sub{width:100%;padding:13px;background:var(--teal);color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;transition:all .15s;font-family:'Quicksand',sans-serif;margin-top:6px}
+.btn-sub:hover{background:var(--teal-d);transform:translateY(-1px);box-shadow:0 4px 12px rgba(8,145,178,.3)}
+.btn-sub:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.link{color:var(--teal);text-decoration:none;font-weight:700;font-size:13px}
+.link:hover{text-decoration:underline}
+.err{background:#fef2f2;border:1px solid #fecaca;color:var(--red);padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:14px;display:none;font-weight:500}
+.suc{background:#f0fdf4;border:1px solid #bbf7d0;color:var(--green);padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:14px;display:none;font-weight:500}
+.divider{display:flex;align-items:center;gap:12px;margin:18px 0;color:var(--ink4);font-size:13px;font-weight:500}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--paper4)}
+.tc{text-align:center;font-size:13px;color:var(--ink3);font-weight:500}
+.panel{display:none}
+.panel.active{display:block}
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="nav-brand">
+    <div class="nav-logo">AMS</div>
+    <span class="nav-name">AuditMyStore</span>
+  </a>
+  <div class="nav-r">
+    <a href="app.html" class="back-link">← Back to App</a>
+    <button class="theme-btn" onclick="toggleTheme()" id="theme-btn">🌙</button>
+  </div>
+</nav>
+
+<main>
+  <div class="card">
+
+    <!-- LOGIN -->
+    <div id="p-login" class="panel active">
+      <div class="card-ico">🔐</div>
+      <div class="card-title">Welcome back</div>
+      <div class="card-sub">Log in to your AuditMyStore Pro account</div>
+      <div id="login-err" class="err"></div>
+      <div class="form-row"><label class="form-lbl">Email address</label><input id="login-email" type="email" class="input" placeholder="you@example.com" autocomplete="email"/></div>
+      <div class="form-row">
+        <div class="lbl-row"><label class="form-lbl" style="margin:0">Password</label><a href="#" class="link" onclick="show('p-forgot');return false">Forgot password?</a></div>
+        <input id="login-pw" type="password" class="input" placeholder="Your password" autocomplete="current-password"/>
+      </div>
+      <button id="login-btn" class="btn-sub" onclick="doLogin()">Log In</button>
+      <div class="divider">or</div>
+      <div class="tc">Don't have an account? <a href="app.html" class="link">Analyze a store first →</a></div>
+    </div>
+
+    <!-- FORGOT -->
+    <div id="p-forgot" class="panel">
+      <div class="card-ico">📧</div>
+      <div class="card-title">Forgot password?</div>
+      <div class="card-sub">Enter your email and we'll send a reset link</div>
+      <div id="forgot-suc" class="suc"></div>
+      <div id="forgot-err" class="err"></div>
+      <div class="form-row"><label class="form-lbl">Email address</label><input id="forgot-email" type="email" class="input" placeholder="you@example.com"/></div>
+      <button id="forgot-btn" class="btn-sub" onclick="doForgot()">Send Reset Link</button>
+      <div style="margin-top:14px;text-align:center"><a href="#" class="link" onclick="show('p-login');return false">← Back to login</a></div>
+    </div>
+
+    <!-- RESET -->
+    <div id="p-reset" class="panel">
+      <div class="card-ico">🔑</div>
+      <div class="card-title">Set new password</div>
+      <div class="card-sub">Choose a strong password for your account</div>
+      <div id="reset-err" class="err"></div>
+      <div class="form-row"><label class="form-lbl">New password</label><input id="reset-pw" type="password" class="input" placeholder="Min 6 characters"/></div>
+      <div class="form-row"><label class="form-lbl">Confirm password</label><input id="reset-confirm" type="password" class="input" placeholder="Repeat password"/></div>
+      <button id="reset-btn" class="btn-sub" onclick="doReset()">Set New Password</button>
+    </div>
+
+  </div>
+</main>
+
+<script>
+let resetToken='';
+function show(id){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active')}
+function showErr(id,msg){const e=document.getElementById(id);e.textContent=msg;e.style.display='block';setTimeout(()=>e.style.display='none',5000)}
+function showSuc(id,msg){const e=document.getElementById(id);e.textContent=msg;e.style.display='block'}
+function toggleTheme(){const h=document.documentElement,d=h.getAttribute('data-theme')==='dark';h.setAttribute('data-theme',d?'light':'dark');document.getElementById('theme-btn').textContent=d?'🌙':'☀️';localStorage.setItem('ams_theme',d?'light':'dark')}
+const t=localStorage.getItem('ams_theme')||'light';
+document.documentElement.setAttribute('data-theme',t);
+document.addEventListener('DOMContentLoaded',()=>{const b=document.getElementById('theme-btn');if(b)b.textContent=t==='dark'?'☀️':'🌙'});
+
+async function doLogin(){
+  const email=document.getElementById('login-email').value.trim();
+  const pw=document.getElementById('login-pw').value;
+  if(!email||!pw){showErr('login-err','Please enter email and password');return}
+  const btn=document.getElementById('login-btn');
+  btn.textContent='Logging in...';btn.disabled=true;
+  try{
+    const r=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pw})});
+    const d=await r.json();btn.textContent='Log In';btn.disabled=false;
+    if(!r.ok){showErr('login-err',d.error||'Login failed');return}
+    localStorage.setItem('ams_session_token',d.token);localStorage.setItem('ams_unlocked','1');
+    window.location.href='account.html';
+  }catch(e){btn.textContent='Log In';btn.disabled=false;showErr('login-err','Connection error. Please try again.')}
+}
+
+async function doForgot(){
+  const email=document.getElementById('forgot-email').value.trim();
+  if(!email||!email.includes('@')){showErr('forgot-err','Please enter a valid email');return}
+  const btn=document.getElementById('forgot-btn');btn.textContent='Sending...';btn.disabled=true;
+  try{
+    await fetch('/api/forgot-password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'send',email})});
+    btn.textContent='Send Reset Link';btn.disabled=false;
+    showSuc('forgot-suc','✅ If that email has an account, a reset link has been sent. Check your inbox!');
+    document.getElementById('forgot-email').value='';
+  }catch(e){btn.textContent='Send Reset Link';btn.disabled=false;showErr('forgot-err','Error sending email.')}
+}
+
+async function doReset(){
+  const pw=document.getElementById('reset-pw').value;
+  const c=document.getElementById('reset-confirm').value;
+  if(pw.length<6){showErr('reset-err','Password must be at least 6 characters');return}
+  if(pw!==c){showErr('reset-err','Passwords do not match');return}
+  const btn=document.getElementById('reset-btn');btn.textContent='Saving...';btn.disabled=true;
+  try{
+    const r=await fetch('/api/forgot-password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'reset',token:resetToken,newPassword:pw})});
+    const d=await r.json();btn.textContent='Set New Password';btn.disabled=false;
+    if(!r.ok){showErr('reset-err',d.error||'Reset failed');return}
+    localStorage.setItem('ams_session_token',d.token);localStorage.setItem('ams_unlocked','1');
+    window.location.href='account.html';
+  }catch(e){btn.textContent='Set New Password';btn.disabled=false;showErr('reset-err','Error. Please try again.')}
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('login-pw').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
+  document.getElementById('login-email').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
+  document.getElementById('forgot-email').addEventListener('keydown',e=>{if(e.key==='Enter')doForgot()});
+  document.getElementById('reset-confirm').addEventListener('keydown',e=>{if(e.key==='Enter')doReset()});
+  // Check reset token
+  const params=new URLSearchParams(window.location.search);
+  const tok=params.get('reset_token');
+  if(tok){
+    resetToken=tok;window.history.replaceState({},'','/login.html');
+    fetch('/api/forgot-password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'verify',token:tok})})
+    .then(r=>r.json()).then(d=>{if(d.valid)show('p-reset');else{show('p-forgot');showErr('forgot-err','Reset link expired. Please request a new one.')}});
+  }
+  // If already logged in
+  const saved=localStorage.getItem('ams_session_token');
+  if(saved){
+    fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'verify-token',token:saved})})
+    .then(r=>r.json()).then(d=>{if(d.valid)window.location.href='account.html'}).catch(()=>{});
+  }
+});
+</script>
+</body>
+</html>
