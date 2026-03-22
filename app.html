@@ -52,9 +52,7 @@ nav{position:sticky;top:0;z-index:50;background:rgba(15,23,42,.95);backdrop-filt
 .pro-badge{display:none;font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px;background:linear-gradient(135deg,#f59e0b,#d97706);color:black;margin-left:4px}
 .nav-right{display:flex;align-items:center;gap:8px}
 .nav-btn{background:transparent;border:1px solid var(--border);border-radius:9px;padding:8px 14px;color:var(--text3);cursor:pointer;font-family:'Quicksand',sans-serif;font-size:14px;font-weight:600;transition:all .15s;display:flex;align-items:center;gap:6px}
-.nav-btn:hover{border-color:var(--teal);color:var(--teal)}
-#audit-counter{display:none}
-#my-account-btn{display:none}
+.nav-btn:hover{border-color:var(--orange);color:var(--orange)}
 
 /* LAYOUT */
 .app-layout{display:flex;height:calc(100vh - 60px)}
@@ -199,15 +197,20 @@ canvas{max-width:100%}
     <span class="pro-badge" id="pro-badge">PRO</span>
   </div>
   <div class="nav-right">
-    <div id="audit-counter" class="nav-btn" style="cursor:pointer;display:none" onclick="showPaywall()">
-      <span id="audit-counter-text">0/2 free</span>
+    <!-- Audit counter — always shown -->
+    <div id="audit-counter" class="nav-btn" style="cursor:pointer" onclick="showPaywall()">
+      <span id="audit-counter-text">2/2 free</span>
     </div>
-    <a href="login.html" id="nav-login-btn" class="nav-btn" style="display:none">Log In</a>
-    <a href="login.html?tab=signup" id="nav-signup-btn" class="nav-btn" style="display:none;background:linear-gradient(135deg,var(--orange-d),var(--orange));color:white;border:none">Sign Up Free</a>
-    <button id="my-account-btn" class="nav-btn" onclick="window.location.href='account.html'" style="display:none;gap:8px">
-      <div id="user-avatar" style="width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--orange-d),var(--orange));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:white;flex-shrink:0"></div>
-      <span id="user-name-display" style="color:var(--orange);font-weight:700"></span>
-    </button>
+    <!-- Logged OUT state -->
+    <a href="login.html" id="nav-login-btn" class="nav-btn" style="text-decoration:none">Log In</a>
+    <a href="login.html?tab=signup" id="nav-signup-btn" style="background:linear-gradient(135deg,var(--orange-d),var(--orange));color:white;border:none;border-radius:9px;padding:8px 16px;font-size:14px;font-weight:700;text-decoration:none;font-family:'Quicksand',sans-serif;cursor:pointer">Sign Up Free</a>
+    <!-- Logged IN state — hidden by default -->
+    <div id="user-info" style="display:none;align-items:center;gap:8px">
+      <div id="user-avatar" style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--orange-d),var(--orange));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:white;flex-shrink:0"></div>
+      <span id="user-name-display" style="color:var(--text);font-weight:700;font-size:14px"></span>
+      <button onclick="window.location.href='account.html'" class="nav-btn" style="padding:6px 12px;font-size:13px">Account</button>
+      <button onclick="doLogout()" class="nav-btn" style="padding:6px 12px;font-size:13px;color:var(--red);border-color:rgba(248,113,113,.3)">Logout</button>
+    </div>
     <button class="nav-btn" onclick="window.location.href='index.html'">← Home</button>
     <button class="nav-btn" onclick="exportPDF()">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -597,58 +600,54 @@ function checkPaywall() {
 }
 
 function updateNavStatus() {
-  const proBadge = document.getElementById('pro-badge');
-  const auditCounter = document.getElementById('audit-counter');
-  const auditCounterText = document.getElementById('audit-counter-text');
-  const myAccountBtn = document.getElementById('my-account-btn');
-  const navLoginBtn = document.getElementById('nav-login-btn');
-  const navSignupBtn = document.getElementById('nav-signup-btn');
-
   const loggedIn = !!accountSessionToken;
   const userName = localStorage.getItem('ams_user_name') || '';
+  const count = getAuditCount();
+  const remaining = Math.max(0, FREE_AUDIT_LIMIT - count);
 
-  if (loggedIn) {
-    // Show user name + account button
-    navLoginBtn.style.display = 'none';
-    navSignupBtn.style.display = 'none';
-    myAccountBtn.style.display = 'flex';
-    const initials = userName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0,2) || '?';
-    document.getElementById('user-avatar').textContent = initials;
-    document.getElementById('user-name-display').textContent = userName.split(' ')[0];
-
-    if (isUnlocked()) {
-      proBadge.style.display = 'inline-flex';
-      auditCounter.style.display = 'none';
-    } else {
-      proBadge.style.display = 'none';
-      const count = getAuditCount();
-      const remaining = Math.max(0, FREE_AUDIT_LIMIT - count);
-      auditCounter.style.display = 'flex';
-      if (remaining === 0) {
-        auditCounterText.textContent = '🔒 Upgrade to Pro';
-        auditCounterText.style.color = 'var(--red)';
-      } else {
-        auditCounterText.textContent = `${count}/${FREE_AUDIT_LIMIT} free audits`;
-        auditCounterText.style.color = 'var(--orange)';
-      }
-    }
+  // Audit counter — always visible
+  const counterText = document.getElementById('audit-counter-text');
+  const counter = document.getElementById('audit-counter');
+  if (isUnlocked()) {
+    counter.style.display = 'none';
+    document.getElementById('pro-badge').style.display = 'inline-flex';
   } else {
-    // Logged out — show login + signup
-    proBadge.style.display = 'none';
-    myAccountBtn.style.display = 'none';
-    navLoginBtn.style.display = 'flex';
-    navSignupBtn.style.display = 'flex';
-    const count = getAuditCount();
-    const remaining = Math.max(0, FREE_AUDIT_LIMIT - count);
-    auditCounter.style.display = 'flex';
+    counter.style.display = 'flex';
+    document.getElementById('pro-badge').style.display = 'none';
     if (remaining === 0) {
-      auditCounterText.textContent = '🔒 Upgrade to Pro';
-      auditCounterText.style.color = 'var(--red)';
+      counterText.textContent = '🔒 Upgrade to Pro';
+      counterText.style.color = 'var(--red)';
     } else {
-      auditCounterText.textContent = `${count}/${FREE_AUDIT_LIMIT} free`;
-      auditCounterText.style.color = 'var(--orange)';
+      counterText.textContent = `${count}/${FREE_AUDIT_LIMIT} free audits`;
+      counterText.style.color = 'var(--orange)';
     }
   }
+
+  if (loggedIn && userName) {
+    // Show user info, hide login/signup
+    document.getElementById('nav-login-btn').style.display = 'none';
+    document.getElementById('nav-signup-btn').style.display = 'none';
+    document.getElementById('user-info').style.display = 'flex';
+    const initials = userName.trim().split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || '?';
+    document.getElementById('user-avatar').textContent = initials;
+    document.getElementById('user-name-display').textContent = userName.split(' ')[0];
+  } else {
+    // Show login/signup, hide user info
+    document.getElementById('nav-login-btn').style.display = 'flex';
+    document.getElementById('nav-signup-btn').style.display = 'flex';
+    document.getElementById('user-info').style.display = 'none';
+  }
+}
+
+function doLogout() {
+  accountSessionToken = '';
+  localStorage.removeItem('ams_session_token');
+  localStorage.removeItem('ams_user_name');
+  localStorage.removeItem('ams_user_email');
+  localStorage.removeItem('ams_unlocked');
+  updateNavStatus();
+  notify('Logged out successfully');
+  addChatMessage('ai', "You've been logged out. Log back in to save your progress!");
 }
 
 async function startCheckout(plan) {
@@ -760,7 +759,9 @@ function addChatMessage(role, text) {
 function clearChat() { chatHistory = []; document.getElementById('chat-messages').innerHTML = ''; initChat(); }
 
 function initChat() {
-  addChatMessage('ai', "👋 Hi! I'm **Debbie**, your AI Shopify consultant. Analyze a store first, then use the quick actions above to get:\n\n🔍 **SEO Audit** — keywords, meta tags, blog topics\n💲 **Pricing** — AOV strategy & price points\n📧 **Email Sequences** — welcome, cart, post-purchase\n📣 **Ad Copy** — Facebook, Instagram & Google ads\n🔎 **Competitors** — who to watch & how to win\n\nOr just ask me anything!");
+  const savedName = localStorage.getItem('ams_user_name');
+  const firstName = savedName ? ', **' + savedName.split(' ')[0] + '**' : '';
+  addChatMessage('ai', '👋 Hi' + firstName + "! I'm **Debbie**, your AI Shopify consultant. Analyze a store first, then use the quick actions above to get:\n\n🔍 **SEO Audit** — keywords, meta tags, blog topics\n💲 **Pricing** — AOV strategy & price points\n📧 **Email Sequences** — welcome, cart, post-purchase\n📣 **Ad Copy** — Facebook, Instagram & Google ads\n🔎 **Competitors** — who to watch & how to win\n\nOr just ask me anything!");
 }
 
 async function debbieFeature(type) {
