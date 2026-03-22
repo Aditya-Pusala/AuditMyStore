@@ -165,7 +165,14 @@ export default async function handler(req, res) {
     const plan = user[0]?.plan || 'free';
 
     // Redirect to app with session
-    res.redirect(302, `${appUrl}/app?session_token=${token}&name=${encodeURIComponent(name||email)}&plan=${plan}&new=${isNew ? '1' : '0'}`);
+    // Set session as a cookie (avoids tracking prevention blocking localStorage from URL params)
+    res.setHeader('Set-Cookie', [
+      `ams_session=${token}; Path=/; Max-Age=2592000; SameSite=Lax; Secure`,
+      `ams_name=${encodeURIComponent(name||email)}; Path=/; Max-Age=2592000; SameSite=Lax; Secure`,
+      `ams_plan=${plan}; Path=/; Max-Age=2592000; SameSite=Lax; Secure`,
+      `ams_new=${isNew ? '1' : '0'}; Path=/; Max-Age=60; SameSite=Lax; Secure`,
+    ]);
+    res.redirect(302, `${appUrl}/app`);
   } catch (err) {
     console.error('Google OAuth error:', err);
     res.redirect(302, `${appUrl}/login?error=oauth_failed`);

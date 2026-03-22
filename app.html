@@ -920,7 +920,7 @@ Be specific to the niche. Reference real brands where relevant.`
   setTimeout(() => document.querySelectorAll('.debbie-pill').forEach(p => p.classList.remove('active')), 500);
 }
 
-
+async function sendChat() {
   const input = document.getElementById('chat-input');
   const msg = input.value.trim();
   if (!msg) return;
@@ -1568,67 +1568,56 @@ document.addEventListener('DOMContentLoaded', () => {
   isDark = savedTheme === 'dark';
   if (!isDark) document.body.classList.add('light-mode');
 
-  // 2. Handle Google OAuth return FIRST — save token & name before anything else
-  const urlParams = new URLSearchParams(window.location.search);
-  const gToken = urlParams.get('session_token');
-  const gName = urlParams.get('name');
-  const gPlan = urlParams.get('plan');
-  const gNew = urlParams.get('new') === '1';
-
-  if (gToken) {
-    accountSessionToken = gToken;
-    localStorage.setItem('ams_session_token', gToken);
-    if (gName) localStorage.setItem('ams_user_name', decodeURIComponent(gName));
-    if (gPlan && gPlan !== 'free') unlockApp();
-    window.history.replaceState({}, '', '/app');
-  }
-
-  // 3. Handle Shopify OAuth return
+  // 2. Handle Shopify OAuth & Stripe return
   checkOAuthReturn();
-
-  // 4. Handle Stripe unlock return
   checkUnlockReturn();
 
-  // 5. Now init chat — name is in localStorage if logged in
-  initChat();
-
-  // 6. Update nav with correct state
-  updateNavStatus();
-
-  // 7. Greet by name after login (Google OAuth)
-  if (gToken && gName) {
-    const firstName = decodeURIComponent(gName).split(' ')[0];
-    setTimeout(() => {
-      document.getElementById('chat-messages').innerHTML = '';
-      if (gNew) {
-        addChatMessage('ai', '🎉 Welcome to AuditMyStore, **' + firstName + '**! I\'m **Debbie**, your AI Shopify consultant. Paste a store URL above to run your first free analysis!');
-      } else {
-        addChatMessage('ai', '👋 Welcome back, **' + firstName + '**! Ready to audit another store? Paste a URL above or use the quick actions to the right.');
-      }
-    }, 200);
-  }
-
-  // 8. Verify existing session for returning visitors (not fresh from OAuth)
-  if (accountSessionToken && !gToken) {
-    fetch('/api/login', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({action:'verify-token', token:accountSessionToken}) })
-    .then(r => r.json()).then(d => {
-      if (d.valid) {
+  // 3. Check for Google OAuth session cookie (avoids tracking prevention)
+  fetch('/api/session')
+    .then(r => r.json())
+    .then(d => {
+      if (d.found && d.token) {
+        // Fresh Google login — save to localStorage
+        accountSessionToken = d.token;
+        localStorage.setItem('ams_session_token', d.token);
         if (d.name) localStorage.setItem('ams_user_name', d.name);
         if (d.plan && d.plan !== 'free') unlockApp();
-        // Re-init chat with name now that we have it
         document.getElementById('chat-messages').innerHTML = '';
-        initChat();
+        const firstName = (d.name || '').split(' ')[0];
+        if (d.isNew) {
+          addChatMessage('ai', '🎉 Welcome to AuditMyStore, **' + firstName + '**! I\'m **Debbie**, your AI Shopify consultant. Paste a store URL above to run your first free analysis!');
+        } else {
+          addChatMessage('ai', '👋 Welcome back, **' + firstName + '**! Ready to audit another store?');
+        }
         updateNavStatus();
-      } else {
-        accountSessionToken = '';
-        localStorage.removeItem('ams_session_token');
-        localStorage.removeItem('ams_user_name');
-        document.getElementById('chat-messages').innerHTML = '';
-        initChat();
-        updateNavStatus();
+      } else if (accountSessionToken) {
+        // Returning visitor — verify existing session
+        fetch('/api/login', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({action:'verify-token', token:accountSessionToken}) })
+        .then(r => r.json()).then(d => {
+          if (d.valid) {
+            if (d.name) localStorage.setItem('ams_user_name', d.name);
+            if (d.plan && d.plan !== 'free') unlockApp();
+            document.getElementById('chat-messages').innerHTML = '';
+            initChat();
+            updateNavStatus();
+          } else {
+            accountSessionToken = '';
+            localStorage.removeItem('ams_session_token');
+            localStorage.removeItem('ams_user_name');
+            initChat();
+            updateNavStatus();
+          }
+        }).catch(() => {});
       }
-    }).catch(() => {});
-  }
+    }).catch(() => {
+      // Session endpoint failed — fall back to localStorage only
+      initChat();
+      updateNavStatus();
+    });
+
+  // 4. Init chat and nav immediately with whatever we have
+  initChat();
+  updateNavStatus();
 
   // Mobile chat
   if (window.innerWidth < 1024) {
