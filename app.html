@@ -665,19 +665,32 @@ let storeData = null;
 let connectedShop = null;
 let chatHistory = [];
 let isDark = true;
+
+// Safe localStorage wrapper — avoids tracking prevention errors
+const store = {
+  get(k, fallback='') {
+    try { return localStorage.getItem(k) ?? fallback; } catch(e) { return fallback; }
+  },
+  set(k, v) {
+    try { localStorage.setItem(k, v); } catch(e) {}
+  },
+  remove(k) {
+    try { localStorage.removeItem(k); } catch(e) {}
+  }
+};
 let radarChart = null;
 let barChart = null;
 
 // ── Paywall System ──────────────────────────────────────────────────────────
 const FREE_AUDIT_LIMIT = 2;
-let accountSessionToken = localStorage.getItem('ams_session_token') || '';
+let accountSessionToken = store.get('ams_session_token');
 let pendingSessionId = '';
 let pendingResetToken = '';
 
-function getAuditCount() { return parseInt(localStorage.getItem('ams_audit_count') || '0'); }
-function incrementAuditCount() { localStorage.setItem('ams_audit_count', getAuditCount() + 1); }
-function isUnlocked() { return localStorage.getItem('ams_unlocked') === '1'; }
-function unlockApp() { localStorage.setItem('ams_unlocked', '1'); }
+function getAuditCount() { return parseInt(store.get('ams_audit_count', '0') || '0'); }
+function incrementAuditCount() { store.set('ams_audit_count', getAuditCount() + 1); }
+function isUnlocked() { return store.get('ams_unlocked') === '1'; }
+function unlockApp() { store.set('ams_unlocked', '1'); }
 
 function showPaywall() {
   document.getElementById('paywall-overlay').classList.add('show');
@@ -709,7 +722,7 @@ function checkPaywall() {
 
 function updateNavStatus() {
   const loggedIn = !!accountSessionToken;
-  const userName = localStorage.getItem('ams_user_name') || '';
+  const userName = store.get('ams_user_name') || '';
   const count = getAuditCount();
   const remaining = Math.max(0, FREE_AUDIT_LIMIT - count);
 
@@ -749,10 +762,10 @@ function updateNavStatus() {
 
 function doLogout() {
   accountSessionToken = '';
-  localStorage.removeItem('ams_session_token');
-  localStorage.removeItem('ams_user_name');
-  localStorage.removeItem('ams_user_email');
-  localStorage.removeItem('ams_unlocked');
+  store.remove('ams_session_token');
+  store.remove('ams_user_name');
+  store.remove('ams_user_email');
+  store.remove('ams_unlocked');
   updateNavStatus();
   notify('Logged out successfully');
   addChatMessage('ai', "You've been logged out. Log back in to save your progress!");
@@ -768,11 +781,12 @@ async function startCheckout(plan) {
   const btn = document.getElementById(`checkout-${plan}`);
   btn.textContent = 'Redirecting...'; btn.disabled = true;
   try {
-    const email = localStorage.getItem('ams_user_email') || '';
+    const email = store.get('ams_user_email') || '';
     const resp = await fetch('/api/checkout', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({plan, email}) });
     const { url, error } = await resp.json();
     if (error) throw new Error(error);
-    window.location.href = url;\n  } catch (err) {
+    window.location.href = url;
+  } catch (err) {
     btn.textContent = plan === 'monthly' ? 'Get Monthly — $5/mo' : 'Get Lifetime — $97';
     btn.disabled = false;
     notify('Error: ' + err.message);
@@ -816,8 +830,8 @@ async function registerAccount() {
     btn.textContent = 'Create Account & Unlock Pro'; btn.disabled = false;
     if (!resp.ok) { notify(data.error || 'Registration failed'); return; }
     accountSessionToken = data.token;
-    localStorage.setItem('ams_session_token', data.token);
-    localStorage.setItem('ams_user_name', data.name || email.split('@')[0]);
+    store.set('ams_session_token', data.token);
+    store.set('ams_user_name', data.name || email.split('@')[0]);
     unlockApp();
     hidePaywall();
     document.getElementById('set-password-modal').classList.remove('show');
@@ -831,7 +845,7 @@ async function registerAccount() {
 function toggleTheme() {
   isDark = !isDark;
   document.body.classList.toggle('light-mode', !isDark);
-  localStorage.setItem('ams_theme', isDark ? 'dark' : 'light');
+  store.set('ams_theme', isDark ? 'dark' : 'light');
   if (radarChart) { radarChart.destroy(); radarChart = null; }
   if (barChart) { barChart.destroy(); barChart = null; }
   if (storeData) { renderRadarChart(storeData.categoryScores); renderBarChart(storeData.revenueOpportunity); }
@@ -881,7 +895,7 @@ function addChatMessage(role, text) {
 function clearChat() { chatHistory = []; document.getElementById('chat-messages').innerHTML = ''; initChat(); }
 
 function initChat() {
-  const savedName = localStorage.getItem('ams_user_name');
+  const savedName = store.get('ams_user_name');
   const firstName = savedName ? ', **' + savedName.split(' ')[0] + '**' : '';
   addChatMessage('ai', '👋 Hi' + firstName + "! I'm **Debbie**, your AI Shopify consultant. Analyze a store first, then use the quick actions above to get:\n\n🔍 **SEO Audit** — keywords, meta tags, blog topics\n💲 **Pricing** — AOV strategy & price points\n📧 **Email Sequences** — welcome, cart, post-purchase\n📣 **Ad Copy** — Facebook, Instagram & Google ads\n🔎 **Competitors** — who to watch & how to win\n\nOr just ask me anything!");
 }
@@ -1692,7 +1706,7 @@ async function exportPDF() {
 // ── Init ─────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   // 1. Restore theme
-  const savedTheme = localStorage.getItem('ams_theme') || 'dark';
+  const savedTheme = store.get('ams_theme') || 'dark';
   isDark = savedTheme === 'dark';
   if (!isDark) document.body.classList.add('light-mode');
 
@@ -1714,13 +1728,13 @@ document.addEventListener('DOMContentLoaded', () => {
       if (d.found && d.token) {
         // Fresh Google login — save to localStorage
         accountSessionToken = d.token;
-        localStorage.setItem('ams_session_token', d.token);
-        if (d.name) localStorage.setItem('ams_user_name', d.name);
+        store.set('ams_session_token', d.token);
+        if (d.name) store.set('ams_user_name', d.name);
         // Only unlock if actually a paid plan
         if (d.plan && d.plan !== 'free') {
           unlockApp();
         } else {
-          localStorage.removeItem('ams_unlocked'); // Clear any stale unlock
+          store.remove('ams_unlocked'); // Clear any stale unlock
         }
         document.getElementById('chat-messages').innerHTML = '';
         const firstName = (d.name || '').split(' ')[0];
@@ -1735,19 +1749,19 @@ document.addEventListener('DOMContentLoaded', () => {
         fetch('/api/login', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({action:'verify-token', token:accountSessionToken}) })
         .then(r => r.json()).then(d => {
           if (d.valid) {
-            if (d.name) localStorage.setItem('ams_user_name', d.name);
+            if (d.name) store.set('ams_user_name', d.name);
             if (d.plan && d.plan !== 'free') {
               unlockApp();
             } else {
-              localStorage.removeItem('ams_unlocked'); // Reset stale unlock for free users
+              store.remove('ams_unlocked'); // Reset stale unlock for free users
             }
             document.getElementById('chat-messages').innerHTML = '';
             initChat();
             updateNavStatus();
           } else {
             accountSessionToken = '';
-            localStorage.removeItem('ams_session_token');
-            localStorage.removeItem('ams_user_name');
+            store.remove('ams_session_token');
+            store.remove('ams_user_name');
             initChat();
             updateNavStatus();
           }

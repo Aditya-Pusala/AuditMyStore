@@ -168,10 +168,17 @@ main::after{content:'';position:absolute;bottom:-20%;right:-10%;width:40%;height
 </main>
 
 <script>
+
+// Safe localStorage wrapper
+const store = {
+  get(k, fb='') { try { return localStorage.getItem(k) ?? fb; } catch(e) { return fb; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch(e) {} },
+  remove(k) { try { localStorage.removeItem(k); } catch(e) {} }
+};
 let resetToken = '';
 
 // Theme
-const t = localStorage.getItem('ams_theme') || 'light';
+const t = store.get('ams_theme') || 'light';
 document.documentElement.setAttribute('data-theme', t);
 function getPostLoginUrl() {
   const params = new URLSearchParams(window.location.search);
@@ -206,7 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (params.get('tab') === 'signup') show('p-signup');
 
   // If already logged in, redirect
-  const saved = localStorage.getItem('ams_session_token');
+  const saved = store.get('ams_session_token');
   if (saved) {
     fetch('/api/login', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({action:'verify-token', token:saved}) })
       .then(r => r.json()).then(d => { if (d.valid) window.location.href = 'app.html'; }).catch(() => {});
@@ -224,7 +231,7 @@ function toggleTheme() {
   const h = document.documentElement, d = h.getAttribute('data-theme') === 'dark';
   h.setAttribute('data-theme', d ? 'light' : 'dark');
   document.getElementById('theme-btn').textContent = d ? '🌙' : '☀️';
-  localStorage.setItem('ams_theme', d ? 'light' : 'dark');
+  store.set('ams_theme', d ? 'light' : 'dark');
 }
 
 function show(id) {
@@ -249,10 +256,10 @@ async function doLogin() {
     const d = await r.json();
     btn.textContent = 'Log In'; btn.disabled = false;
     if (!r.ok) { showErr('login-err', d.error || 'Login failed'); return; }
-    localStorage.setItem('ams_session_token', d.token);
-    localStorage.setItem('ams_user_name', d.name || email.split('@')[0]);
-    localStorage.setItem('ams_user_email', email);
-    if (d.plan !== 'free') localStorage.setItem('ams_unlocked', '1');
+    store.set('ams_session_token', d.token);
+    store.set('ams_user_name', d.name || email.split('@')[0]);
+    store.set('ams_user_email', email);
+    if (d.plan !== 'free') store.set('ams_unlocked', '1');
     window.location.href = getPostLoginUrl();
   } catch(e) { btn.textContent = 'Log In'; btn.disabled = false; showErr('login-err', 'Connection error. Please try again.'); }
 }
@@ -276,9 +283,9 @@ async function doSignup() {
       showErr('signup-err', d.error || 'Signup failed');
       return;
     }
-    localStorage.setItem('ams_session_token', d.token);
-    localStorage.setItem('ams_user_name', name);
-    localStorage.setItem('ams_user_email', email);
+    store.set('ams_session_token', d.token);
+    store.set('ams_user_name', name);
+    store.set('ams_user_email', email);
     window.location.href = getPostLoginUrl();
   } catch(e) { btn.textContent = 'Create Account'; btn.disabled = false; showErr('signup-err', 'Connection error. Please try again.'); }
 }
@@ -307,7 +314,7 @@ async function doReset() {
     const d = await r.json();
     btn.textContent = 'Set New Password'; btn.disabled = false;
     if (!r.ok) { showErr('reset-err', d.error || 'Reset failed'); return; }
-    localStorage.setItem('ams_session_token', d.token);
+    store.set('ams_session_token', d.token);
     window.location.href = 'app.html';
   } catch(e) { btn.textContent = 'Set New Password'; btn.disabled = false; showErr('reset-err', 'Error. Please try again.'); }
 }

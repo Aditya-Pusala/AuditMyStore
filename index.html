@@ -658,17 +658,24 @@ footer{background:var(--paper2);border-top:1px solid var(--paper4);padding:48px 
 </footer>
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+
+// Safe localStorage wrapper
+const store = {
+  get(k, fb='') { try { return localStorage.getItem(k) ?? fb; } catch(e) { return fb; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch(e) {} },
+  remove(k) { try { localStorage.removeItem(k); } catch(e) {} }
+};
 function toggleTheme(){
   const h=document.documentElement,d=h.getAttribute('data-theme')==='dark';
   h.setAttribute('data-theme',d?'light':'dark');
   document.getElementById('theme-btn').textContent=d?'🌙':'☀️';
-  localStorage.setItem('ams_theme',d?'light':'dark');
+  store.set('ams_theme',d?'light':'dark');
 }
 
 async function goCheckout(plan) {
   if (plan === 'free') { window.location.href = 'app.html'; return; }
   // Must be logged in to purchase
-  const token = localStorage.getItem('ams_session_token');
+  const token = store.get('ams_session_token');
   if (!token) {
     window.location.href = 'login.html?tab=signup&next=upgrade&plan=' + plan;
     return;
@@ -680,7 +687,7 @@ async function goCheckout(plan) {
     const resp = await fetch('/api/checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ plan, email: localStorage.getItem('ams_user_email') || '' })
+      body: JSON.stringify({ plan, email: store.get('ams_user_email') || '' })
     });
     const data = await resp.json();
     if (data.url) { window.location.href = data.url; }
@@ -695,7 +702,7 @@ function toggleFaq(el){
   document.querySelectorAll('.faq-item').forEach(x=>x.classList.remove('open'));
   if(!o)i.classList.add('open');
 }
-const t=localStorage.getItem('ams_theme')||'light';
+const t=store.get('ams_theme')||'light';
 document.documentElement.setAttribute('data-theme',t);
 document.addEventListener('DOMContentLoaded',()=>{
   const b=document.getElementById('theme-btn');
