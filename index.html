@@ -1,516 +1,454 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>AuditMyStore — AI-Powered Shopify Store Analysis</title>
-<meta name="description" content="Get a comprehensive AI diagnosis of your Shopify store. Uncover revenue gaps, fix critical issues, and double your sales in 90 days."/>
+<title>AuditMyStore — AI-Powered Shopify Revenue Intelligence</title>
+<meta name="description" content="Uncover hidden revenue gaps in any Shopify store with AI-powered analysis. Get your store's health score, quick wins, and 90-day growth blueprint in 60 seconds."/>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23ea580c'/><text x='50%' y='54%' dominant-baseline='middle' text-anchor='middle' fill='white' font-size='11' font-weight='700' font-family='sans-serif'>AMS</text></svg>"/>
-<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --ink:#0f172a;--ink2:#334155;--ink3:#64748b;--ink4:#94a3b8;
-  --paper:#ffffff;--paper2:#f8fafc;--paper3:#f1f5f9;--paper4:#e2e8f0;
-  --orange:#f97316;--orange-l:#fff7ed;--orange-d:#ea580c;
-  --teal:#0891b2;--teal-l:#e0f2fe;--teal-d:#0e7490;
-  --green:#059669;--red:#dc2626;--yellow:#d97706;
-  --radius:14px;
-  --shadow:0 1px 3px rgba(0,0,0,.08),0 4px 16px rgba(0,0,0,.06);
-  --shadow-lg:0 8px 40px rgba(0,0,0,.12),0 2px 8px rgba(0,0,0,.06);
+  --bg:#060a12;--bg2:#0d1421;--bg3:#111827;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
+  --text:#f0f4ff;--text2:#a8b4cc;--text3:#5a6880;
+  --orange:#f97316;--orange-d:#ea580c;--orange-l:rgba(249,115,22,0.12);
+  --teal:#22d3ee;--green:#4ade80;--red:#f87171;
+  --glow-o:0 0 40px rgba(249,115,22,0.3);
+  --glow-t:0 0 40px rgba(34,211,238,0.2);
 }
-[data-theme="dark"]{
-  --ink:#f1f5f9;--ink2:#cbd5e1;--ink3:#94a3b8;--ink4:#64748b;
-  --paper:#0f172a;--paper2:#1e293b;--paper3:#253347;--paper4:#334155;
-  --orange:#fb923c;--orange-l:rgba(251,146,60,.12);--orange-d:#ea580c;
-  --teal:#22d3ee;--teal-l:rgba(34,211,238,.12);--teal-d:#06b6d4;
-  --green:#4ade80;
-  --shadow:0 1px 3px rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.2);
-  --shadow-lg:0 8px 40px rgba(0,0,0,.5);
-}
-html{scroll-behavior:smooth}
-body{font-family:'Quicksand',sans-serif;background:var(--paper);color:var(--ink);line-height:1.6;overflow-x:hidden;transition:background .3s,color .3s;font-size:16px}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;cursor:none}
+
+/* CURSOR */
+#cursor{position:fixed;width:12px;height:12px;background:var(--orange);border-radius:50%;pointer-events:none;z-index:9999;transition:transform .1s;mix-blend-mode:difference}
+#cursor-ring{position:fixed;width:40px;height:40px;border:1.5px solid rgba(249,115,22,0.5);border-radius:50%;pointer-events:none;z-index:9998;transition:all .15s ease;transform:translate(-50%,-50%)}
+#cursor-ring.hover{transform:translate(-50%,-50%) scale(1.8);border-color:var(--orange);background:rgba(249,115,22,0.05)}
+
+/* CANVAS */
+#bg-canvas{position:fixed;inset:0;z-index:0;opacity:0.7}
 
 /* NAV */
-nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--paper4);padding:0 24px;height:66px;display:flex;align-items:center;justify-content:space-between;transition:background .3s}
-[data-theme="dark"] nav{background:rgba(15,23,42,.95)}
-.nav-brand{display:flex;align-items:center;gap:10px;text-decoration:none}
-.nav-logo{width:38px;height:38px;background:linear-gradient(135deg,var(--orange-d),var(--orange));border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:13px;box-shadow:0 3px 10px rgba(249,115,22,.25)}
-.nav-name{font-size:20px;font-weight:700;color:var(--ink)}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:20px 40px;display:flex;align-items:center;justify-content:space-between;transition:all .3s}
+nav.scrolled{background:rgba(6,10,18,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:14px 40px}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo-mark{width:36px;height:36px;background:linear-gradient(135deg,var(--orange-d),var(--orange));border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:12px;color:white;box-shadow:var(--glow-o)}
+.logo-text{font-family:'Syne',sans-serif;font-weight:700;font-size:17px;color:var(--text)}
 .nav-links{display:flex;align-items:center;gap:6px}
-.nav-link{color:var(--ink3);text-decoration:none;font-size:15px;font-weight:600;padding:8px 14px;border-radius:8px;transition:all .15s}
-.nav-link:hover{background:var(--paper3);color:var(--ink)}
-.nav-cta{background:linear-gradient(135deg,var(--orange-d),var(--orange));color:white;padding:10px 22px;border-radius:10px;font-size:14px;font-weight:700;text-decoration:none;transition:all .15s;box-shadow:0 3px 10px rgba(249,115,22,.22)}
-.nav-cta:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(249,115,22,.32)}
-.theme-btn{width:38px;height:38px;border-radius:10px;border:1.5px solid var(--paper4);background:var(--paper2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:17px;transition:all .15s}
-.theme-btn:hover{border-color:var(--orange);background:var(--orange-l)}
+.nav-link{color:var(--text3);text-decoration:none;font-size:14px;font-weight:500;padding:8px 14px;border-radius:8px;transition:all .2s;cursor:none}
+.nav-link:hover{color:var(--text);background:rgba(255,255,255,0.05)}
+.nav-cta{background:linear-gradient(135deg,var(--orange-d),var(--orange));color:white;padding:9px 22px;border-radius:9px;font-size:14px;font-weight:600;text-decoration:none;transition:all .2s;box-shadow:var(--glow-o);cursor:none}
+.nav-cta:hover{transform:translateY(-1px);box-shadow:0 0 60px rgba(249,115,22,0.4)}
+.theme-nav-btn{background:transparent;border:1px solid var(--border2);border-radius:8px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:none;color:var(--text3);transition:all .2s}
+.theme-nav-btn:hover{border-color:var(--orange);color:var(--orange)}
+
+/* SECTIONS */
+section{position:relative;z-index:1}
+.container{max-width:1100px;margin:0 auto;padding:0 40px}
 
 /* HERO */
-.hero{padding:130px 24px 80px;position:relative;overflow:hidden}
-.hero-mesh{position:absolute;inset:0;pointer-events:none;overflow:hidden}
-.hero-mesh::before{content:'';position:absolute;top:-30%;left:-20%;width:80%;height:140%;background:radial-gradient(ellipse,rgba(234,88,12,.08) 0%,transparent 65%)}
-.hero-mesh::after{content:'';position:absolute;top:-20%;right:-15%;width:60%;height:120%;background:radial-gradient(ellipse,rgba(8,145,178,.07) 0%,transparent 65%)}
-.hero-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;position:relative;z-index:1}
-@media(max-width:900px){.hero-inner{grid-template-columns:1fr;gap:40px}}
-.hero-badge{display:inline-flex;align-items:center;gap:8px;background:var(--orange-l);color:var(--orange-d);padding:6px 14px;border-radius:100px;font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-bottom:20px;border:1px solid rgba(249,115,22,.18)}
-[data-theme="dark"] .hero-badge{color:var(--orange)}
-.hero-badge{color:var(--orange-d)}
-.badge-dot{width:7px;height:7px;background:var(--orange);border-radius:50%;animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.4)}}
-h1{font-size:clamp(32px,4.5vw,60px);line-height:1.1;letter-spacing:-.5px;color:var(--ink);font-weight:700;margin-bottom:18px}
-h1 em{font-style:normal;background:linear-gradient(135deg,var(--orange-d),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.hero-sub{font-size:17px;color:var(--ink3);line-height:1.7;font-weight:500;margin-bottom:32px;max-width:480px}
-.hero-btns{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:36px}
-.btn-orange{background:linear-gradient(135deg,var(--orange-d),var(--orange));color:white;padding:14px 28px;border-radius:12px;font-size:15px;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:all .2s;box-shadow:0 4px 14px rgba(249,115,22,.25);font-family:'Quicksand',sans-serif}
-.btn-orange:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(249,115,22,.38)}
-.btn-ghost{background:var(--paper);color:var(--ink);padding:14px 28px;border-radius:12px;font-size:15px;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:all .2s;border:1.5px solid var(--paper4);box-shadow:var(--shadow);font-family:'Quicksand',sans-serif}
-.btn-ghost:hover{border-color:var(--orange);color:var(--orange);transform:translateY(-1px)}
-.hero-trust{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
-.trust-stat{text-align:left}
-.trust-num{font-size:22px;font-weight:700;color:var(--ink)}
-.trust-lbl{font-size:11px;color:var(--ink4);font-weight:600}
-.trust-div{width:1px;height:32px;background:var(--paper4)}
+.hero{min-height:100vh;display:flex;align-items:center;padding:120px 40px 80px;position:relative}
+.hero-inner{max-width:1100px;margin:0 auto;width:100%}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(249,115,22,0.3);background:rgba(249,115,22,0.08);padding:6px 14px;border-radius:100px;font-size:12px;font-weight:600;color:var(--orange);letter-spacing:1px;text-transform:uppercase;margin-bottom:28px}
+.eyebrow-dot{width:6px;height:6px;background:var(--orange);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.5)}}
+.hero h1{font-family:'Syne',sans-serif;font-size:clamp(42px,6vw,82px);line-height:1.0;letter-spacing:-2px;font-weight:800;margin-bottom:24px;max-width:800px}
+.hero h1 .line{display:block;overflow:hidden}
+.hero h1 .word{display:inline-block;transform:translateY(110%)}
+.grad{background:linear-gradient(135deg,var(--orange-d),var(--orange),#fbbf24);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:18px;color:var(--text2);line-height:1.7;max-width:520px;margin-bottom:36px;font-weight:300;opacity:0}
+.hero-btns{display:flex;align-items:center;gap:14px;flex-wrap:wrap;opacity:0}
+.btn-primary{background:linear-gradient(135deg,var(--orange-d),var(--orange));color:white;padding:15px 32px;border-radius:12px;font-size:15px;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:9px;box-shadow:0 0 50px rgba(249,115,22,0.35);transition:all .2s;cursor:none;font-family:'DM Sans',sans-serif}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 80px rgba(249,115,22,0.5)}
+.btn-ghost{background:transparent;border:1px solid var(--border2);color:var(--text2);padding:15px 32px;border-radius:12px;font-size:15px;font-weight:500;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:all .2s;cursor:none;font-family:'DM Sans',sans-serif}
+.btn-ghost:hover{border-color:var(--orange);color:var(--orange)}
+.hero-stats{display:flex;gap:40px;margin-top:52px;opacity:0}
+.stat-num{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;color:var(--text);display:block;line-height:1}
+.stat-lbl{font-size:13px;color:var(--text3);font-weight:400;margin-top:4px}
+.stat-div{width:1px;background:var(--border2)}
 
-/* HERO VISUAL */
-.hero-visual{position:relative}
-.hero-card-main{background:var(--paper);border:1px solid var(--paper4);border-radius:24px;box-shadow:var(--shadow-lg);overflow:hidden;position:relative}
-.hero-card-main::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--orange-d),var(--orange),var(--teal))}
-.browser-bar{background:var(--paper2);padding:12px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--paper4)}
-.dot{width:10px;height:10px;border-radius:50%}
-.dot-r{background:#ff5f57}.dot-y{background:#ffbd2e}.dot-g{background:#28c940}
-.browser-url{flex:1;background:var(--paper);border-radius:6px;padding:5px 12px;font-size:12px;color:var(--ink4);margin:0 8px;border:1px solid var(--paper4);font-family:monospace}
-.score-section{padding:20px;display:flex;align-items:center;gap:16px;border-bottom:1px solid var(--paper4)}
-.score-circle{width:70px;height:70px;position:relative;flex-shrink:0}
-.score-circle svg{transform:rotate(-90deg)}
-.score-text{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.score-num{font-size:18px;font-weight:700;color:var(--orange)}
-.score-lbl{font-size:9px;color:var(--ink4);font-weight:600}
-.score-info h3{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:4px}
-.score-info p{font-size:12px;color:var(--ink3);font-weight:500}
-.metrics-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0}
-.metric-cell{padding:14px 16px;border-right:1px solid var(--paper4);border-top:1px solid var(--paper4)}
-.metric-cell:last-child{border-right:none}
-.metric-cell-lbl{font-size:10px;color:var(--ink4);font-weight:700;text-transform:uppercase;letter-spacing:.3px;margin-bottom:4px}
-.metric-cell-val{font-size:16px;font-weight:700;color:var(--ink)}
-.metric-cell-chg{font-size:10px;font-weight:600;margin-top:2px}
-/* Floating cards */
-.float-card{position:absolute;background:var(--paper);border:1px solid var(--paper4);border-radius:14px;padding:10px 14px;box-shadow:var(--shadow-lg);font-family:'Quicksand',sans-serif;animation:float 4s ease-in-out infinite}
-.float-card-1{top:-18px;right:-20px;animation-delay:0s}
-.float-card-2{bottom:-14px;left:-24px;animation-delay:1.5s}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-.float-card-inner{display:flex;align-items:center;gap:8px}
-.float-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+/* FLOATING CARD */
+.hero-card{position:absolute;right:40px;top:50%;transform:translateY(-50%);width:320px;background:rgba(13,20,33,0.85);border:1px solid var(--border2);border-radius:20px;backdrop-filter:blur(20px);overflow:hidden;box-shadow:var(--glow-t),0 40px 80px rgba(0,0,0,0.5);opacity:0}
+.hero-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--orange-d),var(--orange),var(--teal))}
+.hc-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.hc-dot{width:8px;height:8px;border-radius:50%}
+.hc-url{font-size:12px;color:var(--text3);font-family:monospace;flex:1}
+.hc-score{padding:20px 18px;display:flex;align-items:center;gap:16px;border-bottom:1px solid var(--border)}
+.hc-ring{position:relative;width:64px;height:64px;flex-shrink:0}
+.hc-ring svg{transform:rotate(-90deg)}
+.hc-score-num{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--orange)}
+.hc-score-sub{font-size:9px;color:var(--text3);font-weight:400}
+.hc-info h4{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px}
+.hc-info p{font-size:12px;color:var(--orange);font-weight:500}
+.hc-metrics{display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:1px solid var(--border)}
+.hc-metric{padding:12px 14px;border-right:1px solid var(--border)}
+.hc-metric:nth-child(2n){border-right:none}
+.hc-metric:nth-child(n+3){border-top:1px solid var(--border)}
+.hc-m-lbl{font-size:10px;color:var(--text3);font-weight:500;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px}
+.hc-m-val{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--text)}
+.hc-m-chg{font-size:10px;color:var(--green);font-weight:500;margin-top:2px}
+.hc-issues{padding:12px 18px}
+.hc-issue{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text2);padding:5px 0;border-bottom:1px solid var(--border)}
+.hc-issue:last-child{border:none}
+.hc-pill{font-size:9px;font-weight:700;padding:2px 7px;border-radius:100px;flex-shrink:0}
+.pill-red{background:rgba(248,113,113,.15);color:var(--red);border:1px solid rgba(248,113,113,.3)}
+.pill-yellow{background:rgba(251,191,36,.15);color:#fbbf24;border:1px solid rgba(251,191,36,.3)}
 
-/* SECTION BASE */
-section{padding:88px 24px}
-.container{max-width:1100px;margin:0 auto}
-.sec-lbl{font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--orange);margin-bottom:10px}
-h2{font-size:clamp(26px,3.5vw,42px);letter-spacing:-.3px;color:var(--ink);line-height:1.1;margin-bottom:14px;font-weight:700}
-.sec-sub{font-size:16px;color:var(--ink3);max-width:520px;line-height:1.7;font-weight:500}
-.sec-hdr{margin-bottom:52px}
-.sec-hdr.c{text-align:center}
-.sec-hdr.c .sec-sub{margin:0 auto}
+/* SCROLLY SECTIONS */
+.scrolly{padding:120px 0}
+.section-label{font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--orange);margin-bottom:12px}
+.section-h2{font-family:'Syne',sans-serif;font-size:clamp(28px,4vw,52px);font-weight:800;letter-spacing:-1.5px;line-height:1.05;color:var(--text);margin-bottom:16px}
+.section-sub{font-size:16px;color:var(--text2);font-weight:300;line-height:1.7;max-width:480px}
 
-/* HOW IT WORKS */
-.alt{background:var(--paper2)}
-.steps-wrap{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;position:relative}
-.steps-wrap::before{content:'';position:absolute;top:44px;left:calc(50%/3 + 44px);right:calc(50%/3 + 44px);height:2px;background:linear-gradient(90deg,var(--orange),var(--teal));z-index:0;border-radius:2px}
-@media(max-width:768px){.steps-wrap::before{display:none}}
-.step-card{background:var(--paper);border:1px solid var(--paper4);border-radius:20px;padding:28px 22px;text-align:center;box-shadow:var(--shadow);transition:all .2s;position:relative;z-index:1}
-.step-card:hover{transform:translateY(-5px);box-shadow:var(--shadow-lg);border-color:var(--orange)}
-.step-num{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;margin:0 auto 18px;position:relative}
-.step-num-1{background:rgba(249,115,22,.1);color:var(--orange)}
-.step-num-2{background:rgba(8,145,178,.12);color:var(--teal)}
-.step-num-3{background:rgba(5,150,105,.12);color:var(--green)}
-.step-card h3{font-size:16px;font-weight:700;color:var(--ink);margin-bottom:8px}
-.step-card p{font-size:14px;color:var(--ink3);line-height:1.6;font-weight:500}
+/* STEPS */
+.steps-track{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:60px}
+.step-card{background:rgba(13,20,33,0.6);border:1px solid var(--border);border-radius:20px;padding:28px;position:relative;overflow:hidden;transition:all .3s;cursor:none}
+.step-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(249,115,22,0.05),transparent);opacity:0;transition:opacity .3s}
+.step-card:hover{border-color:rgba(249,115,22,0.3);transform:translateY(-4px);box-shadow:0 20px 60px rgba(0,0,0,0.3),var(--glow-o)}
+.step-card:hover::before{opacity:1}
+.step-num{font-family:'Syne',sans-serif;font-size:64px;font-weight:800;color:rgba(249,115,22,0.08);line-height:1;position:absolute;top:12px;right:18px}
+.step-ico{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:18px;font-size:22px}
+.step-card h3{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--text);margin-bottom:10px}
+.step-card p{font-size:14px;color:var(--text2);line-height:1.6;font-weight:300}
+
+/* FEATURES BENTO */
+.bento{display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:auto auto;gap:16px;margin-top:60px}
+.bento-card{background:rgba(13,20,33,0.7);border:1px solid var(--border);border-radius:20px;padding:26px;overflow:hidden;position:relative;transition:all .3s;cursor:none}
+.bento-card:hover{border-color:rgba(249,115,22,0.25);transform:translateY(-3px);box-shadow:0 20px 50px rgba(0,0,0,0.3)}
+.bento-card.wide{grid-column:span 2}
+.bento-card.tall{grid-row:span 2}
+.bento-icon{font-size:28px;margin-bottom:14px;display:block}
+.bento-card h3{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--text);margin-bottom:8px}
+.bento-card p{font-size:13px;color:var(--text3);line-height:1.6;font-weight:300}
+.bento-glow{position:absolute;width:120px;height:120px;border-radius:50%;opacity:0.12;filter:blur(40px);top:-20px;right:-20px;pointer-events:none}
 
 /* DEBBIE SECTION */
-.debbie-section{background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);position:relative;overflow:hidden}
-[data-theme="dark"] .debbie-section{background:linear-gradient(135deg,#0a0f1e 0%,#0f172a 100%)}
-.debbie-section::before{content:'';position:absolute;top:-30%;right:-10%;width:50%;height:150%;background:radial-gradient(ellipse,rgba(249,115,22,.1) 0%,transparent 65%);pointer-events:none}
-.debbie-inner{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
-@media(max-width:768px){.debbie-inner{grid-template-columns:1fr}}
-.debbie-text .sec-lbl{color:var(--orange)}
-.debbie-text h2{color:white}
-.debbie-text .sec-sub{color:rgba(255,255,255,.65);max-width:none}
-.debbie-features{display:flex;flex-direction:column;gap:14px;margin-top:24px}
-.debbie-feat{display:flex;align-items:flex-start;gap:12px}
-.debbie-feat-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px}
-.debbie-feat-text h4{font-size:14px;font-weight:700;color:white;margin-bottom:3px}
-.debbie-feat-text p{font-size:13px;color:rgba(255,255,255,.55);font-weight:500;line-height:1.5}
-/* Debbie chat UI */
-.debbie-chat{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:20px;overflow:hidden}
-.debbie-chat-header{padding:14px 18px;border-bottom:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:12px}
-.debbie-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--orange-d),var(--orange));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
-.debbie-name{font-size:14px;font-weight:700;color:white}
-.debbie-status{font-size:11px;color:rgba(255,255,255,.5);display:flex;align-items:center;gap:5px;margin-top:1px}
-.debbie-dot{width:6px;height:6px;background:#4ade80;border-radius:50%;animation:pulse 2s infinite}
-.chat-bubbles{padding:16px;display:flex;flex-direction:column;gap:10px}
-.bubble{padding:10px 14px;border-radius:12px;font-size:13px;font-weight:500;line-height:1.5;max-width:85%}
-.bubble-ai{background:rgba(255,255,255,.1);color:rgba(255,255,255,.85);border-bottom-left-radius:4px;align-self:flex-start}
-.bubble-user{background:linear-gradient(135deg,var(--orange-d),var(--orange));color:white;border-bottom-right-radius:4px;align-self:flex-end}
-.typing{display:flex;align-items:center;gap:4px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:12px;width:fit-content}
-.typing-dot{width:6px;height:6px;background:rgba(255,255,255,.4);border-radius:50%;animation:bounce .8s ease-in-out infinite}
+.debbie-wrap{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;margin-top:60px}
+.debbie-chat{background:rgba(13,20,33,0.8);border:1px solid var(--border2);border-radius:20px;overflow:hidden;box-shadow:var(--glow-t)}
+.debbie-chat::before{content:'';display:block;height:2px;background:linear-gradient(90deg,var(--teal),var(--orange))}
+.dc-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.dc-av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--orange-d),var(--orange));display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.dc-name{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--text)}
+.dc-status{font-size:11px;color:var(--green);display:flex;align-items:center;gap:4px;margin-top:1px}
+.dc-online-dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 2s infinite}
+.dc-msgs{padding:16px;display:flex;flex-direction:column;gap:10px;min-height:200px}
+.dc-msg{padding:10px 14px;border-radius:12px;font-size:13px;line-height:1.5;font-weight:400;max-width:85%}
+.dc-msg.ai{background:rgba(255,255,255,0.06);color:var(--text2);align-self:flex-start;border-bottom-left-radius:4px}
+.dc-msg.user{background:linear-gradient(135deg,var(--orange-d),var(--orange));color:white;align-self:flex-end;border-bottom-right-radius:4px}
+.dc-features{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.dc-feat{display:flex;align-items:flex-start;gap:10px}
+.dc-feat-ico{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px}
+.dc-feat h4{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px}
+.dc-feat p{font-size:12px;color:var(--text3);line-height:1.5;font-weight:300}
+.typing{display:flex;align-items:center;gap:4px;padding:10px 14px;background:rgba(255,255,255,0.05);border-radius:12px;width:fit-content}
+.typing-dot{width:5px;height:5px;background:rgba(255,255,255,0.3);border-radius:50%;animation:bounce .8s ease-in-out infinite}
 .typing-dot:nth-child(2){animation-delay:.15s}
 .typing-dot:nth-child(3){animation-delay:.3s}
-@keyframes bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-6px)}}
-
-/* FEATURES */
-.features-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
-@media(max-width:640px){.features-grid{grid-template-columns:1fr}}
-.feat-card{background:var(--paper);border:1px solid var(--paper4);border-radius:var(--radius);padding:26px;transition:all .2s;box-shadow:var(--shadow);position:relative;overflow:hidden}
-.feat-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:linear-gradient(180deg,var(--orange),var(--orange-d));border-radius:0 2px 2px 0;opacity:0;transition:opacity .2s}
-.feat-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);border-color:var(--orange)}
-.feat-card:hover::before{opacity:1}
-.feat-ico{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;font-size:22px}
-.feat-card h3{font-size:16px;font-weight:700;color:var(--ink);margin-bottom:7px}
-.feat-card p{font-size:14px;color:var(--ink3);line-height:1.6;font-weight:500}
+@keyframes bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-5px)}}
 
 /* TESTIMONIALS */
-.testimonials-section{background:#0f172a;padding:88px 24px}
-[data-theme="light"] .testimonials-section{background:#0f172a}
-.testimonials-section .sec-lbl{color:var(--orange)!important}
-.testimonials-section h2{color:white!important}
-.tgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-@media(max-width:768px){.tgrid{grid-template-columns:1fr}}
-.tcard{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:var(--radius);padding:24px;transition:transform .2s,background .2s;position:relative;overflow:hidden}
-.tcard::after{content:'❝';position:absolute;top:-10px;right:16px;font-size:60px;color:rgba(249,115,22,.15);line-height:1}
-.tcard:hover{background:rgba(255,255,255,.11);transform:translateY(-3px)}
-.stars{color:#fbbf24;font-size:13px;margin-bottom:12px;letter-spacing:2px}
-.ttext{font-size:13px;color:rgba(255,255,255,.8);line-height:1.7;margin-bottom:16px;font-style:italic;font-weight:500;position:relative;z-index:1}
-.tauthor{display:flex;align-items:center;gap:10px}
-.tavatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:white;flex-shrink:0}
-.tname{font-size:13px;font-weight:700;color:white}
-.tstore{font-size:11px;color:rgba(255,255,255,.4);font-weight:500}
-.result-pill{display:inline-flex;align-items:center;gap:5px;background:rgba(249,115,22,.18);color:var(--orange);padding:3px 10px;border-radius:100px;font-size:11px;font-weight:700;margin-top:8px;border:1px solid rgba(249,115,22,.22)}
+.testimonials{background:var(--bg2);padding:120px 0;position:relative;overflow:hidden}
+.testimonials::before{content:'';position:absolute;top:-200px;left:-200px;width:600px;height:600px;background:radial-gradient(circle,rgba(249,115,22,0.06),transparent 70%)}
+.testimonials::after{content:'';position:absolute;bottom:-200px;right:-200px;width:500px;height:500px;background:radial-gradient(circle,rgba(34,211,238,0.05),transparent 70%)}
+.t-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:52px}
+.t-card{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:18px;padding:26px;position:relative;transition:all .3s;cursor:none}
+.t-card:hover{background:rgba(255,255,255,0.05);border-color:rgba(249,115,22,0.2);transform:translateY(-4px)}
+.t-card::after{content:'❝';position:absolute;top:-8px;right:20px;font-size:56px;color:rgba(249,115,22,0.08);line-height:1}
+.stars{color:var(--orange);font-size:13px;letter-spacing:2px;margin-bottom:14px}
+.t-text{font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:18px;font-weight:300;font-style:italic;position:relative;z-index:1}
+.t-author{display:flex;align-items:center;gap:10px}
+.t-av{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:white;flex-shrink:0}
+.t-name{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--text)}
+.t-store{font-size:11px;color:var(--text3)}
+.t-pill{display:inline-flex;align-items:center;gap:5px;background:rgba(249,115,22,0.12);color:var(--orange);padding:3px 10px;border-radius:100px;font-size:11px;font-weight:600;margin-top:10px;border:1px solid rgba(249,115,22,0.2)}
 
 /* PRICING */
-.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;align-items:start}
-@media(max-width:768px){.pricing-grid{grid-template-columns:1fr}}
-.pcard{background:var(--paper);border:1.5px solid var(--paper4);border-radius:20px;padding:30px;position:relative;box-shadow:var(--shadow);transition:all .2s}
-.pcard:hover{box-shadow:var(--shadow-lg)}
-.pcard.feat{border-color:var(--orange);box-shadow:0 0 0 4px rgba(234,88,12,.1),var(--shadow-lg);transform:scale(1.03)}
-.pbadge{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--orange-d),var(--orange));color:white;padding:4px 16px;border-radius:100px;font-size:11px;font-weight:700;text-transform:uppercase;white-space:nowrap}
-.pplan{font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--ink3);margin-bottom:6px}
-.pprice{font-size:46px;font-weight:700;color:var(--ink);letter-spacing:-2px;line-height:1}
-.pprice sup{font-size:20px;letter-spacing:0;vertical-align:super}
-.pprice sub{font-size:15px;color:var(--ink3);letter-spacing:0;font-weight:600}
-.pdesc{font-size:14px;color:var(--ink3);margin:10px 0 22px;line-height:1.5;font-weight:500}
-.pflst{list-style:none;margin-bottom:24px}
-.pflst li{display:flex;align-items:center;gap:9px;font-size:14px;color:var(--ink2);padding:6px 0;border-bottom:1px solid var(--paper3);font-weight:500}
-.pflst li:last-child{border:none}
-.ck{color:var(--green);font-weight:700;flex-shrink:0}
-.cx{color:var(--ink4);flex-shrink:0}
-.btn-plan{display:block;text-align:center;padding:13px;border-radius:10px;font-size:15px;font-weight:700;text-decoration:none;transition:all .15s;cursor:pointer;border:none;width:100%;font-family:'Quicksand',sans-serif}
-.bpo{background:transparent;color:var(--orange);border:1.5px solid var(--orange)}
-.bpo:hover{background:var(--orange-l)}
-.bps{background:linear-gradient(135deg,var(--orange-d),var(--orange));color:white;box-shadow:0 4px 14px rgba(249,115,22,.22)}
-.bps:hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(249,115,22,.32)}
-.bpd{background:var(--ink);color:white}
-[data-theme="dark"] .bpd{background:var(--paper4);color:var(--ink)}
-.bpd:hover{opacity:.9;transform:translateY(-1px)}
+.pricing{padding:120px 0}
+.p-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:52px;align-items:start}
+.p-card{background:rgba(13,20,33,0.8);border:1px solid var(--border);border-radius:20px;padding:32px;position:relative;transition:all .3s;cursor:none}
+.p-card:hover{transform:translateY(-4px)}
+.p-card.featured{border-color:rgba(249,115,22,0.4);box-shadow:0 0 60px rgba(249,115,22,0.1),0 40px 80px rgba(0,0,0,0.3);transform:scale(1.04)}
+.p-card.featured:hover{transform:scale(1.04) translateY(-4px)}
+.p-badge{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--orange-d),var(--orange));color:white;padding:4px 18px;border-radius:100px;font-size:11px;font-weight:700;letter-spacing:.5px;white-space:nowrap}
+.p-plan{font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:8px}
+.p-price{font-family:'Syne',sans-serif;font-size:52px;font-weight:800;color:var(--text);letter-spacing:-2px;line-height:1}
+.p-price sup{font-size:22px;letter-spacing:0;vertical-align:super}
+.p-price sub{font-size:15px;color:var(--text3);letter-spacing:0;font-weight:400}
+.p-desc{font-size:13px;color:var(--text3);margin:10px 0 22px;line-height:1.5;font-weight:300}
+.p-list{list-style:none;margin-bottom:24px}
+.p-list li{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--text2);padding:7px 0;border-bottom:1px solid var(--border);font-weight:300}
+.p-list li:last-child{border:none}
+.ck{color:var(--green);font-weight:700;flex-shrink:0;font-size:14px}
+.cx{color:var(--text3);flex-shrink:0}
+.p-btn{display:block;text-align:center;padding:13px;border-radius:11px;font-size:14px;font-weight:600;transition:all .2s;cursor:none;border:none;width:100%;font-family:'DM Sans',sans-serif}
+.p-btn-ghost{background:transparent;color:var(--orange);border:1.5px solid rgba(249,115,22,0.4)}
+.p-btn-ghost:hover{background:rgba(249,115,22,0.1)}
+.p-btn-solid{background:linear-gradient(135deg,var(--orange-d),var(--orange));color:white;box-shadow:0 0 40px rgba(249,115,22,0.25)}
+.p-btn-solid:hover{box-shadow:0 0 60px rgba(249,115,22,0.4);transform:translateY(-1px)}
+.p-btn-dark{background:rgba(255,255,255,0.08);color:var(--text)}
+.p-btn-dark:hover{background:rgba(255,255,255,0.12)}
 
 /* FAQ */
-.faq-list{max-width:720px;margin:0 auto}
-.faq-item{background:var(--paper);border:1px solid var(--paper4);border-radius:var(--radius);margin-bottom:10px;overflow:hidden;transition:all .2s}
-.faq-item.open{border-color:var(--orange)}
-.faq-q{padding:16px 20px;font-size:14px;font-weight:700;color:var(--ink);cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none}
+.faq{padding:80px 0 120px}
+.faq-list{max-width:680px;margin:52px auto 0}
+.faq-item{border:1px solid var(--border);border-radius:14px;margin-bottom:10px;overflow:hidden;transition:all .2s}
+.faq-item.open{border-color:rgba(249,115,22,0.3)}
+.faq-q{padding:18px 22px;font-size:15px;font-weight:500;color:var(--text);cursor:none;display:flex;justify-content:space-between;align-items:center;user-select:none}
 .faq-q:hover{color:var(--orange)}
-.faq-ico{color:var(--orange);font-size:20px;transition:transform .25s;flex-shrink:0;line-height:1}
-.faq-a{padding:0 20px;font-size:13px;color:var(--ink3);line-height:1.7;max-height:0;overflow:hidden;transition:all .3s;font-weight:500}
-.faq-item.open .faq-a{max-height:200px;padding:0 20px 16px}
+.faq-ico{color:var(--orange);font-size:20px;transition:transform .25s;line-height:1}
+.faq-a{padding:0 22px;font-size:14px;color:var(--text2);line-height:1.7;max-height:0;overflow:hidden;transition:all .35s;font-weight:300}
+.faq-item.open .faq-a{max-height:200px;padding:0 22px 18px}
 .faq-item.open .faq-ico{transform:rotate(45deg)}
 
 /* CTA */
-.cta-s{background:var(--paper2);border-top:1px solid var(--paper4);text-align:center;padding:96px 24px;position:relative;overflow:hidden}
-.cta-s::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(249,115,22,.06) 0%,transparent 70%);pointer-events:none}
-.cta-glass{background:rgba(255,255,255,.6);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.8);border-radius:28px;padding:56px 48px;max-width:640px;margin:0 auto;box-shadow:0 8px 40px rgba(0,0,0,.08);position:relative}
-[data-theme="dark"] .cta-glass{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.1);box-shadow:0 8px 40px rgba(0,0,0,.4)}
-.cta-s h2{color:var(--ink);margin-bottom:14px;position:relative}
-.cta-s p{font-size:16px;color:var(--ink3);margin-bottom:36px;max-width:480px;margin-left:auto;margin-right:auto;font-weight:500;position:relative}
-.btn-white{background:linear-gradient(135deg,var(--orange-d),var(--orange));color:white;padding:15px 32px;border-radius:12px;font-size:15px;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:all .2s;box-shadow:0 4px 16px rgba(249,115,22,.3);font-family:'Quicksand',sans-serif;position:relative}
-.btn-white:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(249,115,22,.45)}
+.cta-section{padding:80px 40px 120px;text-align:center;position:relative}
+.cta-glass{background:rgba(13,20,33,0.7);border:1px solid var(--border2);border-radius:28px;padding:72px 48px;max-width:700px;margin:0 auto;backdrop-filter:blur(20px);position:relative;overflow:hidden}
+.cta-glass::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(249,115,22,0.06),rgba(34,211,238,0.04));pointer-events:none}
+.cta-glass h2{font-family:'Syne',sans-serif;font-size:clamp(28px,4vw,48px);font-weight:800;letter-spacing:-1.5px;color:var(--text);margin-bottom:16px}
+.cta-glass p{font-size:16px;color:var(--text2);margin-bottom:36px;font-weight:300;line-height:1.7}
 
 /* FOOTER */
-footer{background:var(--paper2);border-top:1px solid var(--paper4);padding:48px 24px;text-align:center}
-.ft-brand{font-size:20px;font-weight:700;color:var(--ink);margin-bottom:4px;display:flex;align-items:center;justify-content:center;gap:8px}
-.ft-logo{width:28px;height:28px;background:linear-gradient(135deg,var(--orange-d),var(--orange));border-radius:7px;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:10px}
-.ft-links{display:flex;justify-content:center;gap:24px;margin:14px 0;flex-wrap:wrap}
-.ft-links a{color:var(--ink4);text-decoration:none;font-size:13px;font-weight:600;transition:color .15s}
+footer{background:var(--bg2);border-top:1px solid var(--border);padding:48px 40px;text-align:center}
+.ft-brand{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--text);display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px}
+.ft-links{display:flex;justify-content:center;gap:24px;margin:16px 0}
+.ft-links a{color:var(--text3);text-decoration:none;font-size:13px;font-weight:400;transition:color .15s;cursor:none}
 .ft-links a:hover{color:var(--orange)}
-.ft-copy{font-size:12px;color:var(--ink4);margin-top:10px;font-weight:500}
+.ft-copy{font-size:12px;color:var(--text3)}
 
-/* ANIMATIONS — only animate elements below the fold */
-.fade-up{opacity:0;transform:translateY(28px);transition:opacity .65s ease,transform .65s ease}
-.fade-up.visible{opacity:1;transform:none}
-/* Always show testimonials regardless of scroll state */
-.tcard{opacity:1!important;transform:none!important}
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(40px)}
 
-/* ILLUSTRATION ELEMENTS */
-.ill-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:48px}
-@media(max-width:768px){.ill-grid{grid-template-columns:repeat(2,1fr)}}
-.ill-card{background:var(--paper);border:1px solid var(--paper4);border-radius:16px;padding:20px;text-align:center;transition:all .2s;box-shadow:var(--shadow)}
-.ill-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);border-color:var(--orange)}
-.ill-icon{font-size:32px;margin-bottom:10px;display:block}
-.ill-card h4{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:4px}
-.ill-card p{font-size:11px;color:var(--ink3);font-weight:500}
-
-@media(max-width:768px){
-  .steps-wrap,.debbie-inner,.features-grid,.tgrid,.pricing-grid{grid-template-columns:1fr}
-  .pcard.feat{transform:none}
-  .nav-link{display:none}
-  .hero-visual{display:none}
+@media(max-width:900px){
+  nav{padding:16px 20px}
+  .hero{padding:100px 20px 60px}
+  .hero-card{display:none}
+  .hero h1{font-size:42px}
+  .container{padding:0 20px}
+  .steps-track,.bento,.debbie-wrap,.t-grid,.p-grid{grid-template-columns:1fr!important}
+  .bento-card.wide,.bento-card.tall{grid-column:span 1;grid-row:span 1}
+  .hero-stats{gap:24px}
+  .cta-glass{padding:40px 24px}
+  footer{padding:32px 20px}
 }
 </style>
 </head>
 <body>
 
-<nav>
-  <a href="index.html" class="nav-brand">
-    <div class="nav-logo">AMS</div>
-    <span class="nav-name">AuditMyStore</span>
+<!-- CURSOR -->
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- 3D CANVAS -->
+<canvas id="bg-canvas"></canvas>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="index.html" class="nav-logo">
+    <div class="logo-mark">AMS</div>
+    <span class="logo-text">AuditMyStore</span>
   </a>
   <div class="nav-links">
     <a href="#how" class="nav-link">How it works</a>
     <a href="#debbie" class="nav-link">Meet Debbie</a>
     <a href="#pricing" class="nav-link">Pricing</a>
     <a href="login.html" class="nav-link">Log in</a>
-    <button class="theme-btn" onclick="toggleTheme()" id="theme-btn">🌙</button>
+    <button class="theme-nav-btn" id="theme-btn" onclick="toggleTheme()">🌙</button>
     <a href="app.html" class="nav-cta">Try Free →</a>
   </div>
 </nav>
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-mesh"></div>
   <div class="hero-inner">
-    <div class="hero-left">
-      <div class="hero-badge"><span class="badge-dot"></span>AI-Powered · Shopify Expert</div>
-      <h1>Your Shopify Store Deserves <em>More Revenue</em></h1>
-      <p class="hero-sub">Paste your store URL and get a comprehensive AI diagnosis in 60 seconds — actionable insights to double your revenue.</p>
-      <div class="hero-btns">
-        <a href="app.html" class="btn-orange">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-          Analyze My Store Free
-        </a>
-        <a href="#how" class="btn-ghost">See how it works ↓</a>
+    <div class="hero-eyebrow"><span class="eyebrow-dot"></span>AI-Powered Revenue Intelligence</div>
+    <h1>
+      <span class="line"><span class="word">Your Shopify Store</span></span>
+      <span class="line"><span class="word grad">Hides Revenue.</span></span>
+      <span class="line"><span class="word">We Find It.</span></span>
+    </h1>
+    <p class="hero-sub">Paste your store URL and get a comprehensive AI diagnosis in 60 seconds — uncover hidden gaps, quick wins, and a 90-day blueprint to double your revenue.</p>
+    <div class="hero-btns">
+      <a href="app.html" class="btn-primary">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        Analyze My Store Free
+      </a>
+      <a href="#how" class="btn-ghost">See how it works ↓</a>
+    </div>
+    <div class="hero-stats">
+      <div><span class="stat-num" data-count="2400">0</span><div class="stat-lbl">Stores Analyzed</div></div>
+      <div class="stat-div"></div>
+      <div><span class="stat-num">$2.4M</span><div class="stat-lbl">Revenue Unlocked</div></div>
+      <div class="stat-div"></div>
+      <div><span class="stat-num">60s</span><div class="stat-lbl">Analysis Time</div></div>
+    </div>
+  </div>
+
+  <!-- Floating Dashboard Card -->
+  <div class="hero-card" id="hero-card">
+    <div class="hc-header">
+      <div class="hc-dot" style="background:#ff5f57"></div>
+      <div class="hc-dot" style="background:#ffbd2e"></div>
+      <div class="hc-dot" style="background:#28c940"></div>
+      <div class="hc-url">auditmystore.vercel.app/app</div>
+    </div>
+    <div class="hc-score">
+      <div class="hc-ring">
+        <svg width="64" height="64" viewBox="0 0 64 64">
+          <circle cx="32" cy="32" r="26" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="6"/>
+          <circle cx="32" cy="32" r="26" fill="none" stroke="url(#rg)" stroke-width="6" stroke-linecap="round" stroke-dasharray="163" stroke-dashoffset="41"/>
+          <defs><linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#ea580c"/><stop offset="100%" stop-color="#f97316"/></linearGradient></defs>
+        </svg>
+        <div class="hc-score-num">74<span class="hc-score-sub">/100</span></div>
       </div>
-      <div class="hero-trust">
-        <div class="trust-stat"><div class="trust-num">2,400+</div><div class="trust-lbl">Stores Analyzed</div></div>
-        <div class="trust-div"></div>
-        <div class="trust-stat"><div class="trust-num">$2.4M</div><div class="trust-lbl">Revenue Unlocked</div></div>
-        <div class="trust-div"></div>
-        <div class="trust-stat"><div class="trust-num">60s</div><div class="trust-lbl">Analysis Time</div></div>
+      <div class="hc-info">
+        <h4>Store Health Score</h4>
+        <p>🔥 3 critical issues found</p>
       </div>
     </div>
-    <!-- Hero Visual -->
-    <div class="hero-visual fade-up">
-      <div class="hero-card-main">
-        <div class="browser-bar">
-          <div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
-          <div class="browser-url">auditmystore.vercel.app/app</div>
-        </div>
-        <div class="score-section">
-          <div class="score-circle">
-            <svg width="70" height="70" viewBox="0 0 70 70">
-              <circle cx="35" cy="35" r="28" fill="none" stroke="var(--paper3)" stroke-width="7"/>
-              <circle cx="35" cy="35" r="28" fill="none" stroke="url(#sg)" stroke-width="7" stroke-linecap="round" stroke-dasharray="176" stroke-dashoffset="44"/>
-              <defs><linearGradient id="sg" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#c2410c"/><stop offset="100%" stop-color="#ea580c"/></linearGradient></defs>
-            </svg>
-            <div class="score-text"><span class="score-num">74</span><span class="score-lbl">/100</span></div>
-          </div>
-          <div class="score-info">
-            <h3>Store Health Score</h3>
-            <p style="color:var(--orange);font-weight:700;font-size:13px">🔥 Above average — 3 critical issues found</p>
-            <div style="margin-top:8px;height:6px;background:var(--paper3);border-radius:3px;overflow:hidden;width:180px">
-              <div style="height:100%;width:74%;background:linear-gradient(90deg,var(--orange-d),var(--orange));border-radius:3px"></div>
-            </div>
-          </div>
-        </div>
-        <div class="metrics-grid">
-          <div class="metric-cell">
-            <div class="metric-cell-lbl">Monthly Rev.</div>
-            <div class="metric-cell-val" style="color:var(--orange)">$52k</div>
-            <div class="metric-cell-chg" style="color:var(--green)">↑ $18k opp</div>
-          </div>
-          <div class="metric-cell">
-            <div class="metric-cell-lbl">Conv. Rate</div>
-            <div class="metric-cell-val">1.8%</div>
-            <div class="metric-cell-chg" style="color:var(--orange)">↑ 2.1% target</div>
-          </div>
-          <div class="metric-cell">
-            <div class="metric-cell-lbl">Cart Abandon</div>
-            <div class="metric-cell-val" style="color:var(--red)">68%</div>
-            <div class="metric-cell-chg" style="color:var(--orange)">$12k at risk</div>
-          </div>
-        </div>
-        <div style="padding:14px 16px;background:var(--paper2);border-top:1px solid var(--paper4)">
-          <div style="font-size:11px;font-weight:700;color:var(--ink3);margin-bottom:8px;text-transform:uppercase;letter-spacing:.4px">Quick Wins</div>
-          <div style="display:flex;flex-direction:column;gap:5px">
-            <div style="display:flex;align-items:center;gap:7px;font-size:12px;font-weight:500;color:var(--ink2)"><span style="color:var(--orange);font-weight:700">→</span>Install abandoned cart flow — recover $12k/mo</div>
-            <div style="display:flex;align-items:center;gap:7px;font-size:12px;font-weight:500;color:var(--ink2)"><span style="color:var(--orange);font-weight:700">→</span>Add email popup — +3% capture rate</div>
-          </div>
-        </div>
+    <div class="hc-metrics">
+      <div class="hc-metric">
+        <div class="hc-m-lbl">Revenue</div>
+        <div class="hc-m-val">$52k</div>
+        <div class="hc-m-chg">+$18k opp</div>
       </div>
-      <!-- Floating cards -->
-      <div class="float-card float-card-1">
-        <div class="float-card-inner">
-          <div class="float-icon" style="background:rgba(249,115,22,.1)">🚀</div>
-          <div><div style="font-size:12px;font-weight:700;color:var(--ink)">+23% Revenue</div><div style="font-size:10px;color:var(--ink3);font-weight:500">After 30 days</div></div>
-        </div>
+      <div class="hc-metric">
+        <div class="hc-m-lbl">Conv. Rate</div>
+        <div class="hc-m-val">1.8%</div>
+        <div class="hc-m-chg">↑ 2.1% target</div>
       </div>
-      <div class="float-card float-card-2">
-        <div class="float-card-inner">
-          <div class="float-icon" style="background:rgba(5,150,105,.12)">✅</div>
-          <div><div style="font-size:12px;font-weight:700;color:var(--ink)">Issues Fixed</div><div style="font-size:10px;color:var(--ink3);font-weight:500">12 of 15 resolved</div></div>
-        </div>
+      <div class="hc-metric">
+        <div class="hc-m-lbl">Cart Abandon</div>
+        <div class="hc-m-val" style="color:var(--red)">68%</div>
+        <div class="hc-m-chg" style="color:var(--red)">$12k at risk</div>
       </div>
+      <div class="hc-metric">
+        <div class="hc-m-lbl">AOV</div>
+        <div class="hc-m-val">$67</div>
+        <div class="hc-m-chg">+$15 opp</div>
+      </div>
+    </div>
+    <div class="hc-issues">
+      <div class="hc-issue"><span class="hc-pill pill-red">Critical</span>No email capture popup</div>
+      <div class="hc-issue"><span class="hc-pill pill-yellow">High</span>Missing review app</div>
+      <div class="hc-issue"><span class="hc-pill pill-yellow">High</span>No meta description</div>
     </div>
   </div>
 </section>
 
 <!-- HOW IT WORKS -->
-<section class="alt" id="how">
+<section class="scrolly" id="how">
   <div class="container">
-    <div class="sec-hdr c">
-      <div class="sec-lbl">How it works</div>
-      <h2>From URL to Blueprint in 60 Seconds</h2>
-      <p class="sec-sub">No account needed. Just paste your store URL and let AI do the heavy lifting.</p>
-    </div>
-    <div class="steps-wrap">
-      <div class="step-card fade-up">
-        <div class="step-num step-num-1">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        </div>
+    <div class="section-label reveal">How it works</div>
+    <h2 class="section-h2 reveal">From URL to Blueprint<br>in <span class="grad">60 Seconds</span></h2>
+    <p class="section-sub reveal">No account needed. No credit card. Just paste your store URL.</p>
+    <div class="steps-track">
+      <div class="step-card reveal">
+        <div class="step-num">01</div>
+        <div class="step-ico" style="background:rgba(249,115,22,0.1)">🔍</div>
         <h3>Enter Your Store URL</h3>
-        <p>Paste any Shopify domain — myshopify.com or custom. Works instantly on any public store.</p>
+        <p>Paste any Shopify domain. Works instantly on any public store — even competitor stores.</p>
       </div>
-      <div class="step-card fade-up" style="transition-delay:.12s">
-        <div class="step-num step-num-2">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        </div>
+      <div class="step-card reveal" style="transition-delay:.1s">
+        <div class="step-num">02</div>
+        <div class="step-ico" style="background:rgba(34,211,238,0.1)">⚡</div>
         <h3>AI Scans Everything</h3>
-        <p>Analyzes SEO, products, UX, pricing, conversion, trust signals across 6 key categories.</p>
+        <p>Analyzes SEO, products, UX, trust signals, conversion gaps and discoverability in real time.</p>
       </div>
-      <div class="step-card fade-up" style="transition-delay:.24s">
-        <div class="step-num step-num-3">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-        </div>
+      <div class="step-card reveal" style="transition-delay:.2s">
+        <div class="step-num">03</div>
+        <div class="step-ico" style="background:rgba(74,222,128,0.1)">📈</div>
         <h3>Get Your Blueprint</h3>
-        <p>A personalized score, revenue gaps, quick wins, and a full 90-day growth action plan.</p>
+        <p>Score, issues, quick wins, and a personalized 90-day revenue growth action plan.</p>
       </div>
     </div>
-    <!-- What you get icons -->
-    <div class="ill-grid">
-      <div class="ill-card fade-up">
-        <span class="ill-icon">📊</span>
-        <h4>Health Score</h4>
-        <p>0–100 rating across 6 categories</p>
-      </div>
-      <div class="ill-card fade-up" style="transition-delay:.08s">
-        <span class="ill-icon">💰</span>
-        <h4>Revenue Gaps</h4>
-        <p>Exact $ you're leaving on the table</p>
-      </div>
-      <div class="ill-card fade-up" style="transition-delay:.16s">
-        <span class="ill-icon">⚡</span>
-        <h4>Quick Wins</h4>
-        <p>Actions under 2 hours, sorted by impact</p>
-      </div>
-      <div class="ill-card fade-up" style="transition-delay:.24s">
-        <span class="ill-icon">🗺</span>
-        <h4>90-Day Plan</h4>
-        <p>Week-by-week growth blueprint</p>
-      </div>
-    </div>
-  </div>
-</section>
 
-<!-- FEATURES -->
-<section>
-  <div class="container">
-    <div class="sec-hdr c">
-      <div class="sec-lbl">Features</div>
-      <h2>Everything You Need to Scale</h2>
-      <p class="sec-sub">AuditMyStore gives you the full picture — public data insights and real store analytics when you connect.</p>
-    </div>
-    <div class="features-grid">
-      <div class="feat-card fade-up">
-        <div class="feat-ico" style="background:var(--orange-l)">📊</div>
+    <!-- BENTO FEATURES -->
+    <div class="bento" style="margin-top:80px">
+      <div class="bento-card wide reveal">
+        <div class="bento-glow" style="background:var(--orange)"></div>
+        <span class="bento-icon">📊</span>
         <h3>Store Health Score</h3>
-        <p>Get a 0–100 score across SEO, UX, conversion rate, trust signals, mobile performance, and customer retention. See exactly where you stand.</p>
+        <p>A 0–100 score across SEO, UX, conversion, trust signals, performance and retention — with a breakdown of every category.</p>
       </div>
-      <div class="feat-card fade-up" style="transition-delay:.1s">
-        <div class="feat-ico" style="background:#dcfce7">💰</div>
-        <h3>Revenue Gap Analysis</h3>
-        <p>See exactly how much money you're leaving on the table each month and the specific actions causing it — with dollar amounts attached.</p>
+      <div class="bento-card reveal" style="transition-delay:.1s">
+        <div class="bento-glow" style="background:var(--teal)"></div>
+        <span class="bento-icon">💰</span>
+        <h3>Revenue Gaps</h3>
+        <p>Exact dollar amounts you're leaving on the table each month.</p>
       </div>
-      <div class="feat-card fade-up" style="transition-delay:.2s">
-        <div class="feat-ico" style="background:var(--teal-l)">🔗</div>
-        <h3>Shopify OAuth Integration</h3>
-        <p>Connect your store securely via OAuth to unlock real revenue, orders, customer LTV, abandoned cart rates, and email opt-in data.</p>
+      <div class="bento-card reveal" style="transition-delay:.15s">
+        <div class="bento-glow" style="background:var(--green)"></div>
+        <span class="bento-icon">⚡</span>
+        <h3>Quick Wins</h3>
+        <p>Actions under 2 hours, sorted by revenue impact.</p>
       </div>
-      <div class="feat-card fade-up" style="transition-delay:.3s">
-        <div class="feat-ico" style="background:#f3e8ff">📄</div>
-        <h3>PDF Report Export</h3>
-        <p>Download a beautiful, fully formatted PDF report with all your scores, issues, quick wins, and the 90-day blueprint ready to share.</p>
+      <div class="bento-card reveal" style="transition-delay:.05s">
+        <div class="bento-glow" style="background:#818cf8"></div>
+        <span class="bento-icon">🔗</span>
+        <h3>Shopify OAuth</h3>
+        <p>Connect securely to unlock real revenue, orders, LTV and abandoned cart data.</p>
+      </div>
+      <div class="bento-card reveal" style="transition-delay:.1s">
+        <div class="bento-glow" style="background:var(--orange)"></div>
+        <span class="bento-icon">📄</span>
+        <h3>PDF Export</h3>
+        <p>Branded, shareable PDF reports for your entire analysis.</p>
+      </div>
+      <div class="bento-card wide reveal" style="transition-delay:.15s">
+        <div class="bento-glow" style="background:var(--teal)"></div>
+        <span class="bento-icon">🗺</span>
+        <h3>90-Day Growth Blueprint</h3>
+        <p>A week-by-week action plan — Foundation, Growth, Scale — tailored to the specific gaps found in your store.</p>
       </div>
     </div>
   </div>
 </section>
 
 <!-- MEET DEBBIE -->
-<section class="debbie-section" id="debbie">
+<section class="scrolly" id="debbie" style="background:var(--bg2)">
   <div class="container">
-    <div class="debbie-inner">
-      <div class="debbie-text">
-        <div class="sec-lbl">Meet Your AI Consultant</div>
-        <h2>Say Hello to Debbie 👋</h2>
-        <p class="sec-sub">Debbie is your always-on AI Shopify consultant. Ask her anything about your store — she knows your data, your issues, and exactly how to fix them.</p>
-        <div class="debbie-features">
-          <div class="debbie-feat">
-            <div class="debbie-feat-icon" style="background:rgba(249,115,22,.12)">🧠</div>
-            <div class="debbie-feat-text">
-              <h4>Knows Your Store</h4>
-              <p>Debbie analyses your actual store data — not generic advice. Every recommendation is specific to your numbers.</p>
-            </div>
+    <div class="section-label reveal">Meet Your AI Consultant</div>
+    <h2 class="section-h2 reveal">Say Hello to <span class="grad">Debbie</span> 👋</h2>
+    <div class="debbie-wrap">
+      <div>
+        <p class="section-sub reveal" style="max-width:none;margin-bottom:32px">Debbie is your always-on AI Shopify consultant. Ask her anything about your store — she knows your data and exactly how to fix each issue.</p>
+        <div class="dc-features reveal">
+          <div class="dc-feat">
+            <div class="dc-feat-ico" style="background:rgba(249,115,22,0.1)">🧠</div>
+            <div><h4>SEO Audit</h4><p>Keywords, meta tags, schema & blog topics specific to your niche.</p></div>
           </div>
-          <div class="debbie-feat">
-            <div class="debbie-feat-icon" style="background:rgba(8,145,178,.15)">⚡</div>
-            <div class="debbie-feat-text">
-              <h4>Instant Answers</h4>
-              <p>Ask about your conversion rate, cart abandonment, product strategy — Debbie answers in seconds.</p>
-            </div>
+          <div class="dc-feat">
+            <div class="dc-feat-ico" style="background:rgba(34,211,238,0.1)">📧</div>
+            <div><h4>Email Sequences</h4><p>Full copy for welcome, abandoned cart & post-purchase emails.</p></div>
           </div>
-          <div class="debbie-feat">
-            <div class="debbie-feat-icon" style="background:rgba(5,150,105,.15)">📈</div>
-            <div class="debbie-feat-text">
-              <h4>Revenue Focused</h4>
-              <p>Every suggestion Debbie makes is tied to a revenue impact — no fluff, just what moves the needle.</p>
-            </div>
+          <div class="dc-feat">
+            <div class="dc-feat-ico" style="background:rgba(74,222,128,0.1)">💲</div>
+            <div><h4>Pricing Strategy</h4><p>AOV tactics, price anchoring & upmarket positioning advice.</p></div>
+          </div>
+          <div class="dc-feat">
+            <div class="dc-feat-ico" style="background:rgba(129,140,248,0.1)">📣</div>
+            <div><h4>Ad Copy</h4><p>Ready-to-run Facebook, Instagram & Google ads for your products.</p></div>
           </div>
         </div>
       </div>
-      <!-- Chat UI -->
-      <div class="debbie-chat fade-up">
-        <div class="debbie-chat-header">
-          <div class="debbie-avatar">🤖</div>
+      <div class="debbie-chat reveal">
+        <div class="dc-header">
+          <div class="dc-av">🤖</div>
           <div>
-            <div class="debbie-name">Debbie</div>
-            <div class="debbie-status"><div class="debbie-dot"></div>Online · AI Consultant</div>
+            <div class="dc-name">Debbie</div>
+            <div class="dc-status"><div class="dc-online-dot"></div>Online · AI Consultant</div>
           </div>
         </div>
-        <div class="chat-bubbles">
-          <div class="bubble bubble-ai">👋 Hi! I'm Debbie, your AI Shopify consultant. I've finished analyzing your store — want to know what's costing you the most revenue?</div>
-          <div class="bubble bubble-user">Yes! What's my biggest issue?</div>
-          <div class="bubble bubble-ai">Your cart abandonment rate is <strong>68%</strong> — that's $12,400/month walking out the door. Setting up a Klaviyo abandoned cart flow takes 2 hours and could recover 30–40% of that. Want a step-by-step guide?</div>
-          <div class="bubble bubble-user">How do I set up the flow?</div>
-          <div class="typing">
-            <div class="typing-dot"></div>
-            <div class="typing-dot"></div>
-            <div class="typing-dot"></div>
-          </div>
+        <div class="dc-msgs">
+          <div class="dc-msg ai">👋 Hi! I've finished analyzing your store. Your cart abandonment rate is <strong>68%</strong> — that's $12,400/month walking out the door.</div>
+          <div class="dc-msg user">How do I fix it?</div>
+          <div class="dc-msg ai">Set up a 3-email Klaviyo abandoned cart sequence: send at 1hr, 24hr, and 72hr. Offer a 10% discount only on the 3rd email. Takes 2 hours to build and can recover 20–30% of abandoned carts.</div>
+          <div class="dc-msg user">Can you write those emails?</div>
+          <div class="typing"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>
         </div>
       </div>
     </div>
@@ -518,73 +456,73 @@ footer{background:var(--paper2);border-top:1px solid var(--paper4);padding:48px 
 </section>
 
 <!-- TESTIMONIALS -->
-<section class="testimonials-section" id="results">
+<section class="testimonials">
   <div class="container">
-    <div class="sec-hdr c">
-      <div class="sec-lbl" style="color:var(--orange)">Results</div>
-      <h2 style="color:white">Store Owners Love It</h2>
+    <div style="text-align:center">
+      <div class="section-label reveal" style="justify-content:center;display:flex">Results</div>
+      <h2 class="section-h2 reveal" style="text-align:center">Store Owners Love It</h2>
     </div>
-    <div class="tgrid">
-      <div class="tcard">
+    <div class="t-grid">
+      <div class="t-card reveal">
         <div class="stars">★★★★★</div>
-        <p class="ttext">"Found 3 critical issues in 60 seconds that I'd been missing for months. Fixed them over a weekend and saw a 23% jump in conversion rate."</p>
-        <div class="tauthor">
-          <div class="tavatar" style="background:linear-gradient(135deg,var(--orange-d),var(--orange))">SM</div>
-          <div><div class="tname">Sarah M.</div><div class="tstore">Fashion Boutique · $180k/yr</div></div>
+        <p class="t-text">"Found 3 critical issues in 60 seconds I'd been missing for months. Fixed them over a weekend and saw a 23% jump in conversion rate."</p>
+        <div class="t-author">
+          <div class="t-av" style="background:linear-gradient(135deg,var(--orange-d),var(--orange))">SM</div>
+          <div><div class="t-name">Sarah M.</div><div class="t-store">Fashion Boutique · $180k/yr</div></div>
         </div>
-        <div class="result-pill">📈 +23% conversion</div>
+        <div class="t-pill">📈 +23% conversion</div>
       </div>
-      <div class="tcard" style="transition-delay:.12s">
+      <div class="t-card reveal" style="transition-delay:.1s">
         <div class="stars">★★★★★</div>
-        <p class="ttext">"The revenue gap analysis was eye-opening. I was losing $8,400/month just from a broken checkout flow. Debbie walked me through fixing it in one afternoon."</p>
-        <div class="tauthor">
-          <div class="tavatar" style="background:linear-gradient(135deg,#0891b2,#22d3ee)">JK</div>
-          <div><div class="tname">James K.</div><div class="tstore">Home Goods · $340k/yr</div></div>
+        <p class="t-text">"The revenue gap analysis was eye-opening. I was losing $8,400/month from a broken checkout flow. Debbie walked me through fixing it in one afternoon."</p>
+        <div class="t-author">
+          <div class="t-av" style="background:linear-gradient(135deg,#0891b2,#22d3ee)">JK</div>
+          <div><div class="t-name">James K.</div><div class="t-store">Home Goods · $340k/yr</div></div>
         </div>
-        <div class="result-pill">💰 +$8,400/mo recovered</div>
+        <div class="t-pill">💰 +$8,400/mo recovered</div>
       </div>
-      <div class="tcard" style="transition-delay:.24s">
+      <div class="t-card reveal" style="transition-delay:.2s">
         <div class="stars">★★★★★</div>
-        <p class="ttext">"I use it on every client store. Debbie's chat is like having a senior Shopify consultant on call 24/7. The 90-day blueprint alone is worth the price."</p>
-        <div class="tauthor">
-          <div class="tavatar" style="background:linear-gradient(135deg,#059669,#4ade80)">AP</div>
-          <div><div class="tname">Aisha P.</div><div class="tstore">Shopify Agency Owner</div></div>
+        <p class="t-text">"I run it on every client store. Debbie's chat is like having a senior Shopify consultant on call 24/7. The 90-day blueprint alone is worth the price."</p>
+        <div class="t-author">
+          <div class="t-av" style="background:linear-gradient(135deg,#059669,#4ade80)">AP</div>
+          <div><div class="t-name">Aisha P.</div><div class="t-store">Shopify Agency Owner</div></div>
         </div>
-        <div class="result-pill">🏆 Used on 40+ stores</div>
+        <div class="t-pill">🏆 Used on 40+ stores</div>
       </div>
     </div>
   </div>
 </section>
 
 <!-- PRICING -->
-<section id="pricing">
+<section class="pricing" id="pricing">
   <div class="container">
-    <div class="sec-hdr c">
-      <div class="sec-lbl">Pricing</div>
-      <h2>Simple, Honest Pricing</h2>
-      <p class="sec-sub">Start free. Upgrade when you're ready to unlock real store data and unlimited audits.</p>
+    <div style="text-align:center">
+      <div class="section-label reveal" style="justify-content:center;display:flex">Pricing</div>
+      <h2 class="section-h2 reveal" style="text-align:center">Simple, Honest Pricing</h2>
+      <p class="section-sub reveal" style="margin:0 auto;text-align:center">Start free. Upgrade when you're ready for unlimited audits and real store data.</p>
     </div>
-    <div class="pricing-grid">
-      <div class="pcard fade-up">
-        <div class="pplan">Free</div>
-        <div class="pprice">$0</div>
-        <p class="pdesc">2 free audits to see what you're missing.</p>
-        <ul class="pflst">
+    <div class="p-grid">
+      <div class="p-card reveal">
+        <div class="p-plan">Free</div>
+        <div class="p-price">$0</div>
+        <p class="p-desc">2 free audits to see what you're missing.</p>
+        <ul class="p-list">
           <li><span class="ck">✓</span>2 store audits</li>
           <li><span class="ck">✓</span>Public data analysis</li>
-          <li><span class="ck">✓</span>Store health score</li>
+          <li><span class="ck">✓</span>Health score</li>
           <li><span class="ck">✓</span>Quick wins list</li>
-          <li><span class="cx">—</span><span style="color:var(--ink4)">PDF export</span></li>
-          <li><span class="cx">—</span><span style="color:var(--ink4)">Real revenue data</span></li>
+          <li><span class="cx">—</span><span style="color:var(--text3)">PDF export</span></li>
+          <li><span class="cx">—</span><span style="color:var(--text3)">Real revenue data</span></li>
         </ul>
-        <button onclick="goCheckout('free')" class="btn-plan bpo">Start Free →</button>
+        <button onclick="goCheckout('free')" class="p-btn p-btn-ghost">Start Free →</button>
       </div>
-      <div class="pcard feat fade-up" style="transition-delay:.12s">
-        <div class="pbadge">Most Popular</div>
-        <div class="pplan">Pro Monthly</div>
-        <div class="pprice"><sup>$</sup>5<sub>/mo</sub></div>
-        <p class="pdesc">Unlimited audits + real store data.</p>
-        <ul class="pflst">
+      <div class="p-card featured reveal" style="transition-delay:.1s">
+        <div class="p-badge">Most Popular</div>
+        <div class="p-plan">Pro Monthly</div>
+        <div class="p-price"><sup>$</sup>5<sub>/mo</sub></div>
+        <p class="p-desc">Unlimited audits + real store data.</p>
+        <ul class="p-list">
           <li><span class="ck">✓</span>Unlimited audits</li>
           <li><span class="ck">✓</span>Connect store via OAuth</li>
           <li><span class="ck">✓</span>Real revenue & orders</li>
@@ -592,50 +530,47 @@ footer{background:var(--paper2);border-top:1px solid var(--paper4);padding:48px 
           <li><span class="ck">✓</span>Debbie AI consultant</li>
           <li><span class="ck">✓</span>Cancel anytime</li>
         </ul>
-        <button onclick="goCheckout('monthly')" class="btn-plan bps">Get Pro — $5/mo →</button>
+        <button onclick="goCheckout('monthly')" class="p-btn p-btn-solid">Get Pro — $5/mo →</button>
       </div>
-      <div class="pcard fade-up" style="transition-delay:.24s">
-        <div class="pplan">Lifetime</div>
-        <div class="pprice"><sup>$</sup>97</div>
-        <p class="pdesc">Pay once. Use forever. Best value.</p>
-        <ul class="pflst">
+      <div class="p-card reveal" style="transition-delay:.2s">
+        <div class="p-plan">Lifetime</div>
+        <div class="p-price"><sup>$</sup>97</div>
+        <p class="p-desc">Pay once. Use forever. Best value.</p>
+        <ul class="p-list">
           <li><span class="ck">✓</span>Everything in Pro</li>
           <li><span class="ck">✓</span>Lifetime access</li>
           <li><span class="ck">✓</span>All future updates</li>
           <li><span class="ck">✓</span>Priority support</li>
-          <li><span class="ck">✓</span>No recurring charges</li>
           <li><span class="ck">✓</span>7-day money back</li>
         </ul>
-        <button onclick="goCheckout('lifetime')" class="btn-plan bpd">Get Lifetime — $97 →</button>
+        <button onclick="goCheckout('lifetime')" class="p-btn p-btn-dark">Get Lifetime — $97 →</button>
       </div>
     </div>
   </div>
 </section>
 
 <!-- FAQ -->
-<section class="alt">
-  <div class="container">
-    <div class="sec-hdr c">
-      <div class="sec-lbl">FAQ</div>
-      <h2>Common Questions</h2>
-    </div>
+<section class="faq">
+  <div class="container" style="text-align:center">
+    <div class="section-label reveal" style="justify-content:center;display:flex">FAQ</div>
+    <h2 class="section-h2 reveal" style="text-align:center">Common Questions</h2>
     <div class="faq-list">
-      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Does it work on any Shopify store?<span class="faq-ico">+</span></div><div class="faq-a">Yes! Quick Analyze works on any public Shopify store — even competitors'. For real revenue and order data, connect your own store via OAuth.</div></div>
-      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Who is Debbie?<span class="faq-ico">+</span></div><div class="faq-a">Debbie is your AI Shopify consultant powered by advanced AI. She analyses your store data and gives specific, revenue-focused recommendations. Think of her as a senior e-commerce consultant available 24/7.</div></div>
-      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">How accurate is the free analysis?<span class="faq-ico">+</span></div><div class="faq-a">The free analysis uses publicly available data and AI estimates based on industry benchmarks. Revenue figures are estimates — connect your store for real numbers. The issues, quick wins, and blueprint are based on actual store data.</div></div>
-      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Is my store data safe?<span class="faq-ico">+</span></div><div class="faq-a">We only request read-only access. We never store your products, customer data, or orders — only the access token needed to fetch analytics. Revoke access anytime from your Shopify admin.</div></div>
-      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Can I cancel my monthly subscription?<span class="faq-ico">+</span></div><div class="faq-a">Yes, cancel anytime from your account dashboard. You'll keep access until the end of your billing period. No questions asked.</div></div>
+      <div class="faq-item reveal"><div class="faq-q" onclick="toggleFaq(this)">Does it work on any Shopify store?<span class="faq-ico">+</span></div><div class="faq-a">Yes — Quick Analyze works on any public Shopify store. For real revenue and order data, connect your own store via Shopify OAuth.</div></div>
+      <div class="faq-item reveal"><div class="faq-q" onclick="toggleFaq(this)">Who is Debbie?<span class="faq-ico">+</span></div><div class="faq-a">Debbie is your AI Shopify consultant powered by Groq AI. She analyses your store data and gives specific, revenue-focused recommendations — SEO, pricing, emails, ads, and competitor analysis.</div></div>
+      <div class="faq-item reveal"><div class="faq-q" onclick="toggleFaq(this)">How accurate is the free analysis?<span class="faq-ico">+</span></div><div class="faq-a">The free analysis uses publicly available data — products, collections, homepage signals, SEO and UX. Revenue figures shown are industry benchmarks for your store's price tier. Connect your store for real numbers.</div></div>
+      <div class="faq-item reveal"><div class="faq-q" onclick="toggleFaq(this)">Is my store data safe?<span class="faq-ico">+</span></div><div class="faq-a">We request read-only access only. We never store your products, customer data, or orders. Revoke access anytime from your Shopify admin.</div></div>
+      <div class="faq-item reveal"><div class="faq-q" onclick="toggleFaq(this)">Can I cancel my subscription?<span class="faq-ico">+</span></div><div class="faq-a">Yes — cancel anytime from your account dashboard. You keep access until the end of your billing period. No questions asked.</div></div>
     </div>
   </div>
 </section>
 
 <!-- CTA -->
-<section class="cta-s">
-  <div class="cta-glass">
-    <h2>Ready to Double Your Revenue?</h2>
+<section class="cta-section">
+  <div class="cta-glass reveal">
+    <h2>Ready to Find Your<br><span class="grad">Hidden Revenue?</span></h2>
     <p>Join 2,400+ store owners who've unlocked hidden revenue with AuditMyStore and Debbie.</p>
-    <a href="app.html" class="btn-white">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <a href="app.html" class="btn-primary" style="margin:0 auto;display:inline-flex">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
       Analyze My Store Free
     </a>
   </div>
@@ -643,75 +578,183 @@ footer{background:var(--paper2);border-top:1px solid var(--paper4);padding:48px 
 
 <footer>
   <div class="ft-brand">
-    <div class="ft-logo">AMS</div>
+    <div class="logo-mark" style="width:28px;height:28px;font-size:10px">AMS</div>
     AuditMyStore
   </div>
-  <p style="font-size:13px;color:var(--ink3);font-weight:500">AI-Powered Shopify Store Analysis</p>
+  <p style="font-size:13px;color:var(--text3);margin-bottom:0;font-weight:300">AI-Powered Shopify Revenue Intelligence</p>
   <div class="ft-links">
     <a href="app.html">Analyzer</a>
     <a href="#pricing">Pricing</a>
     <a href="#debbie">Meet Debbie</a>
     <a href="login.html">Login</a>
-    <a href="/cdn-cgi/l/email-protection#5e363b3232311e3f2b3a372a33272d2a312c3b703d3133">Contact</a>
+    <a href="mailto:hello@auditmystore.com">Contact</a>
   </div>
   <div class="ft-copy">© 2026 AuditMyStore. All rights reserved.</div>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
+// Safe store
+const store={get:(k,f='')=>{try{return localStorage.getItem(k)??f}catch{return f}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch{}},remove:(k)=>{try{localStorage.removeItem(k)}catch{}}};
 
-// Safe localStorage wrapper
-const store = {
-  get(k, fb='') { try { return localStorage.getItem(k) ?? fb; } catch(e) { return fb; } },
-  set(k, v) { try { localStorage.setItem(k, v); } catch(e) {} },
-  remove(k) { try { localStorage.removeItem(k); } catch(e) {} }
-};
-function toggleTheme(){
-  const h=document.documentElement,d=h.getAttribute('data-theme')==='dark';
-  h.setAttribute('data-theme',d?'light':'dark');
-  document.getElementById('theme-btn').textContent=d?'🌙':'☀️';
-  store.set('ams_theme',d?'light':'dark');
-}
-
-async function goCheckout(plan) {
-  if (plan === 'free') { window.location.href = 'app.html'; return; }
-  // Must be logged in to purchase
-  const token = store.get('ams_session_token');
-  if (!token) {
-    window.location.href = 'login.html?tab=signup&next=upgrade&plan=' + plan;
-    return;
-  }
-  const btn = event.target;
-  const orig = btn.textContent;
-  btn.textContent = 'Redirecting...'; btn.disabled = true;
-  try {
-    const resp = await fetch('/api/checkout', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ plan, email: store.get('ams_user_email') || '' })
-    });
-    const data = await resp.json();
-    if (data.url) { window.location.href = data.url; }
-    else { btn.textContent = orig; btn.disabled = false; alert(data.error || 'Something went wrong'); }
-  } catch (err) {
-    btn.textContent = orig; btn.disabled = false;
-    alert('Connection error. Please try again.');
-  }
-}
-function toggleFaq(el){
-  const i=el.parentElement,o=i.classList.contains('open');
-  document.querySelectorAll('.faq-item').forEach(x=>x.classList.remove('open'));
-  if(!o)i.classList.add('open');
-}
-const t=store.get('ams_theme')||'light';
-document.documentElement.setAttribute('data-theme',t);
-document.addEventListener('DOMContentLoaded',()=>{
-  const b=document.getElementById('theme-btn');
-  if(b)b.textContent=t==='dark'?'☀️':'🌙';
+// ── CURSOR ──────────────────────────────────────────────────────────────────
+const cursor=document.getElementById('cursor');
+const ring=document.getElementById('cursor-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX; my=e.clientY;
+  cursor.style.left=mx-6+'px'; cursor.style.top=my-6+'px';
 });
-const obs=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('visible')})},{threshold:.1});
-document.querySelectorAll('.fade-up').forEach(el=>obs.observe(el));
-setTimeout(()=>{document.querySelectorAll('.fade-up').forEach(el=>{const r=el.getBoundingClientRect();if(r.top<window.innerHeight)el.classList.add('visible')})},100);
-setTimeout(()=>document.querySelector('.hero-visual')?.classList.add('visible'),400);
+(function animRing(){
+  rx+=(mx-rx)*0.12; ry+=(my-ry)*0.12;
+  ring.style.left=rx+'px'; ring.style.top=ry+'px';
+  requestAnimationFrame(animRing);
+})();
+document.querySelectorAll('a,button,.step-card,.bento-card,.t-card,.p-card,.faq-q').forEach(el=>{
+  el.addEventListener('mouseenter',()=>ring.classList.add('hover'));
+  el.addEventListener('mouseleave',()=>ring.classList.remove('hover'));
+});
+
+// ── THREE.JS NODE GRAPH ─────────────────────────────────────────────────────
+(function initThree(){
+  const canvas=document.getElementById('bg-canvas');
+  const renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true});
+  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  renderer.setSize(innerWidth,innerHeight);
+  const scene=new THREE.Scene();
+  const camera=new THREE.PerspectiveCamera(60,innerWidth/innerHeight,0.1,1000);
+  camera.position.z=30;
+
+  // Nodes
+  const nodeCount=80;
+  const nodes=[];
+  const nodeGeo=new THREE.SphereGeometry(0.18,8,8);
+
+  for(let i=0;i<nodeCount;i++){
+    const col=Math.random()>0.7?0xf97316:Math.random()>0.5?0x22d3ee:0x5a6880;
+    const mat=new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:Math.random()*0.6+0.3});
+    const mesh=new THREE.Mesh(nodeGeo,mat);
+    mesh.position.set((Math.random()-0.5)*60,(Math.random()-0.5)*40,(Math.random()-0.5)*20);
+    mesh.userData={vx:(Math.random()-0.5)*0.015,vy:(Math.random()-0.5)*0.01,vz:(Math.random()-0.5)*0.005};
+    scene.add(mesh);
+    nodes.push(mesh);
+  }
+
+  // Edges
+  const edgeMat=new THREE.LineBasicMaterial({color:0xf97316,transparent:true,opacity:0.08});
+  const edges=[];
+  for(let i=0;i<nodeCount;i++){
+    for(let j=i+1;j<nodeCount;j++){
+      const d=nodes[i].position.distanceTo(nodes[j].position);
+      if(d<12&&Math.random()>0.5){
+        const geo=new THREE.BufferGeometry().setFromPoints([nodes[i].position,nodes[j].position]);
+        const line=new THREE.Line(geo,edgeMat.clone());
+        scene.add(line);
+        edges.push({line,i,j});
+      }
+    }
+  }
+
+  // Mouse parallax
+  let tmx=0,tmy=0;
+  document.addEventListener('mousemove',e=>{tmx=(e.clientX/innerWidth-0.5)*2;tmy=(e.clientY/innerHeight-0.5)*2;});
+
+  window.addEventListener('resize',()=>{
+    renderer.setSize(innerWidth,innerHeight);
+    camera.aspect=innerWidth/innerHeight;
+    camera.updateProjectionMatrix();
+  });
+
+  let t=0;
+  (function animate(){
+    requestAnimationFrame(animate);
+    t+=0.005;
+    camera.position.x+=(tmx*3-camera.position.x)*0.02;
+    camera.position.y+=(-tmy*2-camera.position.y)*0.02;
+    nodes.forEach(n=>{
+      n.position.x+=n.userData.vx;
+      n.position.y+=n.userData.vy;
+      n.position.z+=n.userData.vz;
+      if(Math.abs(n.position.x)>32)n.userData.vx*=-1;
+      if(Math.abs(n.position.y)>22)n.userData.vy*=-1;
+      if(Math.abs(n.position.z)>12)n.userData.vz*=-1;
+      n.material.opacity=0.3+Math.sin(t+n.position.x)*0.25;
+    });
+    edges.forEach(e=>{
+      const pts=[nodes[e.i].position,nodes[e.j].position];
+      e.line.geometry.setFromPoints(pts);
+      e.line.geometry.attributes.position.needsUpdate=true;
+      const d=nodes[e.i].position.distanceTo(nodes[e.j].position);
+      e.line.material.opacity=Math.max(0,0.12-d*0.008);
+    });
+    renderer.render(scene,camera);
+  })();
+})();
+
+// ── GSAP SCROLLTRIGGER ──────────────────────────────────────────────────────
+gsap.registerPlugin(ScrollTrigger);
+
+// Hero text stagger
+gsap.utils.toArray('.hero h1 .word').forEach((w,i)=>{
+  gsap.to(w,{translateY:'0%',duration:.9,delay:i*.15+.2,ease:'power4.out'});
+});
+gsap.to('.hero-sub',{opacity:1,y:0,duration:.8,delay:.7,ease:'power3.out'});
+gsap.to('.hero-btns',{opacity:1,y:0,duration:.8,delay:.9,ease:'power3.out'});
+gsap.to('.hero-stats',{opacity:1,y:0,duration:.8,delay:1.1,ease:'power3.out'});
+gsap.to('#hero-card',{opacity:1,x:0,duration:1,delay:.5,ease:'power3.out'});
+
+// Scroll reveals
+gsap.utils.toArray('.reveal').forEach(el=>{
+  gsap.to(el,{
+    opacity:1,y:0,duration:.7,ease:'power3.out',
+    scrollTrigger:{trigger:el,start:'top 88%',toggleActions:'play none none none'}
+  });
+});
+
+// Count up
+const countEl=document.querySelector('[data-count]');
+if(countEl){
+  ScrollTrigger.create({
+    trigger:countEl,start:'top 85%',
+    onEnter:()=>{
+      let c=0;const target=2400;
+      const iv=setInterval(()=>{c+=60;countEl.textContent=c.toLocaleString()+'+';if(c>=target){countEl.textContent=target.toLocaleString()+'+';clearInterval(iv);}},20);
+    }
+  });
+}
+
+// Nav scroll state
+ScrollTrigger.create({
+  start:'top -80',
+  onUpdate:()=>document.getElementById('nav').classList.toggle('scrolled',scrollY>80)
+});
+
+// ── FAQ ─────────────────────────────────────────────────────────────────────
+function toggleFaq(el){
+  const item=el.parentElement,isOpen=item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(x=>x.classList.remove('open'));
+  if(!isOpen)item.classList.add('open');
+}
+
+// ── CHECKOUT ────────────────────────────────────────────────────────────────
+async function goCheckout(plan){
+  if(plan==='free'){window.location.href='app.html';return;}
+  const token=store.get('ams_session_token');
+  if(!token){window.location.href='login.html?tab=signup&next=upgrade&plan='+plan;return;}
+  const btn=event.target; const orig=btn.textContent;
+  btn.textContent='Redirecting...'; btn.disabled=true;
+  try{
+    const r=await fetch('/api/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({plan,email:store.get('ams_user_email')})});
+    const d=await r.json();
+    if(d.url)window.location.href=d.url;
+    else{btn.textContent=orig;btn.disabled=false;alert(d.error||'Something went wrong');}
+  }catch(e){btn.textContent=orig;btn.disabled=false;alert('Connection error.');}
+}
+
+// ── THEME ────────────────────────────────────────────────────────────────────
+function toggleTheme(){
+  document.documentElement.classList.toggle('light');
+  store.set('ams_theme',document.documentElement.classList.contains('light')?'light':'dark');
+}
 </script>
 </body>
 </html>
