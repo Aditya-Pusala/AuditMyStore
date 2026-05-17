@@ -15,13 +15,13 @@ async function sendWelcomeEmail(email, name) {
       to: email,
       subject: `Welcome to AuditMyStore, ${firstName}! 🚀`,
       html: `<div style="font-family:sans-serif;max-width:540px;margin:0 auto">
-        <div style="background:linear-gradient(135deg,#ea580c,#f97316);padding:32px;text-align:center;border-radius:12px 12px 0 0">
+        <div style="background:linear-gradient(135deg,#115e59,#0f766e);padding:32px;text-align:center;border-radius:12px 12px 0 0">
           <h1 style="color:white;margin:0;font-size:24px">Welcome, ${firstName}! 🎉</h1>
         </div>
         <div style="padding:28px;background:#fff;border:1px solid #e2e8f0;border-top:none;border-radius:0 0 12px 12px">
           <p style="color:#334155;font-size:15px;line-height:1.7">I'm <strong>Debbie</strong>, your AI Shopify consultant. You have <strong>2 free audits</strong> to get started.</p>
           <div style="text-align:center;margin:24px 0">
-            <a href="${process.env.APP_URL}/app" style="background:linear-gradient(135deg,#ea580c,#f97316);color:white;padding:13px 28px;border-radius:9px;text-decoration:none;font-weight:700;font-size:15px">Analyze My First Store →</a>
+            <a href="${process.env.APP_URL}/app" style="background:linear-gradient(135deg,#115e59,#0f766e);color:white;padding:13px 28px;border-radius:9px;text-decoration:none;font-weight:700;font-size:15px">Analyze My First Store →</a>
           </div>
           <p style="color:#94a3b8;font-size:12px;text-align:center">— Debbie, AuditMyStore AI Consultant</p>
         </div>

@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>My Account — AuditMyStore</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230891b2'/><text x='50%' y='54%' dominant-baseline='middle' text-anchor='middle' fill='white' font-size='11' font-weight='700' font-family='sans-serif'>AMS</text></svg>"/>
-<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet"/>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--ink:#0f172a;--ink2:#334155;--ink3:#64748b;--ink4:#94a3b8;--paper:#ffffff;--paper2:#f8fafc;--paper3:#f1f5f9;--paper4:#e2e8f0;--teal:#0891b2;--teal-l:#e0f2fe;--teal-d:#0e7490;--green:#059669;--red:#dc2626;--orange:#ea580c;--yellow:#d97706;--radius:14px;--shadow:0 1px 3px rgba(0,0,0,.08),0 4px 16px rgba(0,0,0,.06);--shadow-lg:0 8px 32px rgba(0,0,0,.1)}
-body{font-family:'Quicksand',sans-serif;background:var(--paper2);color:var(--ink);min-height:100vh;transition:background .3s,color .3s}
+body{font-family:'DM Sans',sans-serif;background:var(--paper2);color:var(--ink);min-height:100vh;transition:background .2s,color .2s}
 nav{background:var(--paper);border-bottom:1px solid var(--paper4);padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between;transition:background .3s}
 .nav-brand{display:flex;align-items:center;gap:10px;text-decoration:none}
 .nav-logo{width:36px;height:36px;background:var(--teal);border-radius:9px;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:12px}
@@ -31,7 +31,7 @@ nav{background:var(--paper);border-bottom:1px solid var(--paper4);padding:0 24px
 .bdg-g{background:#dcfce7;color:var(--green)}
 .bdg-t{background:var(--teal-l);color:var(--teal-d)}
 .bdg-o{background:#fff7ed;color:var(--orange)}
-.btn{padding:10px 20px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;transition:all .15s;border:none;font-family:'Quicksand',sans-serif;text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+.btn{padding:10px 20px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;transition:all .15s;border:none;font-family:'DM Sans',sans-serif;text-decoration:none;display:inline-flex;align-items:center;gap:8px}
 .btn-t{background:var(--teal);color:white}
 .btn-t:hover{background:var(--teal-d);transform:translateY(-1px)}
 .btn-o{background:transparent;color:var(--teal);border:1.5px solid var(--teal)}
@@ -49,6 +49,20 @@ nav{background:var(--paper);border-bottom:1px solid var(--paper4);padding:0 24px
 .loading{text-align:center;padding:80px 24px;color:var(--ink3)}
 .spinner{width:40px;height:40px;border:3px solid var(--paper4);border-top-color:var(--teal);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px}
 @keyframes spin{to{transform:rotate(360deg)}}
+
+nav{background:rgba(255,255,255,.9);border-bottom:1px solid rgba(226,232,240,.9)}
+.nav-logo{background:var(--teal);box-shadow:none}
+.main{padding-top:40px}
+.card{border-radius:20px;box-shadow:none}
+.btn-t{background:var(--teal)}
+.btn-t:hover{background:var(--teal-dark);box-shadow:none}
+.btn-o{color:var(--teal-dark);border-color:var(--paper4)}
+.btn-o:hover{background:var(--paper3);box-shadow:none}
+.btn-d{border-color:#fecaca}
+.btn-d:hover{background:#fff1f2}
+.bdg-t{background:var(--teal-light);color:var(--teal-dark)}
+.warn-box{background:#f8fafc;color:var(--ink2)}
+.input:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(15,118,110,.1)}
 </style>
 </head>
 <body>

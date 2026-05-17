@@ -30,7 +30,7 @@ export default async function handler(req, res) {
         html: `<div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:32px">
           <h2 style="color:#0f172a">Reset your password</h2>
           <p style="color:#64748b">Click the button below to reset your password. This link expires in 30 minutes.</p>
-          <a href="${link}" style="display:inline-block;background:linear-gradient(135deg,#ea580c,#f97316);color:white;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:700;margin:16px 0">Reset Password</a>
+          <a href="${link}" style="display:inline-block;background:linear-gradient(135deg,#115e59,#0f766e);color:white;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:700;margin:16px 0">Reset Password</a>
           <p style="color:#94a3b8;font-size:12px">If you didn't request this, ignore this email.</p>
         </div>`
       })

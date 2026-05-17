@@ -43,7 +43,7 @@ async function sendWelcomeEmail(email, name) {
       html: `
         <div style="font-family:'Helvetica Neue',sans-serif;max-width:560px;margin:0 auto;background:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #e2e8f0">
           <!-- Header -->
-          <div style="background:linear-gradient(135deg,#ea580c,#f97316);padding:36px 32px;text-align:center">
+          <div style="background:linear-gradient(135deg,#115e59,#0f766e);padding:36px 32px;text-align:center">
             <div style="background:rgba(255,255,255,0.2);display:inline-block;padding:10px 20px;border-radius:10px;margin-bottom:16px">
               <span style="color:white;font-weight:800;font-size:18px;letter-spacing:-0.5px">AuditMyStore</span>
             </div>
@@ -76,7 +76,7 @@ async function sendWelcomeEmail(email, name) {
             </p>
             <!-- CTA -->
             <div style="text-align:center;margin:28px 0">
-              <a href="${process.env.APP_URL}/app" style="background:linear-gradient(135deg,#ea580c,#f97316);color:white;padding:14px 32px;border-radius:10px;text-decoration:none;font-weight:700;font-size:16px;display:inline-block">
+              <a href="${process.env.APP_URL}/app" style="background:linear-gradient(135deg,#115e59,#0f766e);color:white;padding:14px 32px;border-radius:10px;text-decoration:none;font-weight:700;font-size:16px;display:inline-block">
                 Analyze My First Store →
               </a>
             </div>
