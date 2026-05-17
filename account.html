@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
@@ -9,7 +9,6 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--ink:#0f172a;--ink2:#334155;--ink3:#64748b;--ink4:#94a3b8;--paper:#ffffff;--paper2:#f8fafc;--paper3:#f1f5f9;--paper4:#e2e8f0;--teal:#0891b2;--teal-l:#e0f2fe;--teal-d:#0e7490;--green:#059669;--red:#dc2626;--orange:#ea580c;--yellow:#d97706;--radius:14px;--shadow:0 1px 3px rgba(0,0,0,.08),0 4px 16px rgba(0,0,0,.06);--shadow-lg:0 8px 32px rgba(0,0,0,.1)}
-[data-theme="dark"]{--ink:#f1f5f9;--ink2:#cbd5e1;--ink3:#94a3b8;--ink4:#64748b;--paper:#0f172a;--paper2:#1e293b;--paper3:#253347;--paper4:#334155;--teal:#22d3ee;--teal-l:rgba(34,211,238,.12);--teal-d:#06b6d4;--green:#4ade80;--shadow:0 1px 3px rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.2);--shadow-lg:0 8px 32px rgba(0,0,0,.4)}
 body{font-family:'Quicksand',sans-serif;background:var(--paper2);color:var(--ink);min-height:100vh;transition:background .3s,color .3s}
 nav{background:var(--paper);border-bottom:1px solid var(--paper4);padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between;transition:background .3s}
 .nav-brand{display:flex;align-items:center;gap:10px;text-decoration:none}
@@ -18,8 +17,6 @@ nav{background:var(--paper);border-bottom:1px solid var(--paper4);padding:0 24px
 .nav-r{display:flex;align-items:center;gap:10px}
 .nav-link{font-size:14px;color:var(--ink3);text-decoration:none;font-weight:600;padding:8px 12px;border-radius:8px;transition:all .15s}
 .nav-link:hover{background:var(--paper3);color:var(--ink)}
-.theme-btn{width:38px;height:38px;border-radius:10px;border:1.5px solid var(--paper4);background:var(--paper2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:17px;transition:all .15s}
-.theme-btn:hover{background:var(--paper3);border-color:var(--teal)}
 .main{max-width:700px;margin:0 auto;padding:48px 24px}
 .page-title{font-size:32px;font-weight:700;color:var(--ink);letter-spacing:-.3px;margin-bottom:4px}
 .page-sub{font-size:14px;color:var(--ink3);font-weight:500;margin-bottom:32px}
@@ -32,9 +29,7 @@ nav{background:var(--paper);border-bottom:1px solid var(--paper4);padding:0 24px
 .info-val{font-size:14px;font-weight:700;color:var(--ink)}
 .bdg{padding:4px 10px;border-radius:100px;font-size:12px;font-weight:700}
 .bdg-g{background:#dcfce7;color:var(--green)}
-[data-theme="dark"] .bdg-g{background:rgba(74,222,128,.15)}
 .bdg-t{background:var(--teal-l);color:var(--teal-d)}
-[data-theme="dark"] .bdg-t{color:var(--teal)}
 .bdg-o{background:#fff7ed;color:var(--orange)}
 .btn{padding:10px 20px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;transition:all .15s;border:none;font-family:'Quicksand',sans-serif;text-decoration:none;display:inline-flex;align-items:center;gap:8px}
 .btn-t{background:var(--teal);color:white}
@@ -45,13 +40,11 @@ nav{background:var(--paper);border-bottom:1px solid var(--paper4);padding:0 24px
 .btn-d:hover{background:#fef2f2}
 .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
 .warn-box{background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:12px 16px;margin-top:12px;font-size:13px;color:var(--orange);font-weight:500}
-[data-theme="dark"] .warn-box{background:rgba(234,88,12,.1);border-color:rgba(234,88,12,.3)}
 .form-row{margin-bottom:12px}
 .form-lbl{display:block;font-size:13px;font-weight:700;color:var(--ink2);margin-bottom:5px}
 .input{width:100%;padding:10px 14px;border:1.5px solid var(--paper4);border-radius:8px;font-size:14px;color:var(--ink);background:var(--paper2);transition:all .15s;font-family:'Quicksand',sans-serif;outline:none;font-weight:500}
 .input:focus{border-color:var(--teal);background:var(--paper);box-shadow:0 0 0 3px rgba(8,145,178,.1)}
 .suc{background:#f0fdf4;border:1px solid #bbf7d0;color:var(--green);padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:12px;display:none;font-weight:500}
-[data-theme="dark"] .suc{background:rgba(74,222,128,.1);border-color:rgba(74,222,128,.3)}
 .err{background:#fef2f2;border:1px solid #fecaca;color:var(--red);padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:12px;display:none;font-weight:500}
 .loading{text-align:center;padding:80px 24px;color:var(--ink3)}
 .spinner{width:40px;height:40px;border:3px solid var(--paper4);border-top-color:var(--teal);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px}
@@ -66,7 +59,6 @@ nav{background:var(--paper);border-bottom:1px solid var(--paper4);padding:0 24px
   </a>
   <div class="nav-r">
     <a href="app.html" class="nav-link">← Go to App</a>
-    <button class="theme-btn" onclick="toggleTheme()" id="theme-btn">🌙</button>
     <button onclick="doLogout()" class="btn btn-d" style="padding:8px 16px;font-size:13px">Log Out</button>
   </div>
 </nav>
@@ -78,10 +70,6 @@ nav{background:var(--paper);border-bottom:1px solid var(--paper4);padding:0 24px
 <script>
 let token=localStorage.getItem('ams_session_token');
 let uData=null;
-function toggleTheme(){const h=document.documentElement,d=h.getAttribute('data-theme')==='dark';h.setAttribute('data-theme',d?'light':'dark');document.getElementById('theme-btn').textContent=d?'🌙':'☀️';localStorage.setItem('ams_theme',d?'light':'dark')}
-const th=localStorage.getItem('ams_theme')||'light';
-document.documentElement.setAttribute('data-theme',th);
-document.addEventListener('DOMContentLoaded',()=>{const b=document.getElementById('theme-btn');if(b)b.textContent=th==='dark'?'☀️':'🌙'});
 
 async function loadAccount(){
   if(!token){window.location.href='login.html';return}

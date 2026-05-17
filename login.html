@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
@@ -16,13 +16,6 @@
   --shadow:0 1px 3px rgba(0,0,0,.08),0 4px 16px rgba(0,0,0,.06);
   --shadow-lg:0 8px 40px rgba(0,0,0,.12);
 }
-[data-theme="dark"]{
-  --ink:#f1f5f9;--ink2:#cbd5e1;--ink3:#94a3b8;--ink4:#64748b;
-  --paper:#0f172a;--paper2:#1e293b;--paper3:#253347;--paper4:#334155;
-  --orange:#fb923c;--orange-l:rgba(251,146,60,.12);--orange-d:#ea580c;
-  --shadow:0 1px 3px rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.2);
-  --shadow-lg:0 8px 40px rgba(0,0,0,.5);
-}
 html,body{height:100%}
 body{font-family:'Quicksand',sans-serif;background:var(--paper2);color:var(--ink);min-height:100vh;display:flex;flex-direction:column;transition:background .3s,color .3s}
 
@@ -34,9 +27,6 @@ nav{background:var(--paper);border-bottom:1px solid var(--paper4);padding:0 24px
 .nav-r{display:flex;align-items:center;gap:10px}
 .nav-link{font-size:14px;color:var(--ink3);text-decoration:none;font-weight:600;padding:8px 14px;border-radius:8px;transition:all .15s}
 .nav-link:hover{background:var(--paper3);color:var(--ink)}
-.theme-btn{width:36px;height:36px;border-radius:9px;border:1.5px solid var(--paper4);background:var(--paper2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .15s}
-.theme-btn:hover{border-color:var(--orange)}
-
 /* MAIN LAYOUT */
 main{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 24px;position:relative;overflow:hidden}
 main::before{content:'';position:absolute;top:-20%;left:-10%;width:50%;height:80%;background:radial-gradient(ellipse,rgba(249,115,22,.06) 0%,transparent 65%);pointer-events:none}
@@ -71,7 +61,6 @@ main::after{content:'';position:absolute;bottom:-20%;right:-10%;width:40%;height
 .btn-sub:disabled{opacity:.6;cursor:not-allowed;transform:none}
 .link{color:var(--orange-d);text-decoration:none;font-weight:700;font-size:13px}
 .link:hover{text-decoration:underline}
-[data-theme="dark"] .link{color:var(--orange)}
 .err{background:#fef2f2;border:1px solid #fecaca;color:var(--red);padding:10px 14px;border-radius:9px;font-size:13px;margin-bottom:14px;display:none;font-weight:500}
 .suc{background:#f0fdf4;border:1px solid #bbf7d0;color:var(--green);padding:10px 14px;border-radius:9px;font-size:13px;margin-bottom:14px;display:none;font-weight:500}
 .tc{text-align:center;font-size:13px;color:var(--ink3);font-weight:500;margin-top:16px}
@@ -88,7 +77,6 @@ main::after{content:'';position:absolute;bottom:-20%;right:-10%;width:40%;height
   </a>
   <div class="nav-r">
     <a href="app.html" class="nav-link">← Back to App</a>
-    <button class="theme-btn" onclick="toggleTheme()" id="theme-btn">🌙</button>
   </div>
 </nav>
 
@@ -178,8 +166,6 @@ const store = {
 let resetToken = '';
 
 // Theme
-const t = store.get('ams_theme') || 'light';
-document.documentElement.setAttribute('data-theme', t);
 function getPostLoginUrl() {
   const params = new URLSearchParams(window.location.search);
   const next = params.get('next');
@@ -189,9 +175,6 @@ function getPostLoginUrl() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  const b = document.getElementById('theme-btn');
-  if (b) b.textContent = t === 'dark' ? '☀️' : '🌙';
-
   // Check URL params
   const params = new URLSearchParams(window.location.search);
 
@@ -226,13 +209,6 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('forgot-email').addEventListener('keydown', e => { if(e.key==='Enter') doForgot(); });
   document.getElementById('reset-confirm').addEventListener('keydown', e => { if(e.key==='Enter') doReset(); });
 });
-
-function toggleTheme() {
-  const h = document.documentElement, d = h.getAttribute('data-theme') === 'dark';
-  h.setAttribute('data-theme', d ? 'light' : 'dark');
-  document.getElementById('theme-btn').textContent = d ? '🌙' : '☀️';
-  store.set('ams_theme', d ? 'light' : 'dark');
-}
 
 function show(id) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
