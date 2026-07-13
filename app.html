@@ -328,7 +328,7 @@ footer{background:#f8fafc;border-top:1px solid rgba(226,232,240,.9)}
       <div id="url-input-area">
         <div class="input-wrap" style="margin-bottom:10px">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-          <input id="store-url" class="store-input" type="text" placeholder="yourstore.myshopify.com or custom domain" onkeydown="if(event.key==='Enter')analyzeStore()"/>
+          <input id="store-url" class="store-input" type="text" placeholder="store URL (Shopify, Amazon, Etsy, WooCommerce...)" onkeydown="if(event.key==='Enter')analyzeStore()"/>
           <button class="btn-connect" onclick="connectShopify()">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
             Connect Store
@@ -341,7 +341,7 @@ footer{background:#f8fafc;border-top:1px solid rgba(226,232,240,.9)}
         <div style="display:flex;flex-wrap:wrap;gap:16px;font-size:14px;color:var(--text4);font-weight:600">
           <span style="display:flex;align-items:center;gap:5px">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-            Quick Analyze — public data &amp; estimated metrics only
+            Quick Analyze — public data only (works for most e-commerce domains)
           </span>
           <span style="display:flex;align-items:center;gap:5px">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
@@ -512,6 +512,16 @@ footer{background:#f8fafc;border-top:1px solid rgba(226,232,240,.9)}
           <div style="font-size:14px;font-weight:700;color:var(--text3);margin-bottom:14px;text-transform:uppercase;letter-spacing:.5px">Revenue Opportunity ($)</div>
           <canvas id="bar-chart" height="200"></canvas>
         </div>
+      </div>
+
+      <!-- Signals Used (Quick Analyze transparency) -->
+      <div class="glass" style="border-radius:var(--radius);padding:20px;margin-bottom:14px;display:none" id="signals-panel">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <div style="font-size:14px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px">Signals Used</div>
+          <div class="tag" id="signals-confidence" style="background:rgba(15,88,96,.12);color:var(--teal-dark);border:1px solid rgba(15,88,96,.25)">Confidence: --</div>
+        </div>
+        <div style="font-size:13px;color:var(--text3);font-weight:500;margin-bottom:12px">This score is based on detectable public signals only.</div>
+        <div id="signals-list" style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px"></div>
       </div>
 
       <!-- Issues + Quick Wins -->
@@ -1131,6 +1141,10 @@ async function analyzeStore() {
     await updateProgress('Fetching live store data...', 10);
     const shopifyResp = await fetch(API_BASE, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({type:'shopify-fetch', storeUrl}) });
     const {shopifyData} = await shopifyResp.json();
+    const lowDataQuality = (shopifyData?.productSummary?.count || 0) === 0 && (shopifyData?.errors?.length || 0) > 0;
+    if (lowDataQuality) {
+      notify('Limited public data detected — showing low-confidence quick analysis.');
+    }
 
     document.getElementById('check-0').innerHTML = `<div style="width:16px;height:16px;border-radius:50%;background:rgba(74,222,128,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>Fetching live store data`;
 
@@ -1239,68 +1253,103 @@ function buildAnalysisPrompt(storeUrl, data) {
   const ps = data?.productSummary || {};
   const hp = data?.homepage || {};
   const collections = data?.collections || [];
+  const platform = data?.platform || 'generic';
+  const fetchErrors = data?.errors?.length || 0;
+  const productCount = ps.count || 0;
+  const hasProductFeed = productCount > 0;
+  const dataConfidence = data?.dataConfidence || (!hasProductFeed && fetchErrors > 0 ? 'low' : (fetchErrors > 0 ? 'medium' : 'high'));
 
   // ── Compute score from real signals ────────────────────────────────
-  let score = 42;
+  let score = 30;
+  if (hasProductFeed)       score += 10;
   if (hp.hasStructuredData) score += 8;
-  if (hp.metaDescription)   score += 7;
-  if (hp.hasOpenGraph)       score += 5;
-  if (hp.hasEmailCapture)    score += 9;
-  if (hp.hasReviews)         score += 9;
+  if (hp.metaDescription)   score += 6;
+  if (hp.hasOpenGraph)      score += 4;
+  if (hp.hasEmailCapture)   score += 8;
+  if (hp.hasReviews)        score += 8;
   if (hp.hasLiveChat)        score += 4;
   if (ps.count > 0 && ps.withImages === ps.count) score += 6;
   if (ps.count > 0 && (ps.withDescriptions / ps.count) > 0.8) score += 6;
   if (collections.length > 3) score += 4;
-  if (data?.hasSitemap)      score += 3;
-  score = Math.min(Math.max(score, 32), 88);
+  if (data?.hasSitemap)       score += 3;
+  if (ps.count > 0 && (ps.withImages / ps.count) < 0.6) score -= 6;
+  if (ps.count > 0 && (ps.withDescriptions / ps.count) < 0.5) score -= 6;
+  if (fetchErrors > 0) score -= Math.min(8, fetchErrors * 2);
+  score = Math.min(Math.max(score, 20), 90);
 
   const scoreBadge  = score >= 80 ? 'Excellent' : score >= 65 ? 'Good' : score >= 50 ? 'Fair' : 'Needs Work';
-  const scoreLabel  = score >= 65 ? 'Based on public data' : 'Several key gaps detected';
-  const avgPrice    = parseFloat(ps.avgPrice || 40);
-  const productCount = ps.count || 0;
+  const scoreLabel  = dataConfidence === 'low' ? 'Limited public data — low confidence' : (score >= 65 ? 'Based on public data' : 'Several key gaps detected');
+  const avgPrice    = parseFloat(ps.avgPrice || 0);
   const missingImages = productCount - (ps.withImages || 0);
   const missingDescs  = productCount - (ps.withDescriptions || 0);
 
+  const signals = [
+    { label: 'Platform detected', ok: true, detail: platform.toUpperCase() },
+    { label: 'Product feed reachable', ok: hasProductFeed, detail: hasProductFeed ? `${productCount} products found` : 'No public products feed found' },
+    { label: 'Meta description', ok: !!hp.metaDescription, detail: hp.metaDescription ? 'Detected on homepage' : 'Missing on homepage' },
+    { label: 'Structured data', ok: !!hp.hasStructuredData, detail: hp.hasStructuredData ? 'JSON-LD present' : 'No JSON-LD detected' },
+    { label: 'Open Graph tags', ok: !!hp.hasOpenGraph, detail: hp.hasOpenGraph ? 'Social tags detected' : 'Social tags not detected' },
+    { label: 'Email capture signal', ok: !!hp.hasEmailCapture, detail: hp.hasEmailCapture ? 'Newsletter/popup signal found' : 'No reliable email-capture signal found' },
+    { label: 'Reviews signal', ok: !!hp.hasReviews, detail: hp.hasReviews ? 'Review app/schema signal found' : 'No review signal detected' },
+    { label: 'Live chat signal', ok: !!hp.hasLiveChat, detail: hp.hasLiveChat ? 'Chat widget/provider detected' : 'No live chat signal detected' },
+    { label: 'Sitemap', ok: !!data?.hasSitemap, detail: data?.hasSitemap ? 'sitemap.xml reachable' : 'sitemap.xml not reachable' },
+  ];
+
   // ── Build issues array from CONFIRMED gaps only ─────────────────────
   const issues = [];
-  if (!hp.hasEmailCapture) issues.push({ title: 'No email capture popup detected',         impact: 'Critical', revenue: 'Est. $4,000–$9,000/mo lost to list-building gap'     });
-  if (!hp.hasReviews)      issues.push({ title: 'No product review app detected',          impact: 'High',     revenue: 'Est. $2,000–$6,000/mo lost — reviews lift CVR 18%+' });
+  if (!hp.hasEmailCapture) issues.push({ title: 'No email capture popup detected',         impact: 'Critical', revenue: 'Likely list growth and remarketing opportunity'       });
+  if (!hp.hasReviews)      issues.push({ title: 'No product review app detected',          impact: 'High',     revenue: 'Trust gap likely lowering conversion rate'             });
   if (!hp.metaDescription) issues.push({ title: 'Homepage missing meta description',       impact: 'High',     revenue: 'Losing organic SEO click-through rate'                });
   if (!hp.hasStructuredData) issues.push({ title: 'No schema/structured data on homepage', impact: 'Medium',   revenue: 'Missing Google rich results & Shopping snippets'       });
   if (!hp.hasOpenGraph)    issues.push({ title: 'No Open Graph tags (og:title, og:image)', impact: 'Medium',   revenue: 'Poor social media link previews hurt traffic'          });
   if (missingImages > 0)   issues.push({ title: `${missingImages} products missing images`, impact: 'High',    revenue: 'Missing images directly kill add-to-cart rate'         });
   if (missingDescs > 0)    issues.push({ title: `${missingDescs} products have thin descriptions`, impact: 'Medium', revenue: 'Hurts SEO rankings and customer confidence'     });
-  if (!hp.hasLiveChat)     issues.push({ title: 'No live chat for pre-purchase support',   impact: 'Medium',   revenue: 'Est. 5–10% of visitors leave with unanswered questions' });
+  if (!hp.hasLiveChat)     issues.push({ title: 'No live chat for pre-purchase support',   impact: 'Medium',   revenue: 'Potential drop-off for high-intent visitors'            });
   if (issues.length === 0) issues.push({ title: 'Good baseline — focus on conversion rate optimisation', impact: 'Medium', revenue: 'Even small CVR gains compound quickly' });
 
   // ── Build quick wins from confirmed gaps ────────────────────────────
   const quickWins = [];
-  if (!hp.hasEmailCapture) quickWins.push({ title: 'Install Klaviyo email popup',             effort: '30 min',  impact: '+3–5% email capture rate'              });
-  if (!hp.hasReviews)      quickWins.push({ title: 'Install Loox or Yotpo review app',        effort: '1 hour',  impact: '+15–25% trust & conversion lift'       });
+  if (!hp.hasEmailCapture) quickWins.push({ title: 'Add email capture popup',                  effort: '30 min',  impact: '+3–5% email capture rate'              });
+  if (!hp.hasReviews)      quickWins.push({ title: 'Add product reviews module',               effort: '1 hour',  impact: '+15–25% trust & conversion lift'       });
   if (!hp.metaDescription) quickWins.push({ title: 'Write homepage meta description',          effort: '10 min',  impact: 'Better SEO click-through from Google'  });
   if (!hp.hasStructuredData) quickWins.push({ title: 'Add JSON-LD schema to homepage',         effort: '30 min',  impact: 'Unlock Google rich results'             });
   if (missingImages > 0)   quickWins.push({ title: `Add images to ${missingImages} products`, effort: '1–2 hrs', impact: 'Lift add-to-cart rate immediately'       });
-  quickWins.push({ title: 'Add trust badges to cart & checkout',  effort: '20 min',  impact: '+5–8% checkout completion'             });
-  quickWins.push({ title: 'Set up abandoned cart email sequence', effort: '2 hours', impact: 'Recover 15–30% of abandoned carts'      });
+  if (!hp.hasReviews || !hp.hasLiveChat) {
+    quickWins.push({ title: 'Add trust badges to cart & checkout',  effort: '20 min',  impact: '+5–8% checkout completion' });
+  }
+  quickWins.push({ title: hp.hasEmailCapture ? 'Optimize abandoned cart email sequence' : 'Set up abandoned cart email sequence', effort: '2 hours', impact: 'Recover abandoned carts and improve return visits' });
 
   // ── Build revenue opportunities ─────────────────────────────────────
   const revenueOpportunity = [];
-  if (!hp.hasEmailCapture) revenueOpportunity.push({ label: 'Email Capture',  value: Math.round(avgPrice * 150) });
-  if (!hp.hasReviews)      revenueOpportunity.push({ label: 'Social Proof',   value: Math.round(avgPrice * 100) });
-  revenueOpportunity.push(                         { label: 'Abandoned Cart', value: Math.round(avgPrice * 180) });
-  revenueOpportunity.push(                         { label: 'AOV Boost',      value: Math.round(avgPrice *  90) });
-  if (!hp.hasStructuredData) revenueOpportunity.push({ label: 'SEO Traffic',  value: Math.round(avgPrice *  70) });
+  if (avgPrice > 0) {
+    if (!hp.hasEmailCapture) revenueOpportunity.push({ label: 'Email Capture',  value: Math.round(avgPrice * 120) });
+    if (!hp.hasReviews)      revenueOpportunity.push({ label: 'Social Proof',   value: Math.round(avgPrice *  80) });
+    revenueOpportunity.push(                         { label: 'Abandoned Cart', value: Math.round(avgPrice * 140) });
+    revenueOpportunity.push(                         { label: 'AOV Boost',      value: Math.round(avgPrice *  70) });
+    if (!hp.hasStructuredData) revenueOpportunity.push({ label: 'SEO Traffic',  value: Math.round(avgPrice *  55) });
+  }
+
+  let monthlyRevenueEstimate = 'Estimate unavailable';
+  if (avgPrice > 0 && productCount > 0) {
+    const low = Math.round(avgPrice * productCount * 0.8);
+    const high = Math.round(avgPrice * productCount * 2.2);
+    monthlyRevenueEstimate = `$${low.toLocaleString()}–$${high.toLocaleString()}`;
+  }
+  const estimatedConversion = hp.hasEmailCapture && hp.hasReviews ? 2.1 : (hp.hasEmailCapture || hp.hasReviews ? 1.7 : 1.2);
 
   // ── Build the analysis object ───────────────────────────────────────
   const analysis = {
     storeName: hp.title?.split(/[|–-]/)[0]?.trim() || storeUrl,
     storeUrl,
+    platform,
+    dataConfidence,
+    signals,
     score,
-    conversionRate: 1.9,
-    monthlyRevenue: '$' + (Math.round(avgPrice * productCount * 6 / 100) * 100).toLocaleString(),
-    revenueChange:  '+' + (hp.hasEmailCapture ? 14 : 22) + '% potential',
+    conversionRate: estimatedConversion,
+    monthlyRevenue: monthlyRevenueEstimate,
+    revenueChange:  dataConfidence === 'low' ? 'Data-limited estimate' : ('+' + (hp.hasEmailCapture ? 10 : 18) + '% potential'),
     revenueBarPct:  Math.round(score * 0.8),
-    convBarPct:     45,
+    convBarPct:     Math.round(estimatedConversion * 25),
     scoreBadge,
     scoreLabel,
     metrics: [
@@ -1395,7 +1444,12 @@ function renderDashboard(d) {
 
   // Estimate note
   const estimateNote = document.getElementById('score-estimate-note');
-  if (!connectedShop) estimateNote.style.display = 'block';
+  if (!connectedShop) {
+    estimateNote.style.display = 'block';
+    estimateNote.textContent = d.dataConfidence === 'low'
+      ? '⚠ Limited public data — low confidence. Connect store for real metrics.'
+      : '⚠ Based on public data estimates';
+  }
   else estimateNote.style.display = 'none';
 
   // Revenue + Conversion
@@ -1437,6 +1491,40 @@ function renderDashboard(d) {
   // Charts
   renderRadarChart(d.categoryScores);
   renderBarChart(d.revenueOpportunity);
+
+  // Signals transparency panel (primarily for quick/public analysis)
+  const signalsPanel = document.getElementById('signals-panel');
+  const signalsList = document.getElementById('signals-list');
+  const signalsConfidence = document.getElementById('signals-confidence');
+  const signals = Array.isArray(d.signals) ? d.signals : [];
+  if (signalsPanel && signalsList && signalsConfidence) {
+    if (signals.length) {
+      const conf = d.dataConfidence || 'medium';
+      const confMap = {
+        high: { txt: 'Confidence: High', bg: 'rgba(34,197,94,.12)', fg: '#166534', br: 'rgba(34,197,94,.25)' },
+        medium: { txt: 'Confidence: Medium', bg: 'rgba(245,158,11,.12)', fg: '#92400e', br: 'rgba(245,158,11,.25)' },
+        low: { txt: 'Confidence: Low', bg: 'rgba(239,68,68,.12)', fg: '#991b1b', br: 'rgba(239,68,68,.25)' },
+      };
+      const c = confMap[conf] || confMap.medium;
+      signalsConfidence.textContent = c.txt;
+      signalsConfidence.style.background = c.bg;
+      signalsConfidence.style.color = c.fg;
+      signalsConfidence.style.borderColor = c.br;
+
+      signalsList.innerHTML = signals.map(s => `
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:9px 10px;border:1px solid var(--border);border-radius:10px;background:var(--bg2)">
+          <div style="width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:${s.ok ? 'rgba(34,197,94,.12)' : 'rgba(239,68,68,.12)'};color:${s.ok ? '#166534' : '#991b1b'};font-size:12px;font-weight:700">${s.ok ? '✓' : '!'}</div>
+          <div style="min-width:0;flex:1">
+            <div style="font-size:13px;color:var(--text);font-weight:700">${s.label}</div>
+            <div style="font-size:12px;color:var(--text3);font-weight:500;margin-top:1px">${s.detail || ''}</div>
+          </div>
+        </div>
+      `).join('');
+      signalsPanel.style.display = 'block';
+    } else {
+      signalsPanel.style.display = 'none';
+    }
+  }
 
   // Issues
   const impactColors = {Critical:'var(--red)',High:'var(--teal-dark)',Medium:'var(--yellow)'};

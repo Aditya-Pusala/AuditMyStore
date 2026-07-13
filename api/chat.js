@@ -123,30 +123,149 @@ async function fetchAdminData(shop, token) {
 async function fetchPublicData(storeUrl) {
   const domain = storeUrl.replace(/^https?:\/\//, '').replace(/\/$/, '').trim();
   const baseUrl = `https://${domain}`;
-  const headers = { 'User-Agent': 'Mozilla/5.0 (compatible; ShopifyAnalyzer/1.0)', Accept: 'application/json' };
+  const headers = { 'User-Agent': 'Mozilla/5.0 (compatible; EcommerceAnalyzer/1.0)', Accept: 'text/html,application/json;q=0.9,*/*;q=0.8' };
   const results = {};
   const errors = [];
 
   const safe = async (label, fn) => { try { results[label] = await fn(); } catch (e) { errors.push(`${label}: ${e.message}`); } };
 
-  await safe('products', async () => { const r = await fetch(`${baseUrl}/products.json?limit=250`, { headers }); return r.ok ? (await r.json()).products || [] : []; });
-  await safe('collections', async () => { const r = await fetch(`${baseUrl}/collections.json?limit=250`, { headers }); return r.ok ? (await r.json()).collections || [] : []; });
-  await safe('hasSitemap', async () => (await fetch(`${baseUrl}/sitemap.xml`, { headers })).ok);
+  const detectPlatform = (host, html = '') => {
+    const h = String(host || '').toLowerCase();
+    const s = String(html || '').toLowerCase();
+    if (h.includes('amazon.')) return 'amazon';
+    if (h.includes('etsy.')) return 'etsy';
+    if (h.includes('ebay.')) return 'ebay';
+    if (h.includes('walmart.')) return 'walmart';
+    if (h.includes('myshopify.com') || s.includes('cdn.shopify.com') || s.includes('shopify.theme')) return 'shopify';
+    if (s.includes('woocommerce') || s.includes('wp-content/plugins/woocommerce')) return 'woocommerce';
+    if (s.includes('bigcommerce')) return 'bigcommerce';
+    if (s.includes('squarespace')) return 'squarespace';
+    if (s.includes('wix.com') || s.includes('wix-static')) return 'wix';
+    return 'generic';
+  };
+
+  const extractProductLinks = (html, base, host) => {
+    const found = new Set();
+    const hrefs = [...String(html || '').matchAll(/href=["']([^"'#]+)["']/gi)].map(m => m[1]);
+    const patterns = [/\/products\//i, /\/dp\/[A-Z0-9]{6,}/i, /\/gp\/product\//i, /\/p\//i, /product/i];
+    for (const href of hrefs) {
+      try {
+        const u = new URL(href, base);
+        if (u.hostname !== host) continue;
+        if (!patterns.some(p => p.test(u.pathname))) continue;
+        found.add(u.toString().split('?')[0]);
+      } catch {}
+      if (found.size >= 6) break;
+    }
+    return [...found];
+  };
+
+  const readLdProducts = (html) => {
+    const out = [];
+    const scripts = [...String(html || '').matchAll(/<script[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)].map(m => m[1]);
+    const walk = (node) => {
+      if (!node) return;
+      if (Array.isArray(node)) return node.forEach(walk);
+      if (typeof node !== 'object') return;
+      const t = node['@type'];
+      const isProduct = (Array.isArray(t) && t.includes('Product')) || t === 'Product';
+      if (isProduct) {
+        const offers = Array.isArray(node.offers) ? node.offers[0] : node.offers;
+        const price = offers?.price || offers?.lowPrice || offers?.highPrice || null;
+        const image = Array.isArray(node.image) ? node.image[0] : node.image;
+        out.push({
+          title: node.name || null,
+          price: price != null ? parseFloat(price) : null,
+          image: image || null,
+          description: node.description || null,
+        });
+      }
+      if (node['@graph']) walk(node['@graph']);
+    };
+    for (const raw of scripts) {
+      try { walk(JSON.parse(raw)); } catch {}
+    }
+    return out;
+  };
+
+  const readMetaProduct = (html) => {
+    const title = (String(html).match(/<meta[^>]*property=["']og:title["'][^>]*content=["']([^"']+)["']/i) || [])[1]
+      || (String(html).match(/<title[^>]*>([^<]+)<\/title>/i) || [])[1]
+      || null;
+    const desc = (String(html).match(/<meta[^>]*name=["']description["'][^>]*content=["']([^"']+)["']/i) || [])[1] || null;
+    const img = (String(html).match(/<meta[^>]*property=["']og:image["'][^>]*content=["']([^"']+)["']/i) || [])[1] || null;
+    const p1 = (String(html).match(/<meta[^>]*property=["']product:price:amount["'][^>]*content=["']([^"']+)["']/i) || [])[1];
+    const p2 = (String(html).match(/itemprop=["']price["'][^>]*content=["']([^"']+)["']/i) || [])[1];
+    const price = p1 || p2 ? parseFloat(p1 || p2) : null;
+    return { title, description: desc, image: img, price };
+  };
+
   await safe('homepage', async () => {
     const r = await fetch(baseUrl, { headers, redirect: 'follow' });
     const html = await r.text();
+    const hasEmailInput = /<input[^>]*type=["']email["'][^>]*>/i.test(html);
+    const hasNewsletterCopy = /newsletter|subscribe|get\s*\d+%|email\s+list|join\s+our/i.test(html);
+    const platform = detectPlatform(domain, html);
+    results.platform = platform;
     return {
       status: r.status,
       title: (html.match(/<title[^>]*>([^<]+)<\/title>/i) || [])[1]?.trim(),
       metaDescription: (html.match(/<meta[^>]*name=["']description["'][^>]*content=["']([^"']+)["']/i) || [])[1]?.trim(),
       hasStructuredData: html.includes('application/ld+json'),
-      hasOpenGraph: html.includes('og:title'),
-      hasEmailCapture: /klaviyo|mailchimp|omnisend|popup|modal/i.test(html),
-      hasReviews: /yotpo|loox|okendo|reviews/i.test(html),
-      hasLiveChat: /tidio|gorgias|intercom|freshchat|crisp/i.test(html),
+      hasOpenGraph: /property=["']og:(title|description|image|site_name)["']/i.test(html),
+      hasEmailCapture: /klaviyo|mailchimp|omnisend|privy|sendlane|convertkit/i.test(html) || (hasEmailInput && hasNewsletterCopy),
+      hasReviews: /yotpo|loox|okendo|judgeme|stamped\.io|ryviu|spr-badge|aggregateRating/i.test(html),
+      hasLiveChat: /tidio|gorgias|intercom|freshchat|crisp|zendesk|tawk\.to|chatra/i.test(html),
       themeName: (html.match(/Shopify\.theme\s*=\s*\{[^}]*"name"\s*:\s*"([^"]+)"/) || [])[1],
+      html,
     };
   });
+
+  if ((results.platform || 'generic') === 'shopify') {
+    await safe('products', async () => {
+      const r = await fetch(`${baseUrl}/products.json?limit=250`, { headers });
+      return r.ok ? (await r.json()).products || [] : [];
+    });
+    await safe('collections', async () => {
+      const r = await fetch(`${baseUrl}/collections.json?limit=250`, { headers });
+      return r.ok ? (await r.json()).collections || [] : [];
+    });
+  } else {
+    results.collections = [];
+    await safe('products', async () => {
+      const links = extractProductLinks(results.homepage?.html || '', baseUrl, domain);
+      const products = [];
+      for (const link of links.slice(0, 5)) {
+        try {
+          const r = await fetch(link, { headers, redirect: 'follow' });
+          if (!r.ok) continue;
+          const html = await r.text();
+          const ld = readLdProducts(html);
+          if (ld.length) {
+            ld.forEach(p => products.push({
+              title: p.title || 'Untitled',
+              body_html: p.description || '',
+              images: p.image ? [{ src: p.image }] : [],
+              variants: [{ price: p.price != null && !Number.isNaN(p.price) ? String(p.price) : null }],
+            }));
+          } else {
+            const p = readMetaProduct(html);
+            if (p.title || p.price != null) {
+              products.push({
+                title: p.title || 'Untitled',
+                body_html: p.description || '',
+                images: p.image ? [{ src: p.image }] : [],
+                variants: [{ price: p.price != null && !Number.isNaN(p.price) ? String(p.price) : null }],
+              });
+            }
+          }
+        } catch {}
+      }
+      return products;
+    });
+  }
+
+  await safe('hasSitemap', async () => (await fetch(`${baseUrl}/sitemap.xml`, { headers })).ok);
 
   if (results.products?.length) {
     const prods = results.products;
@@ -161,6 +280,14 @@ async function fetchPublicData(storeUrl) {
       sample: prods.slice(0, 5).map(p => ({ title: p.title, price: p.variants?.[0]?.price })),
     };
   }
+
+  const productCount = results.productSummary?.count || 0;
+  const platform = results.platform || 'generic';
+  if (platform === 'shopify' && productCount > 0 && errors.length === 0) results.dataConfidence = 'high';
+  else if (productCount > 0) results.dataConfidence = 'medium';
+  else results.dataConfidence = 'low';
+
+  if (results.homepage && results.homepage.html) delete results.homepage.html;
 
   return { ...results, errors };
 }
