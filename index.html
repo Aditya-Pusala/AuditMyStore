@@ -13,12 +13,12 @@
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
   --bg:#f8fafc;--bg2:#ffffff;--bg3:#eef2f7;
-  --border:rgba(15,23,42,0.08);--border2:rgba(15,23,42,0.12);
+  --border:rgba(15,23,42,0.06);--border2:rgba(15,23,42,0.09);
   --text:#0f172a;--text2:#334155;--text3:#64748b;
-  --orange:#f97316;--orange-d:#ea580c;--orange-l:rgba(249,115,22,0.12);
-  --teal:#22d3ee;--green:#4ade80;--red:#f87171;
-  --glow-o:0 10px 30px rgba(249,115,22,0.12);
-  --glow-t:0 10px 30px rgba(34,211,238,0.12);
+  --orange:#ea580c;--orange-d:#ea580c;--orange-l:rgba(234,88,12,0.06);
+  --teal:#0f5860;--green:#16a34a;--red:#ef4444;
+  --glow-o:0 6px 18px rgba(234,88,12,0.06);
+  --glow-t:0 6px 18px rgba(15,88,96,0.06);
 }
 html{scroll-behavior:smooth;overflow-x:hidden}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
@@ -27,20 +27,20 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);ove
 nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:20px 40px;display:flex;align-items:center;justify-content:space-between;transition:all .3s;background:rgba(248,250,252,0.82);backdrop-filter:blur(18px);border-bottom:1px solid transparent}
 nav.scrolled{background:rgba(248,250,252,0.96);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:14px 40px}
 .nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
-.logo-mark{width:36px;height:36px;background:linear-gradient(135deg,var(--teal-dark),var(--teal));border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:12px;color:white;box-shadow:var(--glow-t)}
+.logo-mark{width:36px;height:36px;background:var(--teal);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:12px;color:white}
 .logo-text{font-family:'Syne',sans-serif;font-weight:700;font-size:17px;color:var(--text)}
 .nav-links{display:flex;align-items:center;gap:6px}
 .nav-link{color:var(--text3);text-decoration:none;font-size:14px;font-weight:500;padding:8px 14px;border-radius:8px;transition:all .2s}
 .nav-link:hover{color:var(--text);background:rgba(15,23,42,0.04)}
-.nav-cta{background:linear-gradient(135deg,var(--teal-dark),var(--teal));color:white;padding:9px 22px;border-radius:9px;font-size:14px;font-weight:600;text-decoration:none;transition:all .2s;box-shadow:var(--glow-t)}
-.nav-cta:hover{transform:translateY(-1px);box-shadow:0 0 60px rgba(249,115,22,0.4)}
+.nav-cta{background:transparent;color:var(--teal);padding:8px 18px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none;transition:all .18s;border:1px solid rgba(15,23,42,0.06)}
+.nav-cta:hover{background:rgba(15,88,96,0.04);transform:translateY(-1px)}
 
 /* SECTIONS */
 section{position:relative;z-index:1}
 .container{max-width:1100px;margin:0 auto;padding:0 40px}
 
 /* HERO */
-.hero{min-height:100vh;display:flex;align-items:center;padding:120px 40px 80px;position:relative;background:linear-gradient(180deg,rgba(249,115,22,0.04),transparent 34%)}
+.hero{min-height:100vh;display:flex;align-items:center;padding:120px 40px 80px;position:relative;background:transparent}
 .hero-inner{max-width:1100px;margin:0 auto;width:100%}
 .hero-eyebrow{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(15,118,110,0.22);background:rgba(15,118,110,0.08);padding:6px 14px;border-radius:100px;font-size:12px;font-weight:600;color:var(--teal-dark);letter-spacing:1px;text-transform:uppercase;margin-bottom:28px}
 .eyebrow-dot{width:6px;height:6px;background:var(--teal-dark);border-radius:50%;animation:pulse 2s infinite}
@@ -51,8 +51,8 @@ section{position:relative;z-index:1}
 .grad{background:linear-gradient(135deg,var(--teal-dark),var(--teal),#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .hero-sub{font-size:18px;color:var(--text2);line-height:1.7;max-width:520px;margin-bottom:36px;font-weight:300;opacity:0}
 .hero-btns{display:flex;align-items:center;gap:14px;flex-wrap:wrap;opacity:0}
-.btn-primary{background:linear-gradient(135deg,var(--teal-dark),var(--teal));color:white;padding:15px 32px;border-radius:12px;font-size:15px;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:9px;box-shadow:0 0 40px rgba(15,118,110,0.2);transition:all .2s;cursor:pointer;font-family:'DM Sans',sans-serif}
-.btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 80px rgba(249,115,22,0.5)}
+.btn-primary{background:var(--teal);color:white;padding:12px 26px;border-radius:10px;font-size:15px;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:9px;transition:all .18s;cursor:pointer;font-family:'DM Sans',sans-serif}
+.btn-primary:hover{transform:translateY(-1px)}
 .btn-ghost{background:transparent;border:1px solid var(--border2);color:var(--text2);padding:15px 32px;border-radius:12px;font-size:15px;font-weight:500;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:all .2s;cursor:pointer;font-family:'DM Sans',sans-serif}
 .btn-ghost:hover{border-color:var(--teal);color:var(--teal)}
 .hero-stats{display:flex;gap:40px;margin-top:52px;opacity:0}
@@ -61,8 +61,8 @@ section{position:relative;z-index:1}
 .stat-div{width:1px;background:var(--border2)}
 
 /* FLOATING CARD */
-.hero-card{position:absolute;right:40px;top:50%;transform:translateY(-50%);width:320px;background:rgba(255,255,255,0.92);border:1px solid var(--border2);border-radius:20px;backdrop-filter:blur(20px);overflow:hidden;box-shadow:var(--glow-t),0 24px 60px rgba(15,23,42,0.08);opacity:0}
-.hero-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--teal-dark),var(--teal),#60a5fa)}
+.hero-card{position:absolute;right:40px;top:50%;transform:translateY(-50%);width:320px;background:rgba(255,255,255,0.96);border:1px solid var(--border2);border-radius:12px;overflow:hidden;opacity:0}
+.hero-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,rgba(0,0,0,0),rgba(0,0,0,0))}
 .hc-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
 .hc-dot{width:8px;height:8px;border-radius:50%}
 .hc-url{font-size:12px;color:var(--text3);font-family:monospace;flex:1}
@@ -95,11 +95,10 @@ section{position:relative;z-index:1}
 
 /* STEPS */
 .steps-track{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:60px}
-.step-card{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:28px;position:relative;overflow:hidden;transition:all .3s}
-.step-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(249,115,22,0.05),transparent);opacity:0;transition:opacity .3s}
-.step-card:hover{border-color:rgba(249,115,22,0.3);transform:translateY(-4px);box-shadow:0 20px 60px rgba(0,0,0,0.3),var(--glow-o)}
-.step-card:hover::before{opacity:1}
-.step-num{font-family:'Syne',sans-serif;font-size:64px;font-weight:800;color:rgba(249,115,22,0.08);line-height:1;position:absolute;top:12px;right:18px}
+.step-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:24px;position:relative;overflow:hidden;transition:all .18s}
+.step-card::before{content:'';position:absolute;inset:0;background:transparent;opacity:0}
+.step-card:hover{border-color:rgba(234,88,12,0.06);transform:none;box-shadow:none}
+.step-num{font-family:'Syne',sans-serif;font-size:64px;font-weight:800;color:rgba(234,88,12,0.04);line-height:1;position:absolute;top:12px;right:18px}
 .step-ico{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:18px;font-size:22px}
 .step-card h3{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--text);margin-bottom:10px}
 .step-card p{font-size:14px;color:var(--text2);line-height:1.6;font-weight:300}
@@ -224,30 +223,7 @@ footer{background:linear-gradient(180deg,#f8fafc,#eef2f7);border-top:1px solid v
   footer{padding:32px 20px}
 }
 
-/* Minimal refresh */
-body{background:#f8fafc;color:var(--text)}
-nav{background:rgba(255,255,255,.9);border-bottom:1px solid rgba(226,232,240,.9);box-shadow:none}
-nav.scrolled{background:rgba(255,255,255,.96);border-bottom:1px solid rgba(226,232,240,.95);padding:14px 40px}
-.nav-link{color:var(--text3)}
-.nav-link:hover{color:var(--text);background:#f8fafc}
-.nav-cta,.btn-primary,.p-btn-solid,.dc-msg.user{background:var(--teal-d)!important;box-shadow:none!important}
-.nav-cta:hover,.btn-primary:hover,.p-btn-solid:hover{box-shadow:none!important;transform:translateY(-1px)}
-.hero{background:linear-gradient(180deg,rgba(15,118,110,.03),transparent 32%)}
-.hero-eyebrow,.t-pill,.p-badge,.badge-teal,.section-label{background:rgba(15,118,110,.08)!important;color:var(--teal-dark)!important;border-color:rgba(15,118,110,.12)!important}
-.hero-sub,.section-sub,.step-card p,.bento-card p,.dc-msg.ai,.t-text,.p-desc,.faq-a,.cta-glass p{color:var(--text2)}
-.hero-card,.step-card,.bento-card,.debbie-chat,.t-card,.p-card,.cta-glass{background:#fff;border:1px solid rgba(226,232,240,.95);box-shadow:none}
-.hero-card:hover,.step-card:hover,.bento-card:hover,.t-card:hover,.p-card:hover{transform:none;box-shadow:none}
-.step-card::before,.bento-glow,.testimonials::before,.testimonials::after,.cta-glass::before,.hero-card::before{opacity:.18}
-.testimonials{background:#f8fafc;padding:104px 0}
-.pricing,.faq,.cta-section,.scrolly{background:transparent}
-.section-h2,.hero h1,.stat-num,.hc-score-num,.hc-info h4,.step-card h3,.bento-card h3,.dc-name,.t-name,.p-price,.p-plan,.cta-glass h2,.ft-brand{font-family:'DM Sans',sans-serif}
-.section-h2,.hero h1,.p-price,.cta-glass h2{letter-spacing:-.04em}
-.p-card.featured{transform:none;box-shadow:none;border-color:rgba(15,118,110,.18)}
-.p-card.featured:hover{transform:translateY(-1px)}
-.faq-item{background:#fff}
-.faq-item.open{border-color:rgba(15,118,110,.2)}
-footer{background:#f8fafc;border-top:1px solid rgba(226,232,240,.9);color:var(--text3)}
-.ft-links a:hover{color:var(--text)}
+/* End of restrained design tweaks */
 </style>
 </head>
 <body>
@@ -268,7 +244,7 @@ footer{background:#f8fafc;border-top:1px solid rgba(226,232,240,.9);color:var(--
 </nav>
 
 <!-- HERO -->
-<section class="hero">
+<section class="section hero">
   <div class="hero-inner">
     <div class="hero-eyebrow"><span class="eyebrow-dot"></span>AI-Powered Revenue Intelligence</div>
     <h1>
@@ -346,7 +322,7 @@ footer{background:#f8fafc;border-top:1px solid rgba(226,232,240,.9);color:var(--
 </section>
 
 <!-- HOW IT WORKS -->
-<section class="scrolly" id="how">
+<section class="section scrolly" id="how">
   <div class="container">
     <div class="section-label reveal">How it works</div>
     <h2 class="section-h2 reveal">From URL to Blueprint<br>in <span class="grad">60 Seconds</span></h2>
@@ -415,7 +391,7 @@ footer{background:#f8fafc;border-top:1px solid rgba(226,232,240,.9);color:var(--
 </section>
 
 <!-- MEET DEBBIE -->
-<section class="scrolly" id="debbie" style="background:var(--bg2)">
+<section class="section scrolly" id="debbie" style="background:var(--bg2)">
   <div class="container">
     <div class="section-label reveal">Meet Your AI Consultant</div>
     <h2 class="section-h2 reveal">Say Hello to <span class="grad">Debbie</span> 👋</h2>
@@ -462,7 +438,7 @@ footer{background:#f8fafc;border-top:1px solid rgba(226,232,240,.9);color:var(--
 </section>
 
 <!-- TESTIMONIALS -->
-<section class="testimonials">
+<section class="section testimonials">
   <div class="container">
     <div style="text-align:center">
       <div class="section-label reveal" style="justify-content:center;display:flex">Results</div>
@@ -501,7 +477,7 @@ footer{background:#f8fafc;border-top:1px solid rgba(226,232,240,.9);color:var(--
 </section>
 
 <!-- PRICING -->
-<section class="pricing" id="pricing">
+<section class="section pricing" id="pricing">
   <div class="container">
     <div style="text-align:center">
       <div class="section-label reveal" style="justify-content:center;display:flex">Pricing</div>
@@ -556,7 +532,7 @@ footer{background:#f8fafc;border-top:1px solid rgba(226,232,240,.9);color:var(--
 </section>
 
 <!-- FAQ -->
-<section class="faq">
+<section class="section faq">
   <div class="container" style="text-align:center">
     <div class="section-label reveal" style="justify-content:center;display:flex">FAQ</div>
     <h2 class="section-h2 reveal" style="text-align:center">Common Questions</h2>
@@ -571,7 +547,7 @@ footer{background:#f8fafc;border-top:1px solid rgba(226,232,240,.9);color:var(--
 </section>
 
 <!-- CTA -->
-<section class="cta-section">
+<section class="section cta-section">
   <div class="cta-glass reveal">
     <h2>Ready to Find Your<br><span class="grad">Hidden Revenue?</span></h2>
     <p>Join 2,400+ store owners who've unlocked hidden revenue with AuditMyStore and Debbie.</p>
