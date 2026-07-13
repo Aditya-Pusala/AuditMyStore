@@ -13,6 +13,14 @@
     --teal: #0f5860;
     --teal-light: #eef6f5;
     --teal-dark: #0c494b;
+  --green: #16a34a;
+  --green-dark: #065f46;
+  --red: #ef4444;
+  --red-dark: #991b1b;
+  --orange: #ea580c;
+  --orange-dark: #c2410c;
+  --yellow: #d97706;
+  --yellow-dark: #92400e;
   --yellow: #d97706;
   --radius: 12px;
   --shadow: 0 1px 2px rgba(15,23,42,0.05), 0 10px 24px rgba(15,23,42,0.04);
@@ -123,12 +131,32 @@ html { scroll-behavior: smooth; }
 .alert-success { background: #f0fdf4; border: 1px solid #bbf7d0; color: var(--green); }
 .alert-warning { background: #fff7ed; border: 1px solid #fed7aa; color: var(--orange); }
 
+/* Ensure alerts use sufficiently dark text for contrast */
+.alert-error { color: var(--red-dark); }
+.alert-success { color: var(--green-dark); }
+.alert-warning { color: var(--orange-dark); }
+
 /* BADGES */
 .badge { padding: 4px 10px; border-radius: 100px; font-size: 12px; font-weight: 700; }
 .badge-green { background: #dcfce7; color: var(--green); }
 .badge-teal { background: var(--teal-light); color: var(--teal-dark); }
-.badge-orange { background: #fff7ed; color: var(--orange); }
-.badge-yellow { background: #fef9c3; color: var(--yellow); }
+.badge-orange { background: #fff7ed; color: var(--ink); }
+.badge-yellow { background: #fef9c3; color: var(--ink); }
+.badge-green { background: #dcfce7; color: var(--ink); }
+
+/* utility badge/pill classes referenced in pages */
+.pill-red { color: var(--red-dark); }
+.pill-yellow { color: var(--yellow-dark); }
+.t-pill { color: var(--teal-dark); }
+
+/* simple status classes */
+.err { color: var(--red-dark); }
+.suc { color: var(--green-dark); }
+
+/* compact badge aliases used in account.html */
+.bdg-g { color: var(--green-dark); }
+.bdg-t { color: var(--teal-dark); }
+.bdg-o { color: var(--orange-dark); }
 
 /* ANIMATIONS */
 .fade-up { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }

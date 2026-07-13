@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>AuditMyStore — Visual Checklist</title>
+<style>
+  :root{--bg:#f8fafc;--paper:#fff;--muted:#64748b;--accent:#0f5860}
+  body{font-family:Inter,DM Sans,system-ui,Segoe UI,Arial,sans-serif;background:var(--bg);color:#0f172a;padding:28px}
+  .wrap{max-width:920px;margin:0 auto;background:var(--paper);padding:24px;border-radius:12px;border:1px solid rgba(15,23,42,0.04)}
+  h1{margin:0 0 6px;font-size:20px}
+  p.sub{margin:0 0 18px;color:var(--muted)}
+  .group{margin-top:18px}
+  .group h3{margin:0 0 8px;font-size:15px}
+  ul.checks{list-style:none;padding:0;margin:0}
+  li.item{display:flex;align-items:flex-start;gap:12px;padding:10px 8px;border-radius:8px}
+  li.item:hover{background:rgba(15,23,42,0.02)}
+  label{display:flex;gap:12px;align-items:flex-start;cursor:pointer}
+  .desc{color:var(--muted);font-size:13px}
+  .links{display:flex;gap:10px;margin-top:10px}
+  a.btn{display:inline-block;padding:8px 12px;border-radius:8px;background:transparent;border:1px solid rgba(15,23,42,0.06);color:var(--accent);text-decoration:none}
+  footer{margin-top:18px;color:var(--muted);font-size:13px}
+  .actions{display:flex;gap:10px;margin-top:12px}
+  button.action{padding:8px 12px;border-radius:8px;border:1px solid rgba(15,23,42,0.06);background:white;cursor:pointer}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Visual Checklist — Minimal UI Review</h1>
+    <p class="sub">Open each page and mark items as pass/fail. Progress is saved locally in your browser.</p>
+
+    <div class="links">
+      <a class="btn" href="index.html" target="_blank">Open Home</a>
+      <a class="btn" href="login.html" target="_blank">Open Login</a>
+      <a class="btn" href="account.html" target="_blank">Open Account</a>
+    </div>
+
+    <div class="group">
+      <h3>Global / Layout</h3>
+      <ul class="checks" id="global">
+        <li class="item"><label><input type="checkbox" data-key="g-1"> <div><strong>Readable spacing</strong><div class="desc">Section spacing, padding, and consistent container widths.</div></div></label></li>
+        <li class="item"><label><input type="checkbox" data-key="g-2"> <div><strong>Clear section separation</strong><div class="desc">You can visually tell where each section starts/ends without loud borders or colors.</div></div></label></li>
+        <li class="item"><label><input type="checkbox" data-key="g-3"> <div><strong>Consistent radii & elevation</strong><div class="desc">Cards and buttons use subtle radii and no heavy shadows.</div></div></label></li>
+        <li class="item"><label><input type="checkbox" data-key="g-4"> <div><strong>Typography hierarchy</strong><div class="desc">Headings, subheads and body text are distinct and legible.</div></div></label></li>
+      </ul>
+    </div>
+
+    <div class="group">
+      <h3>Hero & CTAs</h3>
+      <ul class="checks" id="hero">
+        <li class="item"><label><input type="checkbox" data-key="h-1"> <div><strong>Hero not loud</strong><div class="desc">No overpowering gradients or glows; hero feels calm.</div></div></label></li>
+        <li class="item"><label><input type="checkbox" data-key="h-2"> <div><strong>Primary CTA prominence</strong><div class="desc">Primary CTA is visible but not visually aggressive.</div></div></label></li>
+        <li class="item"><label><input type="checkbox" data-key="h-3"> <div><strong>Floating card subtle</strong><div class="desc">If present, floating card uses soft border and limited blur.</div></div></label></li>
+      </ul>
+    </div>
+
+    <div class="group">
+      <h3>Forms & Accessibility</h3>
+      <ul class="checks" id="forms">
+        <li class="item"><label><input type="checkbox" data-key="f-1"> <div><strong>Inputs: visible focus</strong><div class="desc">Focus ring appears and is clearly visible when tabbing.</div></div></label></li>
+        <li class="item"><label><input type="checkbox" data-key="f-2"> <div><strong>Contrast acceptable</strong><div class="desc">Text on background passes basic contrast (visually legible).</div></div></label></li>
+        <li class="item"><label><input type="checkbox" data-key="f-3"> <div><strong>Buttons accessible</strong><div class="desc">Buttons have sufficient hit area, label clarity, and keyboard focus.</div></div></label></li>
+      </ul>
+    </div>
+
+    <div class="group">
+      <h3>Mobile & Responsiveness</h3>
+      <ul class="checks" id="mobile">
+        <li class="item"><label><input type="checkbox" data-key="m-1"> <div><strong>Layout stacks cleanly</strong><div class="desc">Grids collapse to single column and spacing remains comfortable.</div></div></label></li>
+        <li class="item"><label><input type="checkbox" data-key="m-2"> <div><strong>Navigation usable</strong><div class="desc">Nav links accessible and CTAs reachable on small screens.</div></div></label></li>
+      </ul>
+    </div>
+
+    <div class="group">
+      <h3>Performance & Motion</h3>
+      <ul class="checks" id="perf">
+        <li class="item"><label><input type="checkbox" data-key="p-1"> <div><strong>Animations subtle</strong><div class="desc">Reveal/entrance animations are not overly busy or distracting.</div></div></label></li>
+        <li class="item"><label><input type="checkbox" data-key="p-2"> <div><strong>Prefers-reduced-motion respected</strong><div class="desc">Page respects reduced-motion setting (if enabled).</div></div></label></li>
+      </ul>
+    </div>
+
+    <div class="actions">
+      <button class="action" id="clear">Clear saved</button>
+      <button class="action" id="export">Export checklist</button>
+    </div>
+
+    <footer>Tip: open each page in a new tab from the top links, then check items as you review them.</footer>
+  </div>
+
+<script>
+  const keys = Array.from(document.querySelectorAll('input[type=checkbox]'))
+  function load(){
+    keys.forEach(cb=>{const k=cb.dataset.key;cb.checked = localStorage.getItem('vc-'+k)==='1'})
+  }
+  function save(){
+    keys.forEach(cb=>{localStorage.setItem('vc-'+cb.dataset.key, cb.checked ? '1' : '0')})
+  }
+  keys.forEach(cb=>cb.addEventListener('change', save))
+  document.getElementById('clear').addEventListener('click', ()=>{keys.forEach(cb=>cb.checked=false);save()})
+  document.getElementById('export').addEventListener('click', ()=>{
+    const out = keys.map(cb=>({id:cb.dataset.key,pass:cb.checked}));
+    const blob = new Blob([JSON.stringify(out,null,2)],{type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download='visual-checklist.json'; a.click(); URL.revokeObjectURL(url);
+  })
+  load()
+</script>
+</body>
+</html>
